@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Ojukaye{% endblock %}
+
+{% block content %}
+<!-- In the banner section of index.html -->
+<div class="banner-carousel mb-4">
+    <div class="banner-slider">
+        {% for banner in banner_posts %}
+        <div class="banner-slide">
+            <div class="banner-content" 
+                 style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        {% if banner.image and banner.image.url %} 
+                            url('{{ banner.image.url }}')
+                        {% elif banner.image_url %}
+                            url('{{ banner.image_url }}')
+                        {% else %}
+                            url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80')
+                        {% endif %} center/cover;">
+                <div class="banner-overlay">
+                    <span class="banner-category">{{ banner.category.name|default:"Featured" }}</span>
+                    <!-- Banner Title as Link -->
+                    <h2 class="banner-title">
+                        <a href="{% url 'post_detail' banner.id %}" class="text-white text-decoration-none">
+                            {{ banner.title }}
+                        </a>
+                    </h2>
+                    <p class="banner-description">{{ banner.content|truncatechars:150 }}</p>
+                    <!-- Read More Button -->
+                    <a href="{% url 'post_detail' banner.id %}" class="btn btn-accent">Read More</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Default banner... -->
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Create Post Section -->
+{% if user.is_authenticated %}
+<div class="create-post-card content-card mb-4">
+    <div class="create-post-header">
+        {% if user.profile.profile_pic %}
+            <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="create-post-avatar">
+        {% else %}
+            <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random" alt="{{ user.username }}" class="create-post-avatar">
+        {% endif %}
+        <div class="create-post-input">
+            <input type="text" placeholder="What's on your mind, {{ user.username }}?" 
+                   data-bs-toggle="modal" data-bs-target="#createPostModal" readonly>
+            <div class="create-post-options">
+                <button class="create-post-option" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                    <i class="fas fa-edit"></i> Write
+                </button>
+                <button class="create-post-option" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                    <i class="fas fa-image"></i> Photo
+                </button>
+                <button class="create-post-option" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                    <i class="fas fa-video"></i> Video
+                </button>
+                <button class="create-post-option" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                    <i class="fas fa-newspaper"></i> News
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Posts Feed -->
+<div class="posts-feed">
+    <!-- Filter Tabs -->
+    <div class="filter-tabs mb-4">
+        <div class="filter-nav">
+            <a href="?filter=latest" class="filter-tab {% if filter_type == 'latest' %}active{% endif %}">
+                <i class="fas fa-clock"></i> Latest
+            </a>
+            <a href="?filter=trending" class="filter-tab {% if filter_type == 'trending' %}active{% endif %}">
+                <i class="fas fa-fire"></i> Trending
+            </a>
+            <a href="?filter=popular" class="filter-tab {% if filter_type == 'popular' %}active{% endif %}">
+                <i class="fas fa-chart-line"></i> Popular
+            </a>
+        </div>
+    </div>
+
+    <!-- Posts List -->
+    {% for post in posts %}
+    <div class="content-card post-card mb-4">
+        <!-- Post Header -->
+        <div class="post-header">
+            <div class="post-user-info">
+                {% if post.author.profile.profile_pic %}
+                    <img src="{{ post.author.profile.profile_pic.url }}" alt="{{ post.author.username }}" class="post-avatar">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ post.author.username }}&background=random" 
+                         alt="{{ post.author.username }}" class="post-avatar">
+                {% endif %}
+                <div>
+                    <h5 class="post-author">
+                        <a href="{% url 'profile_view' post.author.username %}" class="text-decoration-none text-dark">
+                            {{ post.author.get_full_name|default:post.author.username }}
+                        </a>
+                        {% if post.is_verified %}
+                            <span class="verified-badge" title="Verified"><i class="fas fa-check-circle"></i></span>
+                        {% endif %}
+                    </h5>
+                    <p class="post-meta">
+                        {{ post.published_at|timesince }} ago • 
+                        {% if post.category %}
+                            <a href="{% url 'category_view' post.category.slug %}" class="text-accent">{{ post.category.name }}</a>
+                        {% endif %}
+                        {% if post.is_auto_fetched %}
+                            • <span class="text-info"><i class="fas fa-rss"></i> News</span>
+                        {% endif %}
+                        {% if post.is_sponsored %}
+                            • <span class="text-warning"><i class="fas fa-ad"></i> Sponsored</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="post-options">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-pale dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% if user == post.author or user.is_staff %}
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-flag me-2"></i>Report</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-ban me-2"></i>Hide</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Post Content -->
+        <div class="post-content">
+            <!-- Post Title as Link -->
+            <h4 class="post-title">
+                <a href="{% url 'post_detail' post.id %}" class="text-decoration-none text-dark">
+                    {{ post.title }}
+                </a>
+            </h4>
+            
+            <div class="post-text">
+                {{ post.content|linebreaks|truncatechars:500 }}
+                {% if post.content|length > 500 %}
+                <!-- Read More Link -->
+                <a href="{% url 'post_detail' post.id %}" class="read-more">
+                    Read more
+                </a>
+                {% endif %}
+            </div>
+            
+            {% if post.image %}
+            <!-- Post Image as Link -->
+            <div class="post-media mt-3">
+                <a href="{% url 'post_detail' post.id %}">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded">
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+
+        <!-- Post Stats -->
+        <div class="post-stats">
+            <span class="stat-item">
+                <i class="fas fa-heart text-danger"></i> {{ post.like_count }}
+            </span>
+            <span class="stat-item">
+                <i class="fas fa-comment text-accent"></i> {{ post.comment_count }}
+            </span>
+            <span class="stat-item">
+                <i class="fas fa-share text-success"></i> {{ post.share_count|default:0 }}
+            </span>
+            <span class="stat-item">
+                <i class="fas fa-eye text-muted"></i> {{ post.views }}
+            </span>
+        </div>
+
+        <!-- Post Actions -->
+        <div class="post-actions">
+            <button class="post-action-btn like-btn {% if user in post.likes.all %}active{% endif %}" 
+                    data-post-id="{{ post.id }}">
+                <i class="{% if user in post.likes.all %}fas{% else %}far{% endif %} fa-heart"></i> 
+                <span>Like</span>
+            </button>
+            <button class="post-action-btn comment-btn" data-post-id="{{ post.id }}">
+                <i class="far fa-comment"></i> Comment
+            </button>
+            <button class="post-action-btn share-btn" data-post-id="{{ post.id }}">
+                <i class="fas fa-share"></i> Share
+            </button>
+            <button class="post-action-btn bookmark-btn {% if user in post.bookmarks.all %}active{% endif %}" 
+                    data-post-id="{{ post.id }}">
+                <i class="{% if user in post.bookmarks.all %}fas{% else %}far{% endif %} fa-bookmark"></i> 
+                <span>Save</span>
+            </button>
+        </div>
+
+        <!-- Quick Comment Form -->
+        {% if user.is_authenticated %}
+        <div class="quick-comment mt-3 d-none" id="commentForm-{{ post.id }}">
+            <form class="comment-form" data-post-id="{{ post.id }}">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-pale" placeholder="Write a comment..." 
+                           name="content" required>
+                    <button class="btn btn-accent" type="submit">Post</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="content-card text-center py-5">
+        <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+        <h4>No posts yet</h4>
+        <p class="text-muted">Be the first to share something with the community!</p>
+        {% if user.is_authenticated %}
+        <button class="btn btn-accent" data-bs-toggle="modal" data-bs-target="#createPostModal">
+            <i class="fas fa-plus me-2"></i>Create Post
+        </button>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-accent">
+            <i class="fas fa-sign-in-alt me-2"></i>Login to Post
+        </a>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Posts pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter_type %}&filter={{ filter_type }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if filter_type %}&filter={{ filter_type }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter_type %}&filter={{ filter_type }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize banner carousel
+    $('.banner-slider').slick({
+        dots: true,
+        infinite: true,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        autoplay: true,
+        autoplaySpeed: 5000,
+        arrows: true,
+        prevArrow: '<button type="button" class="slick-prev"><i class="fas fa-chevron-left"></i></button>',
+        nextArrow: '<button type="button" class="slick-next"><i class="fas fa-chevron-right"></i></button>'
+    });
+
+    // Toggle comment form
+    $('.comment-btn').click(function() {
+        const postId = $(this).data('post-id');
+        $(`#commentForm-${postId}`).toggleClass('d-none');
+    });
+
+    // Post type change handler
+    $('#postType').change(function() {
+        const postType = $(this).val();
+        if (postType === 'profile_post') {
+            $('#categoryField').hide();
+        } else {
+            $('#categoryField').show();
+        }
+    });
+});
+</script>
+{% endblock %}

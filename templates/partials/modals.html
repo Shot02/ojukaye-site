@@ -1,0 +1,98 @@
+<!-- Login Modal -->
+<div class="modal fade modal-pale" id="quickLoginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Login to Ojukaye</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="loginUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control form-control-pale" id="loginUsername" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control form-control-pale" id="loginPassword" name="password" required>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="rememberMe" name="remember_me">
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+                    <button type="submit" class="btn btn-accent w-100">Login</button>
+                </form>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <p class="small mb-0">Don't have an account? <a href="{% url 'register' %}" class="text-accent">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Post Modal -->
+{% if user.is_authenticated %}
+<div class="modal fade modal-pale" id="createPostModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Create New Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'create_post' %}" enctype="multipart/form-data" id="postForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="postType" class="form-label">Post Type</label>
+                        <select class="form-control form-control-pale" id="postType" name="post_type">
+                            <option value="discussion">Discussion</option>
+                            <option value="user_news">User News</option>
+                            <option value="profile_post">Profile Post</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="postTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control form-control-pale" id="postTitle" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="postContent" class="form-label">Content</label>
+                        <textarea class="form-control form-control-pale" id="postContent" name="content" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3" id="categoryField">
+                        <label for="postCategory" class="form-label">Category</label>
+                        <select class="form-control form-control-pale" id="postCategory" name="category">
+                            <option value="">Select Category</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="postImage" class="form-label">Image (Optional)</label>
+                        <input type="file" class="form-control form-control-pale" id="postImage" name="image" accept="image/*">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="allowComments" name="allow_comments" checked>
+                                <label class="form-check-label" for="allowComments">Allow Comments</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="allowSharing" name="allow_sharing" checked>
+                                <label class="form-check-label" for="allowSharing">Allow Sharing</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-pale" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="postForm" class="btn btn-accent">Post</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

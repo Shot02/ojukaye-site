@@ -1,0 +1,79 @@
+<div class="sidebar-content">
+    {% if user.is_authenticated %}
+    <div class="profile-section">
+        {% if user.profile.profile_pic %}
+            <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="profile-avatar">
+        {% else %}
+            <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random" alt="{{ user.username }}" class="profile-avatar">
+        {% endif %}
+        <div class="profile-info">
+            <h5>{{ user.get_full_name|default:user.username }}</h5>
+            <p>@{{ user.username|truncatechars:15 }}</p>
+            <a href="{% url 'profile_view' user.username %}" class="btn btn-sm btn-pale mt-2">View Profile</a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="sidebar-card">
+        <h6 class="sidebar-title">
+            <i class="fas fa-bars"></i> Navigation
+        </h6>
+        <ul class="nav-sidebar">
+            <li class="nav-sidebar-item">
+                <a href="{% url 'index' %}" class="nav-sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </li>
+            <li class="nav-sidebar-item">
+                <a href="{% url 'online_news' %}" class="nav-sidebar-link {% if request.resolver_match.url_name == 'online_news' %}active{% endif %}">
+                    <i class="fas fa-newspaper"></i> Online News
+                </a>
+            </li>
+            <li class="nav-sidebar-item">
+                <a href="{% url 'messages' %}" class="nav-sidebar-link {% if request.resolver_match.url_name == 'messages' %}active{% endif %}">
+                    <i class="fas fa-comments"></i> Messages
+                    {% if unread_messages_count > 0 %}
+                        <span class="badge bg-accent rounded-pill ms-auto">{{ unread_messages_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            {% comment %} {% if user.is_authenticated %} {% endcomment %}
+            {% comment %} <li class="nav-sidebar-item">
+                <a href="{% url 'groups_list' %}" class="nav-sidebar-link {% if 'groups' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-users"></i> Groups
+                </a>
+            </li> {% endcomment %}
+            {% if user.is_staff %}
+            <li class="nav-sidebar-item">
+                <a href="{% url 'admin_dashboard' %}" class="nav-sidebar-link">
+                    <i class="fas fa-crown"></i> Admin
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    
+    <!-- Quick Stats -->
+    {% comment %} <div class="sidebar-card mt-4">
+        <h6 class="sidebar-title">
+            <i class="fas fa-chart-bar"></i> Platform Stats
+        </h6>
+        <div class="stats-list">
+            <div class="stat-item">
+                <i class="fas fa-users text-accent"></i>
+                <span class="stat-label">Total Users</span>
+                <span class="stat-value">{{ total_users|default:"0" }}</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-newspaper text-accent"></i>
+                <span class="stat-label">Total Posts</span>
+                <span class="stat-value">{{ total_posts|default:"0" }}</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-comments text-accent"></i>
+                <span class="stat-label">Total Comments</span>
+                <span class="stat-value">{{ total_comments|default:"0" }}</span>
+            </div>
+        </div>
+    </div> {% endcomment %}
+</div>

@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - Ojukaye{% endblock %}
+
+{% block full_page %}true{% endblock %}
+{% block hide_navbar %}true{% endblock %}
+
+{% block content %}
+<div class="auth-full-page">
+    <div class="auth-card content-card">
+        <div class="col-md-6 col-lg-5">
+            <div class="auth-card content-card">
+                <div class="text-center mb-4">
+                    <div class="auth-logo mb-3">
+                        <i class="fas fa-newspaper fa-3x text-accent"></i>
+                    </div>
+                    <h2 class="auth-title">Welcome Back</h2>
+                    <p class="text-muted">Sign in to your Ojukaye account</p>
+                </div>
+
+                {% if form.errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Invalid username or password. Please try again.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endif %}
+
+                {% if next %}
+                    {% if user.is_authenticated %}
+                    <div class="alert alert-warning" role="alert">
+                        Your account doesn't have access to this page. Please login with an account that has access.
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info" role="alert">
+                        Please login to access this page.
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}" class="auth-form">
+                    {% csrf_token %}
+                    
+                    <input type="hidden" name="next" value="{{ next }}">
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">
+                            <i class="fas fa-user me-2"></i>Username or Email
+                        </label>
+                        <input type="text" 
+                               name="username" 
+                               id="id_username" 
+                               class="form-control form-control-lg"
+                               placeholder="Enter your username or email"
+                               required
+                               autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Password
+                        </label>
+                        <input type="password" 
+                               name="password" 
+                               id="id_password" 
+                               class="form-control form-control-lg"
+                               placeholder="Enter your password"
+                               required>
+                        <div class="form-text">
+                            <a href="#" class="text-decoration-none">Forgot password?</a>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-accent btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </button>
+                    </div>
+                </form>
+
+                <div class="auth-divider my-4">
+                    <span class="px-3 bg-white text-muted">OR</span>
+                </div>
+
+                <div class="text-center">
+                    <p class="mb-3">Don't have an account?</p>
+                    <a href="{% url 'register' %}" class="btn btn-outline-accent btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Create New Account
+                    </a>
+                </div>
+
+                <!-- Admin Login Info (for development only - remove in production) -->
+                {% if debug %}
+                <div class="mt-4 p-3 border rounded bg-light">
+                    <h6 class="mb-2"><i class="fas fa-user-shield me-2"></i>Admin Login (Development)</h6>
+                    <small class="text-muted d-block">Username: <code>admin</code></small>
+                    <small class="text-muted d-block">Password: <code>admin123</code></small>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Demo Accounts -->
+            <div class="demo-accounts mt-4 content-card">
+                <h6 class="mb-3">Demo Accounts</h6>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="demo-account p-2 border rounded">
+                            <small class="d-block fw-bold">Regular User</small>
+                            <small class="text-muted">user / user123</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="demo-account p-2 border rounded">
+                            <small class="d-block fw-bold">Business Account</small>
+                            <small class="text-muted">business / business123</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-card {
+        max-width: 450px;
+        width: 100%;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        background: white;
+    }
+
+    .auth-logo {
+        color: var(--accent-blue);
+    }
+
+    .auth-title {
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-form .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+
+    .auth-form .form-control:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(52, 144, 220, 0.1);
+    }
+
+    .auth-divider {
+        position: relative;
+        text-align: center;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .auth-divider span {
+        position: relative;
+        top: -10px;
+        background: white;
+        padding: 0 15px;
+    }
+
+    .demo-accounts {
+        padding: 1.5rem;
+        background: rgba(52, 144, 220, 0.05);
+        border-radius: 15px;
+    }
+
+    .demo-account {
+        background: white;
+        transition: transform 0.2s ease;
+        cursor: pointer;
+    }
+
+    .demo-account:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+.auth-full-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f5f9ff 0%, #eef4ff 100%);
+        padding: 20px;
+    }
+
+
+    @media (max-width: 768px) {
+        .auth-card {
+            padding: 2rem;
+        }
+    }
+</style>
+{% endblock %}

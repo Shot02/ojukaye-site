@@ -1,0 +1,832 @@
+<!-- templates/includes/post_modal.html -->
+<div class="post-modal-overlay" id="postModalOverlay">
+    <div class="post-modal" id="postModal">
+        <div class="modal-header">
+            <button class="close-modal" onclick="closePostModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form method="POST" enctype="multipart/form-data" class="post-form" id="postForm">
+            {% csrf_token %}
+            
+            <div class="post-author">
+                <div class="author-avatar">
+                    {% if user.profile.profile_pic %}
+                    <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}">
+                    {% else %}
+                    {{ user.username|first|upper }}
+                    {% endif %}
+                </div>
+                
+                <div class="author-details">
+                    <div class="post-audience">
+                        <button type="button" class="audience-btn" onclick="toggleAudience()">
+                            <i class="fas fa-globe-africa"></i>
+                            Everyone
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-content">
+                <textarea name="content" id="postContent" 
+                          placeholder="What's happening?" 
+                          maxlength="280"
+                          autofocus></textarea>
+                
+                <div class="post-preview" id="imagePreview">
+                    <!-- Image preview will be inserted here -->
+                </div>
+                
+                <div class="post-options">
+                    <input type="file" name="image" id="postImage" accept="image/*" style="display: none;">
+                    
+                    <div class="option-buttons">
+                        <button type="button" class="option-btn" onclick="document.getElementById('postImage').click()">
+                            <i class="fas fa-image"></i>
+                        </button>
+                        
+                        <button type="button" class="option-btn" onclick="openEmojiPicker()">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        
+                        <button type="button" class="option-btn" onclick="togglePoll()">
+                            <i class="fas fa-chart-bar"></i>
+                        </button>
+                        
+                        <span class="char-count" id="charCount">0/280</span>
+                    </div>
+                    
+                    <button type="submit" class="post-submit" id="postSubmit">
+                        Post
+                    </button>
+                </div>
+                
+                <!-- Poll Section -->
+                <div class="poll-section" id="pollSection" style="display: none;">
+                    <div class="poll-header">
+                        <h4>Create a poll</h4>
+                        <button type="button" class="poll-close" onclick="togglePoll()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="poll-options">
+                        <div class="poll-option">
+                            <input type="text" placeholder="Option 1" class="poll-input" maxlength="25">
+                            <button type="button" class="remove-option" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="poll-option">
+                            <input type="text" placeholder="Option 2" class="poll-input" maxlength="25">
+                            <button type="button" class="remove-option" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="add-option" onclick="addPollOption()">
+                        <i class="fas fa-plus"></i> Add option
+                    </button>
+                    
+                    <div class="poll-settings">
+                        <div class="poll-duration">
+                            <label>Poll duration:</label>
+                            <select class="duration-select">
+                                <option value="1">1 day</option>
+                                <option value="3">3 days</option>
+                                <option value="7">7 days</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.post-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.2s ease;
+}
+
+.post-modal-overlay.active {
+    display: flex;
+}
+
+.post-modal {
+    background: var(--bg-color);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.close-modal {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.close-modal:hover {
+    background: var(--hover-color);
+}
+
+.post-author {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+}
+
+.author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 20px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.author-details {
+    flex: 1;
+}
+
+.post-audience {
+    margin-bottom: 8px;
+}
+
+.audience-btn {
+    padding: 4px 12px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.audience-btn:hover {
+    background: rgba(29, 155, 240, 0.2);
+}
+
+.post-content {
+    padding: 0 16px 16px;
+}
+
+#postContent {
+    width: 100%;
+    min-height: 120px;
+    border: none;
+    background: none;
+    font-size: 20px;
+    color: var(--text-primary);
+    resize: none;
+    font-family: inherit;
+}
+
+#postContent:focus {
+    outline: none;
+}
+
+#postContent::placeholder {
+    color: var(--text-secondary);
+}
+
+.post-preview {
+    margin: 16px 0;
+    display: none;
+}
+
+.preview-container {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.preview-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+}
+
+.remove-image {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.remove-image:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.post-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.option-buttons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.option-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    color: var(--primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.option-btn:hover {
+    background: var(--primary-light);
+}
+
+.char-count {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-left: 16px;
+}
+
+.char-count.warning {
+    color: var(--warning);
+}
+
+.char-count.error {
+    color: var(--danger);
+}
+
+.post-submit {
+    padding: 10px 24px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.post-submit:hover {
+    background: var(--primary-dark);
+}
+
+.post-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Poll Section */
+.poll-section {
+    background: var(--widget-bg);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.poll-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.poll-header h4 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.poll-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.poll-close:hover {
+    background: var(--hover-color);
+}
+
+.poll-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.poll-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.poll-input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.poll-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.remove-option {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--danger-light);
+    color: var(--danger);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.remove-option:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.add-option {
+    padding: 10px 16px;
+    background: none;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 9999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.add-option:hover {
+    background: var(--primary-light);
+}
+
+.poll-settings {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.poll-duration {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.poll-duration label {
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.duration-select {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dark/Light mode variables */
+:root {
+    --bg-color: #ffffff;
+    --border-color: #eff3f4;
+    --text-primary: #0f1419;
+    --text-secondary: #536471;
+    --hover-color: #f7f7f7;
+    --primary: #1d9bf0;
+    --primary-dark: #1a8cd8;
+    --primary-light: rgba(29, 155, 240, 0.1);
+    --widget-bg: #f7f9f9;
+    --danger: #f4212e;
+    --danger-light: rgba(244, 33, 46, 0.1);
+    --warning: #ffd400;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #000000;
+        --border-color: #2f3336;
+        --text-primary: #e7e9ea;
+        --text-secondary: #71767b;
+        --hover-color: #1d1f23;
+        --widget-bg: #16181c;
+    }
+}
+</style>
+
+<script>
+let postModal = null;
+let emojiPicker = null;
+let pollOptions = 2;
+
+document.addEventListener('DOMContentLoaded', function() {
+    postModal = document.getElementById('postModalOverlay');
+    
+    // Character counter
+    const postContent = document.getElementById('postContent');
+    const charCount = document.getElementById('charCount');
+    const postSubmit = document.getElementById('postSubmit');
+    
+    postContent.addEventListener('input', function() {
+        const length = this.value.length;
+        charCount.textContent = `${length}/280`;
+        
+        // Update character count color
+        if (length > 250) {
+            charCount.classList.add('warning');
+            charCount.classList.remove('error');
+        } else if (length > 280) {
+            charCount.classList.add('error');
+            charCount.classList.remove('warning');
+            postSubmit.disabled = true;
+        } else {
+            charCount.classList.remove('warning', 'error');
+            postSubmit.disabled = false;
+        }
+        
+        // Enable/disable submit button
+        postSubmit.disabled = length === 0 || length > 280;
+    });
+    
+    // Image upload handling
+    const postImage = document.getElementById('postImage');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    postImage.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size should be less than 5MB');
+                this.value = '';
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file');
+                this.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.innerHTML = `
+                    <div class="preview-container">
+                        <img src="${e.target.result}" class="preview-image">
+                        <button type="button" class="remove-image" onclick="removeImage()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Form submission
+    const postForm = document.getElementById('postForm');
+    postForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const content = postContent.value.trim();
+        if (content.length === 0 || content.length > 280) {
+            return;
+        }
+        
+        // Create FormData
+        const formData = new FormData(this);
+        
+        // Add poll data if exists
+        const pollSection = document.getElementById('pollSection');
+        if (pollSection.style.display !== 'none') {
+            const pollOptions = [];
+            document.querySelectorAll('.poll-input').forEach(input => {
+                if (input.value.trim()) {
+                    pollOptions.push(input.value.trim());
+                }
+            });
+            
+            if (pollOptions.length >= 2) {
+                formData.append('poll_options', JSON.stringify(pollOptions));
+                const duration = document.querySelector('.duration-select').value;
+                formData.append('poll_duration', duration);
+            }
+        }
+        
+        // Submit form via AJAX
+        submitPost(formData);
+    });
+    
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && postModal.classList.contains('active')) {
+            closePostModal();
+        }
+    });
+    
+    // Close modal when clicking outside
+    postModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePostModal();
+        }
+    });
+});
+
+function openPostModal() {
+    if (postModal) {
+        postModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('postContent').focus();
+    }
+}
+
+function closePostModal() {
+    if (postModal) {
+        postModal.classList.remove('active');
+        document.body.style.overflow = '';
+        
+        // Reset form
+        document.getElementById('postForm').reset();
+        document.getElementById('imagePreview').style.display = 'none';
+        document.getElementById('imagePreview').innerHTML = '';
+        document.getElementById('charCount').textContent = '0/280';
+        document.getElementById('charCount').classList.remove('warning', 'error');
+        document.getElementById('postSubmit').disabled = true;
+        
+        // Reset poll
+        togglePoll(true);
+    }
+}
+
+function removeImage() {
+    document.getElementById('postImage').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('imagePreview').innerHTML = '';
+}
+
+function toggleAudience() {
+    // Implement audience selection
+    console.log('Toggle audience');
+}
+
+function openEmojiPicker() {
+    // Implement emoji picker
+    console.log('Open emoji picker');
+}
+
+function togglePoll(forceClose = false) {
+    const pollSection = document.getElementById('pollSection');
+    const isVisible = pollSection.style.display !== 'none';
+    
+    if (forceClose) {
+        pollSection.style.display = 'none';
+        pollOptions = 2;
+        resetPollOptions();
+    } else {
+        pollSection.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+function addPollOption() {
+    if (pollOptions >= 4) {
+        alert('Maximum 4 options allowed');
+        return;
+    }
+    
+    pollOptions++;
+    const pollOptionsContainer = document.querySelector('.poll-options');
+    
+    const newOption = document.createElement('div');
+    newOption.className = 'poll-option';
+    newOption.innerHTML = `
+        <input type="text" placeholder="Option ${pollOptions}" class="poll-input" maxlength="25">
+        <button type="button" class="remove-option" onclick="removePollOption(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    pollOptionsContainer.appendChild(newOption);
+    
+    // Show remove buttons on all options if more than 2
+    if (pollOptions > 2) {
+        document.querySelectorAll('.remove-option').forEach(btn => {
+            btn.style.display = 'block';
+        });
+    }
+}
+
+function removePollOption(button) {
+    if (pollOptions <= 2) return;
+    
+    const optionDiv = button.closest('.poll-option');
+    optionDiv.remove();
+    pollOptions--;
+    
+    // Update remaining option placeholders
+    document.querySelectorAll('.poll-input').forEach((input, index) => {
+        input.placeholder = `Option ${index + 1}`;
+    });
+    
+    // Hide remove buttons if only 2 options left
+    if (pollOptions === 2) {
+        document.querySelectorAll('.remove-option').forEach(btn => {
+            btn.style.display = 'none';
+        });
+    }
+}
+
+function resetPollOptions() {
+    const pollOptionsContainer = document.querySelector('.poll-options');
+    pollOptionsContainer.innerHTML = `
+        <div class="poll-option">
+            <input type="text" placeholder="Option 1" class="poll-input" maxlength="25">
+            <button type="button" class="remove-option" style="display: none;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="poll-option">
+            <input type="text" placeholder="Option 2" class="poll-input" maxlength="25">
+            <button type="button" class="remove-option" style="display: none;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+}
+
+function submitPost(formData) {
+    const submitBtn = document.getElementById('postSubmit');
+    const originalText = submitBtn.textContent;
+    
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+    submitBtn.disabled = true;
+    
+    fetch('{% url "create_post" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closePostModal();
+            showNotification('Post created successfully!', 'success');
+            
+            // Reload or update feed
+            if (typeof loadPosts === 'function') {
+                loadPosts();
+            } else {
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        } else {
+            showNotification(data.error || 'Failed to create post', 'error');
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Something went wrong', 'error');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showNotification(message, type = 'info') {
+    // Use existing notification system
+    if (typeof window.showNotification === 'function') {
+        window.showNotification(message, type);
+    } else {
+        alert(message);
+    }
+}
+</script>

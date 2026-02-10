@@ -1,0 +1,398 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Post - Ojukaye{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="content-card p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="create-post-icon me-3">
+                        <i class="fas fa-edit fa-2x text-accent"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-1">Create New Post</h1>
+                        <p class="text-muted mb-0">Share your thoughts, news, or discussions with the community</p>
+                    </div>
+                </div>
+
+                <!-- Post Type Tabs -->
+                <div class="post-type-tabs mb-4">
+                    <ul class="nav nav-pills nav-fill" id="postTypeTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="discussion-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#discussion" type="button" role="tab">
+                                <i class="fas fa-comments me-2"></i>Discussion
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="news-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#news" type="button" role="tab">
+                                <i class="fas fa-newspaper me-2"></i>User News
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#profile" type="button" role="tab">
+                                <i class="fas fa-user me-2"></i>Profile Post
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" id="postForm">
+                    {% csrf_token %}
+                    
+                    <div class="tab-content" id="postTypeTabContent">
+                        <!-- Discussion Tab -->
+                        <div class="tab-pane fade show active" id="discussion" role="tabpanel">
+                            <input type="hidden" name="post_type" value="discussion">
+                            
+                            <div class="mb-4">
+                                <label for="title" class="form-label fw-bold">Title</label>
+                                <input type="text" 
+                                       name="title" 
+                                       id="title" 
+                                       class="form-control form-control-lg"
+                                       placeholder="What would you like to discuss?"
+                                       required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="content" class="form-label fw-bold">Content</label>
+                                <textarea name="content" 
+                                          id="content" 
+                                          class="form-control" 
+                                          rows="10"
+                                          placeholder="Share your thoughts, ideas, or questions..."
+                                          required></textarea>
+                                <div class="form-text">
+                                    <span id="charCount">0</span> characters
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label for="category" class="form-label fw-bold">Category</label>
+                                    <select name="category" id="category" class="form-select">
+                                        <option value="">Select a category</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label for="image" class="form-label fw-bold">Add Image (Optional)</label>
+                                    <input type="file" 
+                                           name="image" 
+                                           id="image" 
+                                           class="form-control"
+                                           accept="image/*">
+                                    <div class="form-text">JPG, PNG or GIF. Max 5MB.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User News Tab -->
+                        <div class="tab-pane fade" id="news" role="tabpanel">
+                            <input type="hidden" name="post_type" value="user_news">
+                            
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                User news posts require admin approval before publishing.
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="news_title" class="form-label fw-bold">News Headline</label>
+                                <input type="text" 
+                                       name="title" 
+                                       id="news_title" 
+                                       class="form-control form-control-lg"
+                                       placeholder="Enter the news headline"
+                                       required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="news_content" class="form-label fw-bold">News Content</label>
+                                <textarea name="content" 
+                                          id="news_content" 
+                                          class="form-control" 
+                                          rows="10"
+                                          placeholder="Write the full news content..."
+                                          required></textarea>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="source_url" class="form-label fw-bold">Source URL</label>
+                                    <input type="url" 
+                                           name="source_url" 
+                                           id="source_url" 
+                                           class="form-control"
+                                           placeholder="https://example.com/news"
+                                           required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="source_name" class="form-label fw-bold">Source Name</label>
+                                    <input type="text" 
+                                           name="source_name" 
+                                           id="source_name" 
+                                           class="form-control"
+                                           placeholder="BBC News, Premium Times, etc.">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="news_image" class="form-label fw-bold">News Image (Optional)</label>
+                                <input type="file" 
+                                       name="image" 
+                                       id="news_image" 
+                                       class="form-control"
+                                       accept="image/*">
+                            </div>
+                        </div>
+
+                        <!-- Profile Post Tab -->
+                        <div class="tab-pane fade" id="profile" role="tabpanel">
+                            <input type="hidden" name="post_type" value="profile_post">
+                            
+                            <div class="alert alert-warning">
+                                <i class="fas fa-eye me-2"></i>
+                                This post will only be visible on your profile.
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="profile_content" class="form-label fw-bold">What's on your mind?</label>
+                                <textarea name="content" 
+                                          id="profile_content" 
+                                          class="form-control" 
+                                          rows="8"
+                                          placeholder="Share updates about yourself..."
+                                          required></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="profile_image" class="form-label fw-bold">Add Photo/Video</label>
+                                <div class="file-upload-area">
+                                    <input type="file" 
+                                           name="image" 
+                                           id="profile_image" 
+                                           class="form-control"
+                                           accept="image/*,video/*">
+                                    <div class="file-upload-preview mt-3" id="previewContainer">
+                                        <div class="upload-placeholder text-center py-5 border rounded">
+                                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Click to upload or drag and drop</p>
+                                            <small class="text-muted">PNG, JPG, GIF up to 10MB</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               name="allow_comments" 
+                                               id="allow_comments" 
+                                               checked>
+                                        <label class="form-check-label" for="allow_comments">
+                                            Allow Comments
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               name="allow_sharing" 
+                                               id="allow_sharing" 
+                                               checked>
+                                        <label class="form-check-label" for="allow_sharing">
+                                            Allow Sharing
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Common Options -->
+                    <div class="post-options mt-4 p-4 border rounded">
+                        <h6 class="mb-3"><i class="fas fa-cog me-2"></i>Post Options</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Visibility</label>
+                                <select name="status" class="form-select">
+                                    <option value="published">Public (Everyone can see)</option>
+                                    <option value="draft">Save as Draft</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tags (Optional)</label>
+                                <input type="text" 
+                                       name="keywords" 
+                                       class="form-control"
+                                       placeholder="news, politics, technology">
+                                <div class="form-text">Separate tags with commas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <div class="btn-group">
+                            <button type="submit" name="action" value="draft" class="btn btn-outline-accent">
+                                <i class="fas fa-save me-2"></i>Save Draft
+                            </button>
+                            <button type="submit" name="action" value="publish" class="btn btn-accent">
+                                <i class="fas fa-paper-plane me-2"></i>Publish Post
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character counter
+        const contentTextarea = document.getElementById('content');
+        const charCount = document.getElementById('charCount');
+        
+        if (contentTextarea) {
+            contentTextarea.addEventListener('input', function() {
+                charCount.textContent = this.value.length;
+            });
+        }
+
+        // File preview
+        const fileInput = document.getElementById('profile_image');
+        const previewContainer = document.getElementById('previewContainer');
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        previewContainer.innerHTML = `
+                            <div class="preview-image text-center">
+                                <img src="${e.target.result}" 
+                                     class="img-fluid rounded" 
+                                     style="max-height: 300px;">
+                                <button type="button" 
+                                        class="btn btn-sm btn-danger mt-2" 
+                                        onclick="removePreview()">
+                                    <i class="fas fa-times me-1"></i>Remove
+                                </button>
+                            </div>
+                        `;
+                    };
+                    
+                    if (file.type.startsWith('image/')) {
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+        }
+
+        // Form validation
+        const form = document.getElementById('postForm');
+        const postTypeTabs = document.querySelectorAll('#postTypeTab button');
+        
+        postTypeTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const postType = this.getAttribute('data-bs-target').replace('#', '');
+                document.querySelector('input[name="post_type"]').value = postType;
+            });
+        });
+    });
+
+    function removePreview() {
+        const fileInput = document.getElementById('profile_image');
+        const previewContainer = document.getElementById('previewContainer');
+        
+        fileInput.value = '';
+        previewContainer.innerHTML = `
+            <div class="upload-placeholder text-center py-5 border rounded">
+                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Click to upload or drag and drop</p>
+                <small class="text-muted">PNG, JPG, GIF up to 10MB</small>
+            </div>
+        `;
+    }
+</script>
+
+<style>
+    .post-type-tabs .nav-link {
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 0 5px;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .post-type-tabs .nav-link.active {
+        background-color: rgba(52, 144, 220, 0.1);
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+
+    .post-type-tabs .nav-link:hover:not(.active) {
+        border-color: #e0e0e0;
+    }
+
+    .file-upload-area {
+        border: 2px dashed #e0e0e0;
+        border-radius: 12px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--accent-blue);
+        background-color: rgba(52, 144, 220, 0.05);
+    }
+
+    .upload-placeholder {
+        cursor: pointer;
+    }
+
+    .post-options {
+        background-color: rgba(52, 144, 220, 0.05);
+    }
+
+    .create-post-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(52, 144, 220, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+        .post-type-tabs .nav-link {
+            margin: 5px 0;
+            width: 100%;
+        }
+        
+        .post-options {
+            padding: 1.5rem !important;
+        }
+    }
+</style>
+{% endblock %}

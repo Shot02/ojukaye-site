@@ -1,0 +1,122 @@
+<div class="comment">
+    <!-- Comment Header -->
+    <div class="comment-header d-flex justify-content-between align-items-start mb-2">
+        <div class="d-flex align-items-center">
+            {% if comment.user.profile.profile_pic %}
+            <img src="{{ comment.user.profile.profile_pic.url }}" 
+                 alt="{{ comment.user.username }}" 
+                 class="rounded-circle me-2" 
+                 width="35" 
+                 height="35">
+            {% else %}
+            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" 
+                 style="width: 35px; height: 35px;">
+                <i class="fas fa-user text-white"></i>
+            </div>
+            {% endif %}
+            <div>
+                <a href="{% url 'user_profile' comment.user.username %}" 
+                   class="text-dark fw-bold text-decoration-none small">
+                    {{ comment.user.username }}
+                </a>
+                <div class="text-muted small">
+                    {{ comment.created_at|timesince }} ago
+                    {% if comment.updated_at != comment.created_at %}
+                    • Edited
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="dropdown">
+            <button class="btn btn-sm btn-pale dropdown-toggle p-0" 
+                    type="button" 
+                    data-bs-toggle="dropdown">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                {% if user == comment.user or user.is_staff %}
+                <li>
+                    <button class="dropdown-item" onclick="editComment({{ comment.id }})">
+                        <i class="fas fa-edit me-2"></i>Edit
+                    </button>
+                </li>
+                <li>
+                    <button class="dropdown-item text-danger" onclick="deleteComment({{ comment.id }})">
+                        <i class="fas fa-trash me-2"></i>Delete
+                    </button>
+                </li>
+                {% else %}
+                <li>
+                    <button class="dropdown-item" onclick="reportComment({{ comment.id }})">
+                        <i class="fas fa-flag me-2"></i>Report
+                    </button>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Comment Content -->
+    <div class="comment-content mb-2" id="comment-content-{{ comment.id }}">
+        <p class="mb-0">{{ comment.content|linebreaks }}</p>
+    </div>
+
+    <!-- Comment Edit Form (Hidden) -->
+    <form class="comment-edit-form mb-2" id="comment-edit-form-{{ comment.id }}" style="display: none;">
+        <textarea class="form-control mb-2" rows="3" 
+                  id="edit-content-{{ comment.id }}">{{ comment.content }}</textarea>
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-sm btn-secondary" 
+                    onclick="cancelEdit({{ comment.id }})">
+                Cancel
+            </button>
+            <button type="button" class="btn btn-sm btn-accent" 
+                    onclick="saveCommentEdit({{ comment.id }})">
+                Save
+            </button>
+        </div>
+    </form>
+
+    <!-- Comment Actions -->
+    <div class="comment-actions d-flex align-items-center gap-3">
+        <button class="btn btn-sm btn-pale like-comment-btn {% if user in comment.likes.all %}active{% endif %}" 
+                onclick="likeComment({{ comment.id }})"
+                {% if not user.is_authenticated %}disabled{% endif %}>
+            <i class="{% if user in comment.likes.all %}fas{% else %}far{% endif %} fa-heart me-1"></i>
+            <span class="like-count">{{ comment.like_count }}</span>
+        </button>
+        
+        <button class="btn btn-sm btn-pale" onclick="replyToComment({{ comment.id }})"
+                {% if not user.is_authenticated %}disabled{% endif %}>
+            <i class="fas fa-reply me-1"></i> Reply
+        </button>
+    </div>
+
+    <!-- Replies -->
+    {% if comment.replies.all %}
+    <div class="replies mt-3 ms-4 ps-3 border-start">
+        {% for reply in comment.replies.all %}
+            {% include 'post/comment.html' with comment=reply %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Reply Form (Hidden) -->
+    <div class="reply-form mt-3 ms-4" id="reply-form-{{ comment.id }}" style="display: none;">
+        <form method="post" action="{% url 'post_detail' post.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+            <div class="d-flex">
+                <textarea name="content" 
+                          class="form-control me-2" 
+                          rows="2" 
+                          placeholder="Write a reply..." 
+                          required></textarea>
+                <button type="submit" name="comment" class="btn btn-accent align-self-start">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

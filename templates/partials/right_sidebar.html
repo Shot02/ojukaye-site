@@ -1,0 +1,68 @@
+<div class="sidebar-content">
+    <!-- Categories -->
+    <div class="sidebar-card">
+        <h6 class="sidebar-title">
+            <i class="fas fa-folder"></i> Categories
+        </h6>
+        {% for category in categories %}
+        <div class="category-item" onclick="location.href='{% url 'category_view' category.slug %}'">
+            <div class="category-icon">
+                <i class="fas fa-{{ category.icon|default:'folder' }}"></i>
+            </div>
+            <span class="category-name">{{ category.name }}</span>
+            <span class="category-count">{{ category.cached_post_count }}</span>
+        </div>
+        {% empty %}
+        <p class="text-muted small">No categories yet</p>
+        {% endfor %}
+        <a href="#" class="btn btn-sm btn-pale mt-2 w-100">View All Categories</a>
+    </div>
+    
+    <!-- Trending Posts -->
+    <div class="sidebar-card mt-4">
+        <h6 class="sidebar-title">
+            <i class="fas fa-fire"></i> Trending Now
+        </h6>
+        {% for post in trending_posts|slice:":5" %}
+        <div class="trending-item" onclick="location.href='{% url 'post_detail' post.id %}'">
+            <span class="trending-tag">#{{ post.category.name|default:"Trending" }}</span>
+            <div class="trending-title">{{ post.title|truncatechars:60 }}</div>
+            <div class="trending-stats">
+                {{ post.like_count }} likes • {{ post.comment_count }} comments
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted small">No trending posts yet</p>
+        {% endfor %}
+    </div>
+    
+    <!-- Sponsored Ads -->
+    {% if sponsored_posts %}
+    <div class="sidebar-card mt-4">
+        <h6 class="sidebar-title">
+            <i class="fas fa-ad"></i> Sponsored
+        </h6>
+        {% for post in sponsored_posts|slice:":2" %}
+        <div class="ad-item" onclick="location.href='{% url 'post_detail' post.id %}'">
+            <div class="ad-badge">SPONSORED</div>
+            <div class="ad-content">
+                <h6>{{ post.title|truncatechars:50 }}</h6>
+                <p class="small text-muted">{{ post.content|truncatechars:80 }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Platform Advertisement -->
+    {% if not user.is_authenticated or user.profile.account_type == 'individual' %}
+    <div class="ad-container mt-4">
+        <div class="ad-badge">UPGRADE</div>
+        <div class="ad-title">Upgrade to Business</div>
+        <div class="ad-text">Get access to premium features, analytics, and advertising tools.</div>
+        {% comment %} <a href="{% url 'business_registration' %}" class="btn btn-pale" style="background-color: white; color: var(--accent-blue);"> {% endcomment %}
+            Upgrade Now
+        </a>
+    </div>
+    {% endif %}
+</div>
