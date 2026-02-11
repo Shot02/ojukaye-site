@@ -1,371 +1,275 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Register - Ojukaye{% endblock %}
-
-{% block full_page %}true{% endblock %}
-{% block hide_navbar %}true{% endblock %}
+{% block title %}Create Account - Ojukaye{% endblock %}
 
 {% block content %}
-<div class="auth-full-page">
-    <div class="auth-card content-card">
-        <div class="col-md-8 col-lg-6">
-            <div class="auth-card content-card">
-                <div class="text-center mb-4">
-                    <div class="auth-logo mb-3">
-                        <i class="fas fa-user-plus fa-3x text-accent"></i>
-                    </div>
-                    <h2 class="auth-title">Join Ojukaye</h2>
-                    <p class="text-muted">Create your account to start sharing and discussing news</p>
+<div class="auth-page">
+    <div class="auth-container">
+        <!-- Left Side - Branding -->
+        <div class="auth-left">
+            <div class="auth-left-content">
+                <div class="auth-logo-area">
+                    <img src="{% static 'images/logo.jpeg' %}" alt="Ojukaye Logo" class="auth-logo">
+                    <h2>Join Ojukaye Today!</h2>
+                    <p>Create your account and become part of Nigeria's fastest growing news and discussion community.</p>
                 </div>
-
-                {% if form.errors %}
-                <div class="alert alert-danger" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    Please correct the errors below:
-                    <ul class="mb-0 mt-2">
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        {% endfor %}
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-
-                <form method="post" class="auth-form" id="registerForm">
-                    {% csrf_token %}
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="id_username" class="form-label">
-                                <i class="fas fa-user me-2"></i>Username
-                            </label>
-                            <input type="text" 
-                                   name="username" 
-                                   id="id_username" 
-                                   class="form-control form-control-lg"
-                                   placeholder="Choose a username"
-                                   required>
-                            <div class="form-text">Letters, digits and @/./+/-/_ only</div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="id_email" class="form-label">
-                                <i class="fas fa-envelope me-2"></i>Email Address
-                            </label>
-                            <input type="email" 
-                                   name="email" 
-                                   id="id_email" 
-                                   class="form-control form-control-lg"
-                                   placeholder="your@email.com"
-                                   required>
-                        </div>
+                
+                <div class="auth-features">
+                    <div class="auth-feature-item">
+                        <i class="fas fa-bolt"></i>
+                        <span>Fast & real-time updates</span>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="id_password1" class="form-label">
-                                <i class="fas fa-lock me-2"></i>Password
-                            </label>
-                            <input type="password" 
-                                   name="password1" 
-                                   id="id_password1" 
-                                   class="form-control form-control-lg"
-                                   placeholder="Create a password"
-                                   required>
-                            <div class="form-text">
-                                <small>At least 8 characters</small>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="id_password2" class="form-label">
-                                <i class="fas fa-lock me-2"></i>Confirm Password
-                            </label>
-                            <input type="password" 
-                                   name="password2" 
-                                   id="id_password2" 
-                                   class="form-control form-control-lg"
-                                   placeholder="Confirm your password"
-                                   required>
-                        </div>
+                    <div class="auth-feature-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Engage in discussions</span>
                     </div>
-
-                    <!-- Account Type Selection -->
-                    <div class="mb-4">
-                        <label class="form-label">
-                            <i class="fas fa-briefcase me-2"></i>Account Type
-                        </label>
-                        <div class="account-type-selector">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <input type="radio" 
-                                           class="btn-check" 
-                                           name="account_type" 
-                                           id="individual" 
-                                           value="individual" 
-                                           checked>
-                                    <label class="btn btn-outline-accent w-100 py-3" for="individual">
-                                        <i class="fas fa-user fa-2x mb-2"></i>
-                                        <div class="fw-bold">Individual</div>
-                                        <small class="text-muted">For personal use</small>
-                                    </label>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="radio" 
-                                           class="btn-check" 
-                                           name="account_type" 
-                                           id="business" 
-                                           value="business">
-                                    <label class="btn btn-outline-accent w-100 py-3" for="business">
-                                        <i class="fas fa-building fa-2x mb-2"></i>
-                                        <div class="fw-bold">Business</div>
-                                        <small class="text-muted">For companies & organizations</small>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="auth-feature-item">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Curated news feed</span>
                     </div>
-
-                    <!-- Business Fields (Hidden by default) -->
-                    <div id="businessFields" class="mb-4" style="display: none;">
-                        <h6 class="mb-3"><i class="fas fa-building me-2"></i>Business Information</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <input type="text" 
-                                       name="business_name" 
-                                       class="form-control"
-                                       placeholder="Business Name">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <input type="email" 
-                                       name="business_email" 
-                                       class="form-control"
-                                       placeholder="Business Email">
-                            </div>
-                            <div class="col-12 mb-3">
-                                <input type="text" 
-                                       name="business_phone" 
-                                       class="form-control"
-                                       placeholder="Business Phone">
-                            </div>
-                        </div>
+                    <div class="auth-feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure & private</span>
                     </div>
-
-                    <!-- Terms and Conditions -->
-                    <div class="mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" 
-                                   type="checkbox" 
-                                   id="terms" 
-                                   required>
-                            <label class="form-check-label" for="terms">
-                                I agree to the <a href="{% url 'terms' %}" class="text-decoration-none">Terms of Service</a> 
-                                and <a href="{% url 'privacy' %}" class="text-decoration-none">Privacy Policy</a>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-accent btn-lg">
-                            <i class="fas fa-user-plus me-2"></i>Create Account
-                        </button>
-                    </div>
-                </form>
-
-                <div class="auth-divider my-4">
-                    <span class="px-3 bg-white text-muted">OR</span>
-                </div>
-
-                <div class="text-center">
-                    <p class="mb-3">Already have an account?</p>
-                    <a href="{% url 'login' %}" class="btn btn-outline-accent btn-lg">
-                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
-                    </a>
                 </div>
             </div>
-
-            <!-- Benefits Card -->
-            <div class="benefits-card mt-4 content-card">
-                <h6 class="mb-3">Why Join Ojukaye?</h6>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="benefit-item text-center p-3">
-                            <i class="fas fa-newspaper fa-2x text-accent mb-2"></i>
-                            <h6>Latest News</h6>
-                            <p class="small text-muted mb-0">Stay updated with verified news</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="benefit-item text-center p-3">
-                            <i class="fas fa-comments fa-2x text-accent mb-2"></i>
-                            <h6>Join Discussions</h6>
-                            <p class="small text-muted mb-0">Share your thoughts on trending topics</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="benefit-item text-center p-3">
-                            <i class="fas fa-users fa-2x text-accent mb-2"></i>
-                            <h6>Connect</h6>
-                            <p class="small text-muted mb-0">Connect with like-minded people</p>
-                        </div>
+            
+            <div class="auth-footer">
+                <p>By joining, you agree to our Terms of Service and Privacy Policy</p>
+            </div>
+        </div>
+        
+        <!-- Right Side - Registration Form -->
+        <div class="auth-right">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Get started with your free account</p>
+            </div>
+            
+            <form method="post" action="{% url 'register' %}" class="auth-form" novalidate>
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div class="alert-content">
+                        <div class="alert-message">{{ form.non_field_errors.0 }}</div>
                     </div>
                 </div>
+                {% endif %}
+                
+                <!-- Account Type Selection -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user-tag"></i> Account Type
+                    </label>
+                    <div class="account-type-selector">
+                        <label class="account-type-card">
+                            <input type="radio" name="account_type" value="individual" {% if form.account_type.value == 'individual' or not form.account_type.value %}checked{% endif %}>
+                            <div class="account-type-content">
+                                <i class="fas fa-user"></i>
+                                <span>Individual</span>
+                                <small>Personal account</small>
+                            </div>
+                        </label>
+                        <label class="account-type-card">
+                            <input type="radio" name="account_type" value="business" {% if form.account_type.value == 'business' %}checked{% endif %}>
+                            <div class="account-type-content">
+                                <i class="fas fa-building"></i>
+                                <span>Business</span>
+                                <small>For organizations</small>
+                            </div>
+                        </label>
+                    </div>
+                    {% if form.account_type.errors %}
+                    <div class="form-error">
+                        <i class="fas fa-exclamation-circle"></i> {{ form.account_type.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Basic Information -->
+                <div class="form-group">
+                    <label for="id_username" class="form-label">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" 
+                           name="username" 
+                           id="id_username" 
+                           class="form-input" 
+                           placeholder="Choose a username" 
+                           required
+                           value="{{ form.username.value|default:'' }}">
+                    {% if form.username.errors %}
+                    <div class="form-error">
+                        <i class="fas fa-exclamation-circle"></i> {{ form.username.errors.0 }}
+                    </div>
+                    {% endif %}
+                    <small style="color: var(--gray-500); font-size: 0.75rem; margin-top: 0.25rem;">
+                        Letters, digits and @/./+/-/_ only.
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_email" class="form-label">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <input type="email" 
+                           name="email" 
+                           id="id_email" 
+                           class="form-input" 
+                           placeholder="your@email.com" 
+                           required
+                           value="{{ form.email.value|default:'' }}">
+                    {% if form.email.errors %}
+                    <div class="form-error">
+                        <i class="fas fa-exclamation-circle"></i> {{ form.email.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Business Fields (Hidden by default, shown when business is selected) -->
+                <div class="business-fields" style="display: none;">
+                    <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--gray-700);">
+                        <i class="fas fa-building" style="color: var(--primary);"></i> Business Information
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label for="id_business_name" class="form-label">
+                            <i class="fas fa-store"></i> Business Name
+                        </label>
+                        <input type="text" 
+                               name="business_name" 
+                               id="id_business_name" 
+                               class="form-input" 
+                               placeholder="Your business name"
+                               value="{{ form.business_name.value|default:'' }}">
+                        {% if form.business_name.errors %}
+                        <div class="form-error">
+                            <i class="fas fa-exclamation-circle"></i> {{ form.business_name.errors.0 }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_business_email" class="form-label">
+                            <i class="fas fa-envelope"></i> Business Email
+                        </label>
+                        <input type="email" 
+                               name="business_email" 
+                               id="id_business_email" 
+                               class="form-input" 
+                               placeholder="business@example.com"
+                               value="{{ form.business_email.value|default:'' }}">
+                        {% if form.business_email.errors %}
+                        <div class="form-error">
+                            <i class="fas fa-exclamation-circle"></i> {{ form.business_email.errors.0 }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_business_phone" class="form-label">
+                            <i class="fas fa-phone"></i> Business Phone
+                        </label>
+                        <input type="text" 
+                               name="business_phone" 
+                               id="id_business_phone" 
+                               class="form-input" 
+                               placeholder="+234 800 000 0000"
+                               value="{{ form.business_phone.value|default:'' }}">
+                    </div>
+                    
+                    <small style="color: var(--gray-500); font-size: 0.75rem; display: block; margin-top: 0.5rem;">
+                        <i class="fas fa-info-circle"></i> Business accounts require verification. You'll receive an email with next steps.
+                    </small>
+                </div>
+                
+                <!-- Password Fields -->
+                <div class="form-group">
+                    <label for="id_password1" class="form-label">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" 
+                               name="password1" 
+                               id="id_password1" 
+                               class="form-input" 
+                               placeholder="Create a password" 
+                               required>
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    {% if form.password1.errors %}
+                    <div class="form-error">
+                        <i class="fas fa-exclamation-circle"></i> {{ form.password1.errors.0 }}
+                    </div>
+                    {% endif %}
+                    <small style="color: var(--gray-500); font-size: 0.75rem; margin-top: 0.25rem;">
+                        At least 8 characters. Can't be entirely numeric.
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_password2" class="form-label">
+                        <i class="fas fa-lock"></i> Confirm Password
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" 
+                               name="password2" 
+                               id="id_password2" 
+                               class="form-input" 
+                               placeholder="Confirm your password" 
+                               required>
+                        <button type="button" class="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    {% if form.password2.errors %}
+                    <div class="form-error">
+                        <i class="fas fa-exclamation-circle"></i> {{ form.password2.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Terms Agreement -->
+                <div class="form-group">
+                    <label class="remember-me" style="margin-top: 0.5rem;">
+                        <input type="checkbox" name="agree_terms" id="agree_terms" required>
+                        <span style="font-size: 0.875rem;">
+                            I agree to the <a href="{% url 'terms' %}" target="_blank">Terms of Service</a> and 
+                            <a href="{% url 'privacy' %}" target="_blank">Privacy Policy</a>
+                        </span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            
+            <div class="auth-divider">
+                <span>OR</span>
+            </div>
+            
+            <div class="social-login">
+                {% comment %} <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn-social google"> {% endcomment %}
+                    {% comment %} <i class="fab fa-google"></i> {% endcomment %}
+                    {% comment %} Google {% endcomment %}
+                </a>
+                {% comment %} <a href="{% url 'social:begin' 'facebook' %}" class="btn-social facebook"> {% endcomment %}
+                    {% comment %} <i class="fab fa-facebook-f"></i> {% endcomment %}
+                    {% comment %} Facebook {% endcomment %}
+                </a>
+            </div>
+            
+            <div class="auth-switch">
+                Already have an account?
+                <a href="{% url 'login' %}">Sign in</a>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Show/hide business fields based on account type
-        const individualRadio = document.getElementById('individual');
-        const businessRadio = document.getElementById('business');
-        const businessFields = document.getElementById('businessFields');
-        
-        individualRadio.addEventListener('change', function() {
-            businessFields.style.display = 'none';
-        });
-        
-        businessRadio.addEventListener('change', function() {
-            businessFields.style.display = 'block';
-        });
-
-        // Password strength indicator
-        const password1 = document.getElementById('id_password1');
-        const password2 = document.getElementById('id_password2');
-        
-        function checkPasswordStrength(password) {
-            let strength = 0;
-            
-            // Length check
-            if (password.length >= 8) strength++;
-            
-            // Contains letters
-            if (/[a-zA-Z]/.test(password)) strength++;
-            
-            // Contains numbers
-            if (/[0-9]/.test(password)) strength++;
-            
-            // Contains special characters
-            if (/[^a-zA-Z0-9]/.test(password)) strength++;
-            
-            return strength;
-        }
-        
-        password1.addEventListener('input', function() {
-            const strength = checkPasswordStrength(this.value);
-            const indicator = document.getElementById('passwordStrength');
-            
-            if (!indicator) {
-                const div = document.createElement('div');
-                div.id = 'passwordStrength';
-                div.className = 'mt-2';
-                this.parentNode.appendChild(div);
-            }
-            
-            const colors = ['danger', 'warning', 'info', 'success'];
-            const texts = ['Very Weak', 'Weak', 'Good', 'Strong'];
-            
-            document.getElementById('passwordStrength').innerHTML = `
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-${colors[strength]}" 
-                         style="width: ${(strength + 1) * 25}%"></div>
-                </div>
-                <small class="text-${colors[strength]}">${texts[strength] || 'Very Weak'}</small>
-            `;
-        });
-
-        // Confirm password match
-        password2.addEventListener('input', function() {
-            if (password1.value !== password2.value) {
-                this.setCustomValidity('Passwords do not match');
-            } else {
-                this.setCustomValidity('');
-            }
-        });
-    });
-</script>
-
-<style>
-    .auth-card {
-        max-width: 500px;
-        width: 100%;
-        padding: 2.5rem;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        background: white;
-    }
-
-    .auth-full-page {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #f5f9ff 0%, #eef4ff 100%);
-        padding: 20px;
-    }
-
-    .account-type-selector .btn {
-        height: 100%;
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        transition: all 0.3s ease;
-    }
-
-    .account-type-selector .btn-check:checked + .btn {
-        border-color: var(--accent-blue);
-        background-color: rgba(52, 144, 220, 0.1);
-        color: var(--accent-blue);
-    }
-
-    .account-type-selector .btn:hover {
-        border-color: var(--accent-blue);
-    }
-
-    .benefits-card {
-        padding: 1.5rem;
-        border-radius: 15px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    }
-
-    .benefit-item {
-        background: white;
-        border-radius: 10px;
-        transition: transform 0.3s ease;
-    }
-
-    .benefit-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .auth-form .form-control {
-        border: 2px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 12px 15px;
-        transition: all 0.3s ease;
-    }
-
-    .auth-form .form-control:focus {
-        border-color: var(--accent-blue);
-        box-shadow: 0 0 0 3px rgba(52, 144, 220, 0.1);
-    }
-
-    @media (max-width: 768px) {
-        .auth-card {
-            padding: 2rem;
-        }
-        
-        .account-type-selector .row {
-            flex-direction: column;
-        }
-    }
-</style>
 {% endblock %}

@@ -1,306 +1,568 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Home - Ojukaye{% endblock %}
 
 {% block content %}
-<!-- In the banner section of index.html -->
-<div class="banner-carousel mb-4">
-    <div class="banner-slider">
-        {% for banner in banner_posts %}
-        <div class="banner-slide">
-            <div class="banner-content" 
-                 style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                        {% if banner.image and banner.image.url %} 
-                            url('{{ banner.image.url }}')
-                        {% elif banner.image_url %}
-                            url('{{ banner.image_url }}')
-                        {% else %}
-                            url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80')
-                        {% endif %} center/cover;">
-                <div class="banner-overlay">
-                    <span class="banner-category">{{ banner.category.name|default:"Featured" }}</span>
-                    <!-- Banner Title as Link -->
-                    <h2 class="banner-title">
-                        <a href="{% url 'post_detail' banner.id %}" class="text-white text-decoration-none">
-                            {{ banner.title }}
-                        </a>
-                    </h2>
-                    <p class="banner-description">{{ banner.content|truncatechars:150 }}</p>
-                    <!-- Read More Button -->
-                    <a href="{% url 'post_detail' banner.id %}" class="btn btn-accent">Read More</a>
+<div class="home-container">
+    <div class="home-grid">
+        <!-- ===== LEFT SIDEBAR ===== -->
+        <aside class="left-sidebar">
+            <div class="sidebar-card">
+                {% if user.is_authenticated %}
+                <!-- User Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-cover"></div>
+                    <div class="profile-info">
+                        <div class="profile-avatar-wrapper">
+                            {% if user.profile.profile_pic %}
+                            <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="profile-avatar-large">
+                            {% else %}
+                            <div class="profile-avatar-placeholder">
+                                {{ user.username|first|upper }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <h3 class="profile-name">{{ user.get_full_name|default:user.username }}</h3>
+                        <p class="profile-username">@{{ user.username }}</p>
+                        
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <span class="stat-value">{{ user.posts.count }}</span>
+                                <span class="stat-label">Posts</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">{{ user.followers.count }}</span>
+                                <span class="stat-label">Followers</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">{{ user.following.count }}</span>
+                                <span class="stat-label">Following</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        {% empty %}
-        <!-- Default banner... -->
-        {% endfor %}
-    </div>
-</div>
-
-<!-- Create Post Section -->
-{% if user.is_authenticated %}
-<div class="create-post-card content-card mb-4">
-    <div class="create-post-header">
-        {% if user.profile.profile_pic %}
-            <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="create-post-avatar">
-        {% else %}
-            <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random" alt="{{ user.username }}" class="create-post-avatar">
-        {% endif %}
-        <div class="create-post-input">
-            <input type="text" placeholder="What's on your mind, {{ user.username }}?" 
-                   data-bs-toggle="modal" data-bs-target="#createPostModal" readonly>
-            <div class="create-post-options">
-                <button class="create-post-option" data-bs-toggle="modal" data-bs-target="#createPostModal">
-                    <i class="fas fa-edit"></i> Write
-                </button>
-                <button class="create-post-option" data-bs-toggle="modal" data-bs-target="#createPostModal">
-                    <i class="fas fa-image"></i> Photo
-                </button>
-                <button class="create-post-option" data-bs-toggle="modal" data-bs-target="#createPostModal">
-                    <i class="fas fa-video"></i> Video
-                </button>
-                <button class="create-post-option" data-bs-toggle="modal" data-bs-target="#createPostModal">
-                    <i class="fas fa-newspaper"></i> News
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-<!-- Posts Feed -->
-<div class="posts-feed">
-    <!-- Filter Tabs -->
-    <div class="filter-tabs mb-4">
-        <div class="filter-nav">
-            <a href="?filter=latest" class="filter-tab {% if filter_type == 'latest' %}active{% endif %}">
-                <i class="fas fa-clock"></i> Latest
-            </a>
-            <a href="?filter=trending" class="filter-tab {% if filter_type == 'trending' %}active{% endif %}">
-                <i class="fas fa-fire"></i> Trending
-            </a>
-            <a href="?filter=popular" class="filter-tab {% if filter_type == 'popular' %}active{% endif %}">
-                <i class="fas fa-chart-line"></i> Popular
-            </a>
-        </div>
-    </div>
-
-    <!-- Posts List -->
-    {% for post in posts %}
-    <div class="content-card post-card mb-4">
-        <!-- Post Header -->
-        <div class="post-header">
-            <div class="post-user-info">
-                {% if post.author.profile.profile_pic %}
-                    <img src="{{ post.author.profile.profile_pic.url }}" alt="{{ post.author.username }}" class="post-avatar">
                 {% else %}
-                    <img src="https://ui-avatars.com/api/?name={{ post.author.username }}&background=random" 
-                         alt="{{ post.author.username }}" class="post-avatar">
+                <!-- Guest Card -->
+                <div class="guest-card">
+                    <div class="guest-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3>Welcome to Ojukaye!</h3>
+                    <p>Sign in to connect with your community</p>
+                    <div class="guest-actions">
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-block">Sign In</a>
+                        <a href="{% url 'register' %}" class="btn btn-outline btn-block">Register</a>
+                    </div>
+                </div>
                 {% endif %}
-                <div>
-                    <h5 class="post-author">
-                        <a href="{% url 'profile_view' post.author.username %}" class="text-decoration-none text-dark">
-                            {{ post.author.get_full_name|default:post.author.username }}
+
+                <!-- Navigation Menu -->
+                <div class="sidebar-menu">
+                    <a href="{% url 'home' %}" class="menu-item active">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="{% url 'online_news' %}" class="menu-item">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Online News</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'profile_view' username=user.username %}" class="menu-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="{% url 'bookmarks' %}" class="menu-item">
+                        <i class="fas fa-bookmark"></i>
+                        <span>Saved</span>
+                    </a>
+                    {% endif %}
+                    
+                    {% if user.is_staff or user.is_superuser %}
+                    <div class="menu-divider"></div>
+                    <div class="menu-section-title">Admin</div>
+                    <a href="{% url 'admin_dashboard' %}" class="menu-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{% url 'admin_posts' %}" class="menu-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Manage Posts</span>
+                    </a>
+                    <a href="{% url 'fetch_news' %}" class="menu-item">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Fetch News</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Trending Topics -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-fire" style="color: var(--primary);"></i> Trending Now</h3>
+                </div>
+                <div class="trending-list">
+                    {% for post in trending_posts %}
+                    <a href="{% url 'post_detail' post.id %}" class="trending-item">
+                        <div class="trending-rank">#{{ forloop.counter }}</div>
+                        <div class="trending-content">
+                            <h4>{{ post.title|truncatechars:50 }}</h4>
+                            <div class="trending-meta">
+                                <span><i class="fas fa-eye"></i> {{ post.views }}</span>
+                                <span><i class="fas fa-heart"></i> {{ post.likes.count }}</span>
+                                <span><i class="fas fa-comment"></i> {{ post.comments.count }}</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="fas fa-chart-line"></i>
+                        <p>No trending posts yet</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Footer Links -->
+            <div class="sidebar-footer">
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'privacy' %}">Privacy</a>
+                <a href="{% url 'terms' %}">Terms</a>
+                <a href="{% url 'help' %}">Help</a>
+                <p class="copyright">© {% now "Y" %} Ojukaye</p>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-feed">
+            <!-- Banner Slider -->
+            <div class="banner-slider-container">
+                <div class="banner-slider">
+                    {% for banner in banner_posts %}
+                    <div class="banner-slide {% if forloop.first %}active{% endif %}">
+                        <a href="{% url 'post_detail' banner.id %}" class="banner-link">
+                            <div class="banner-image">
+                                {% if banner.image %}
+                                <img src="{{ banner.image.url }}" alt="{{ banner.title }}">
+                                {% elif banner.image_url %}
+                                <img src="{{ banner.image_url }}" alt="{{ banner.title }}" data-category="{{ banner.category.name|default:'default' }}">
+                                {% else %}
+                                <img src="https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?w=800&q=80" alt="Default banner">
+                                {% endif %}
+                                <div class="banner-overlay">
+                                    <div class="banner-content">
+                                        <span class="banner-category">{{ banner.category.name|default:"Featured" }}</span>
+                                        <h2 class="banner-title">{{ banner.title }}</h2>
+                                        <p class="banner-excerpt">{{ banner.content|truncatechars:120 }}</p>
+                                        <span class="banner-cta">Read More <i class="fas fa-arrow-right"></i></span>
+                                    </div>
+                                </div>
+                            </div>
                         </a>
-                        {% if post.is_verified %}
-                            <span class="verified-badge" title="Verified"><i class="fas fa-check-circle"></i></span>
-                        {% endif %}
-                    </h5>
-                    <p class="post-meta">
-                        {{ post.published_at|timesince }} ago • 
-                        {% if post.category %}
-                            <a href="{% url 'category_view' post.category.slug %}" class="text-accent">{{ post.category.name }}</a>
-                        {% endif %}
-                        {% if post.is_auto_fetched %}
-                            • <span class="text-info"><i class="fas fa-rss"></i> News</span>
-                        {% endif %}
-                        {% if post.is_sponsored %}
-                            • <span class="text-warning"><i class="fas fa-ad"></i> Sponsored</span>
-                        {% endif %}
-                    </p>
+                    </div>
+                    {% empty %}
+                    <div class="banner-slide active">
+                        <div class="banner-image">
+                            <img src="https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?w=800&q=80" alt="Welcome to Ojukaye">
+                            <div class="banner-overlay">
+                                <div class="banner-content">
+                                    <span class="banner-category">Welcome</span>
+                                    <h2 class="banner-title">Welcome to Ojukaye</h2>
+                                    <p class="banner-excerpt">Nigeria's modern news and discussion platform</p>
+                                    <span class="banner-cta">Get Started <i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="banner-slide">
+                        <div class="banner-image">
+                            <img src="https://images.unsplash.com/photo-1551135049-8a33b2fb2f7f?w=800&q=80" alt="Latest News">
+                            <div class="banner-overlay">
+                                <div class="banner-content">
+                                    <span class="banner-category">News</span>
+                                    <h2 class="banner-title">Stay Informed</h2>
+                                    <p class="banner-excerpt">Get the latest news from Nigeria and around the world</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="banner-slide">
+                        <div class="banner-image">
+                            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80" alt="Join Discussions">
+                            <div class="banner-overlay">
+                                <div class="banner-content">
+                                    <span class="banner-category">Community</span>
+                                    <h2 class="banner-title">Join Discussions</h2>
+                                    <p class="banner-excerpt">Share your thoughts and connect with others</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-            </div>
-            <div class="post-options">
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-pale dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                        {% if user == post.author or user.is_staff %}
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
-                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
-                        {% endif %}
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-flag me-2"></i>Report</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-ban me-2"></i>Hide</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Post Content -->
-        <div class="post-content">
-            <!-- Post Title as Link -->
-            <h4 class="post-title">
-                <a href="{% url 'post_detail' post.id %}" class="text-decoration-none text-dark">
-                    {{ post.title }}
-                </a>
-            </h4>
-            
-            <div class="post-text">
-                {{ post.content|linebreaks|truncatechars:500 }}
-                {% if post.content|length > 500 %}
-                <!-- Read More Link -->
-                <a href="{% url 'post_detail' post.id %}" class="read-more">
-                    Read more
-                </a>
-                {% endif %}
-            </div>
-            
-            {% if post.image %}
-            <!-- Post Image as Link -->
-            <div class="post-media mt-3">
-                <a href="{% url 'post_detail' post.id %}">
-                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded">
-                </a>
-            </div>
-            {% endif %}
-        </div>
-
-
-        <!-- Post Stats -->
-        <div class="post-stats">
-            <span class="stat-item">
-                <i class="fas fa-heart text-danger"></i> {{ post.like_count }}
-            </span>
-            <span class="stat-item">
-                <i class="fas fa-comment text-accent"></i> {{ post.comment_count }}
-            </span>
-            <span class="stat-item">
-                <i class="fas fa-share text-success"></i> {{ post.share_count|default:0 }}
-            </span>
-            <span class="stat-item">
-                <i class="fas fa-eye text-muted"></i> {{ post.views }}
-            </span>
-        </div>
-
-        <!-- Post Actions -->
-        <div class="post-actions">
-            <button class="post-action-btn like-btn {% if user in post.likes.all %}active{% endif %}" 
-                    data-post-id="{{ post.id }}">
-                <i class="{% if user in post.likes.all %}fas{% else %}far{% endif %} fa-heart"></i> 
-                <span>Like</span>
-            </button>
-            <button class="post-action-btn comment-btn" data-post-id="{{ post.id }}">
-                <i class="far fa-comment"></i> Comment
-            </button>
-            <button class="post-action-btn share-btn" data-post-id="{{ post.id }}">
-                <i class="fas fa-share"></i> Share
-            </button>
-            <button class="post-action-btn bookmark-btn {% if user in post.bookmarks.all %}active{% endif %}" 
-                    data-post-id="{{ post.id }}">
-                <i class="{% if user in post.bookmarks.all %}fas{% else %}far{% endif %} fa-bookmark"></i> 
-                <span>Save</span>
-            </button>
-        </div>
-
-        <!-- Quick Comment Form -->
-        {% if user.is_authenticated %}
-        <div class="quick-comment mt-3 d-none" id="commentForm-{{ post.id }}">
-            <form class="comment-form" data-post-id="{{ post.id }}">
-                {% csrf_token %}
-                <div class="input-group">
-                    <input type="text" class="form-control form-control-pale" placeholder="Write a comment..." 
-                           name="content" required>
-                    <button class="btn btn-accent" type="submit">Post</button>
-                </div>
-            </form>
-        </div>
-        {% endif %}
-    </div>
-    {% empty %}
-    <div class="content-card text-center py-5">
-        <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
-        <h4>No posts yet</h4>
-        <p class="text-muted">Be the first to share something with the community!</p>
-        {% if user.is_authenticated %}
-        <button class="btn btn-accent" data-bs-toggle="modal" data-bs-target="#createPostModal">
-            <i class="fas fa-plus me-2"></i>Create Post
-        </button>
-        {% else %}
-        <a href="{% url 'login' %}" class="btn btn-accent">
-            <i class="fas fa-sign-in-alt me-2"></i>Login to Post
-        </a>
-        {% endif %}
-    </div>
-    {% endfor %}
-
-    <!-- Pagination -->
-    {% if page_obj.has_other_pages %}
-    <nav aria-label="Posts pagination" class="mt-4">
-        <ul class="pagination justify-content-center">
-            {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter_type %}&filter={{ filter_type }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
+                
+                <!-- Slider Controls -->
+                <button class="slider-prev">
                     <i class="fas fa-chevron-left"></i>
-                </a>
-            </li>
-            {% endif %}
-            
-            {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ num }}{% if filter_type %}&filter={{ filter_type }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">{{ num }}</a>
-                </li>
-                {% endif %}
-            {% endfor %}
-            
-            {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter_type %}&filter={{ filter_type }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
+                </button>
+                <button class="slider-next">
                     <i class="fas fa-chevron-right"></i>
-                </a>
-            </li>
+                </button>
+                <div class="slider-dots"></div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="feed-filters">
+                <div class="filter-tabs">
+                    <a href="?filter=latest" class="filter-tab {% if filter_type == 'latest' or not filter_type %}active{% endif %}">
+                        <i class="fas fa-clock"></i> Latest
+                    </a>
+                    <a href="?filter=trending" class="filter-tab {% if filter_type == 'trending' %}active{% endif %}">
+                        <i class="fas fa-fire"></i> Trending
+                    </a>
+                    <a href="?filter=popular" class="filter-tab {% if filter_type == 'popular' %}active{% endif %}">
+                        <i class="fas fa-star"></i> Popular
+                    </a>
+                </div>
+                
+                <!-- Category Dropdown (Mobile) -->
+                <div class="category-dropdown">
+                    <select onchange="window.location.href=this.value" class="form-input">
+                        <option value="?category=all" {% if current_category == 'all' %}selected{% endif %}>All Categories</option>
+                        {% for category in categories %}
+                        <option value="?category={{ category.slug }}" {% if current_category == category.slug %}selected{% endif %}>
+                            {{ category.name }} ({{ category.cached_post_count }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <!-- Create Post Section - What's in your mind? -->
+            <div class="create-post-card">
+                <div class="create-post-header">
+                    <div class="user-avatar-small">
+                        {% if user.profile.profile_pic %}
+                        <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}">
+                        {% else %}
+                        <div class="avatar-placeholder">{{ user.username|first|upper }}</div>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'create_post' %}" class="create-post-input">
+                        What's on your mind, {{ user.first_name|default:user.username }}?
+                    </a>
+                </div>
+                
+                <div class="create-post-actions">
+                    <a href="{% url 'create_post' %}?type=discussion" class="action-btn">
+                        <i class="fas fa-comment-dots" style="color: var(--primary);"></i>
+                        <span>Discussion</span>
+                    </a>
+                    <a href="{% url 'create_post' %}?type=user_news" class="action-btn">
+                        <i class="fas fa-newspaper" style="color: #10b981;"></i>
+                        <span>News</span>
+                    </a>
+                    <a href="{% url 'create_post' %}?type=profile_post" class="action-btn">
+                        <i class="fas fa-user" style="color: #8b5cf6;"></i>
+                        <span>Profile Post</span>
+                    </a>
+                    <button class="action-btn image-upload-trigger">
+                        <i class="fas fa-image" style="color: #f59e0b;"></i>
+                        <span>Photo</span>
+                    </button>
+                </div>
+            </div>
+            {% else %}
+            <!-- Guest Create Post Prompt -->
+            <div class="guest-prompt-card">
+                <p>Sign in to share your thoughts and join the discussion</p>
+                <div class="guest-prompt-actions">
+                    <a href="{% url 'login' %}" class="btn btn-primary">Sign In</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline">Register</a>
+                </div>
+            </div>
             {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
+
+            <!-- Posts Feed -->
+            <div class="posts-container">
+                {% if page_obj %}
+                    {% for post in posts %}
+                    <article class="post-card">
+                        <!-- Post Header -->
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="author-avatar">
+                                    {% if post.author.profile.profile_pic %}
+                                    <img src="{{ post.author.profile.profile_pic.url }}" alt="{{ post.author.username }}">
+                                    {% else %}
+                                    <div class="avatar-placeholder">{{ post.author.username|first|upper }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="author-info">
+                                    <div class="author-name-wrapper">
+                                        <a href="{% url 'profile_view' username=post.author.username %}" class="author-name">
+                                            {{ post.author.get_full_name|default:post.author.username }}
+                                        </a>
+                                        {% if post.author.profile.is_verified_business %}
+                                        <span class="verified-badge" title="Verified Business">
+                                            <i class="fas fa-check-circle"></i>
+                                        </span>
+                                        {% endif %}
+                                        {% if post.is_sponsored %}
+                                        <span class="sponsored-badge">Sponsored</span>
+                                        {% endif %}
+                                        {% if post.post_type == 'user_news' %}
+                                        <span class="news-badge">News</span>
+                                        {% elif post.post_type == 'profile_post' %}
+                                        <span class="profile-badge">Profile Post</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="post-meta">
+                                        <span class="post-time" title="{{ post.published_at }}">
+                                            <i class="far fa-clock"></i> 
+                                            <time datetime="{{ post.published_at|date:'c' }}">{{ post.published_at|timesince }} ago</time>
+                                        </span>
+                                        {% if post.category %}
+                                        <span class="post-category">
+                                            <i class="far fa-folder"></i> {{ post.category.name }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if user == post.author or user.is_staff %}
+                            <div class="post-actions-menu">
+                                <button class="post-menu-btn" onclick="togglePostMenu(this)">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="post-dropdown">
+                                    <a href="{% url 'post_detail' post.id %}">View Post</a>
+                                    {% if user == post.author %}
+                                    <a href="#" onclick="deletePost({{ post.id }})" style="color: var(--danger);">Delete</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Post Content -->
+                        <div class="post-content">
+                            <a href="{% url 'post_detail' post.id %}" class="post-link">
+                                <h3 class="post-title">{{ post.title }}</h3>
+                                <p class="post-text">{{ post.content|truncatechars:300 }}</p>
+                            </a>
+                            
+                            {% if post.image %}
+                            <div class="post-image">
+                                <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                            </div>
+                            {% elif post.image_url %}
+                            <div class="post-image">
+                                <img src="{{ post.image_url }}" alt="{{ post.title }}" data-category="{{ post.category.name|default:'default' }}">
+                            </div>
+                            {% endif %}
+                            
+                            {% if post.external_source %}
+                            <div class="post-source">
+                                <i class="fas fa-link"></i> Source: 
+                                <a href="{{ post.external_url }}" target="_blank" rel="nofollow noopener">
+                                    {{ post.external_source }}
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Post Stats -->
+                        <div class="post-stats">
+                            <span class="stat-item">
+                                <i class="fas fa-eye"></i> {{ post.views }}
+                            </span>
+                            <span class="stat-item">
+                                <i class="fas fa-heart"></i> {{ post.likes.count }}
+                            </span>
+                            <span class="stat-item">
+                                <i class="fas fa-comment"></i> {{ post.comments.count }}
+                            </span>
+                            <span class="stat-item">
+                                <i class="fas fa-retweet"></i> {{ post.repost_count|default:0 }}
+                            </span>
+                        </div>
+                        
+                        <!-- Post Actions -->
+                        <div class="post-actions">
+                            <button class="post-action-btn like-btn {% if user in post.likes.all %}liked{% endif %}" 
+                                    data-post-id="{{ post.id }}">
+                                <i class="{% if user in post.likes.all %}fas{% else %}far{% endif %} fa-heart"></i>
+                                <span class="like-count">{{ post.likes.count }}</span>
+                            </button>
+                            
+                            <a href="{% url 'post_detail' post.id %}#comments" class="post-action-btn">
+                                <i class="far fa-comment"></i>
+                                <span>{{ post.comments.count }}</span>
+                            </a>
+                            
+                            <button class="post-action-btn bookmark-btn {% if user in post.bookmarks.all %}bookmarked{% endif %}"
+                                    data-post-id="{{ post.id }}">
+                                <i class="{% if user in post.bookmarks.all %}fas{% else %}far{% endif %} fa-bookmark"></i>
+                            </button>
+                            
+                            <button class="post-action-btn share-btn" 
+                                    data-title="{{ post.title }}"
+                                    data-url="{% url 'post_detail' post.id %}">
+                                <i class="far fa-share-square"></i>
+                            </button>
+                        </div>
+                    </article>
+                    {% endfor %}
+                    
+                    <!-- Pagination -->
+                    {% if page_obj.has_next %}
+                    <div class="pagination-load-more">
+                        <button class="btn btn-outline btn-block" onclick="loadMorePosts()">
+                            Load More
+                        </button>
+                    </div>
+                    <div class="loading-indicator" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                    {% endif %}
+                    
+                {% else %}
+                <!-- Empty State -->
+                <div class="empty-state-container">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h3>No posts yet</h3>
+                    <p>Be the first to start a discussion or share news!</p>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'create_post' %}" class="btn btn-primary">
+                        <i class="fas fa-pen-to-square"></i> Create Post
+                    </a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Sign in to Post
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </main>
+
+        <!-- ===== RIGHT SIDEBAR ===== -->
+        <aside class="right-sidebar">
+            <!-- Categories -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tags" style="color: var(--primary);"></i> Categories</h3>
+                </div>
+                <div class="categories-list">
+                    <a href="?category=all" class="category-item {% if current_category == 'all' or not current_category %}active{% endif %}">
+                        <span class="category-name">All Categories</span>
+                        <span class="category-count">{{ total_posts|default:"0" }}</span>
+                    </a>
+                    {% for category in categories %}
+                    <a href="?category={{ category.slug }}" class="category-item {% if current_category == category.slug %}active{% endif %}">
+                        <span class="category-name">
+                            {% if category.icon %}
+                            <i class="fas fa-{{ category.icon }}"></i>
+                            {% endif %}
+                            {{ category.name }}
+                        </span>
+                        <span class="category-count">{{ category.cached_post_count }}</span>
+                    </a>
+                    {% empty %}
+                    <div class="empty-state small">
+                        <p>No categories yet</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Sponsored/Advertisement Posts -->
+            <div class="sidebar-card sponsored-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-ad" style="color: var(--primary);"></i> Sponsored</h3>
+                </div>
+                <div class="sponsored-list">
+                    {% for ad in sponsored_posts %}
+                    <div class="sponsored-item">
+                        <div class="sponsored-badge-small">Ad</div>
+                        <a href="{% url 'post_detail' ad.id %}" class="sponsored-content">
+                            {% if ad.image %}
+                            <div class="sponsored-image">
+                                <img src="{{ ad.image.url }}" alt="{{ ad.title }}">
+                            </div>
+                            {% endif %}
+                            <div class="sponsored-info">
+                                <h4>{{ ad.title|truncatechars:40 }}</h4>
+                                <p>{{ ad.content|truncatechars:60 }}</p>
+                                <span class="sponsored-link">Learn more <i class="fas fa-arrow-right"></i></span>
+                            </div>
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state small">
+                        <i class="fas fa-ad"></i>
+                        <p>No sponsored content</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Ad Submission Prompt -->
+            <div class="sidebar-card ad-prompt-card">
+                <div class="ad-prompt-content">
+                    <i class="fas fa-bullhorn"></i>
+                    <h4>Advertise with us</h4>
+                    <p>Reach thousands of engaged users daily</p>
+                    {% comment %} <a href="{% url 'ad_submission' %}" class="btn btn-primary btn-sm"> {% endcomment %}
+                        Submit Ad
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-$(document).ready(function() {
-    // Initialize banner carousel
-    $('.banner-slider').slick({
-        dots: true,
-        infinite: true,
-        speed: 500,
-        fade: true,
-        cssEase: 'linear',
-        autoplay: true,
-        autoplaySpeed: 5000,
-        arrows: true,
-        prevArrow: '<button type="button" class="slick-prev"><i class="fas fa-chevron-left"></i></button>',
-        nextArrow: '<button type="button" class="slick-next"><i class="fas fa-chevron-right"></i></button>'
-    });
-
-    // Toggle comment form
-    $('.comment-btn').click(function() {
-        const postId = $(this).data('post-id');
-        $(`#commentForm-${postId}`).toggleClass('d-none');
-    });
-
-    // Post type change handler
-    $('#postType').change(function() {
-        const postType = $(this).val();
-        if (postType === 'profile_post') {
-            $('#categoryField').hide();
-        } else {
-            $('#categoryField').show();
+    // JavaScript for index page specific functions
+    function togglePostMenu(btn) {
+        const dropdown = btn.nextElementSibling;
+        dropdown.classList.toggle('active');
+        
+        // Close other open menus
+        document.querySelectorAll('.post-dropdown.active').forEach(el => {
+            if (el !== dropdown) el.classList.remove('active');
+        });
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.post-actions-menu')) {
+            document.querySelectorAll('.post-dropdown.active').forEach(el => {
+                el.classList.remove('active');
+            });
         }
     });
-});
+    
+    function deletePost(postId) {
+        if (confirm('Are you sure you want to delete this post?')) {
+            fetch(`/post/${postId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                }
+            });
+        }
+    }
 </script>
 {% endblock %}

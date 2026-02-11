@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 def create_user_profile(sender, instance, created, **kwargs):
     """Auto-create UserProfile when User is created"""
     if created:
-        UserProfile.objects.create(user=instance)
-        logger.info(f"Created UserProfile for {instance.username}")
+        UserProfile.objects.get_or_create(user=instance)
+        logger.info(f"Created/Retrieved UserProfile for {instance.username}")
 
 @receiver(post_save, sender=Advertisement)
 def handle_ad_approval(sender, instance, created, **kwargs):

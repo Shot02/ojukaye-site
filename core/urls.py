@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     # Home and posts
-    path('', views.home, name='index'),
+    path('', views.home, name='home'),
     path('online-news/', views.online_news, name='online_news'),
     
     # Post URLs - THIS IS WHAT'S MISSING

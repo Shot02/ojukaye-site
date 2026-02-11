@@ -15,8 +15,9 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from decimal import Decimal, InvalidOperation
 from django.db import models  
-from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST, require_http_methods
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import Post, Category, Comment, UserProfile, Notification, UserActivity, Follow, Post, Advertisement, Group, GroupMember, GroupPost, UserProfile, Category, Comment, UserActivity, SystemSettings, AdAnalytics
 from .forms import PostForm, CommentForm, UserProfileForm, UserUpdateForm, BusinessProfileForm, GroupForm, SystemSettingsForm,RegistrationForm, PostForm, AdSubmissionForm
@@ -836,6 +837,9 @@ def register_view(request):
     context = {'form': form}
     return render(request, 'registration/register.html', context)
 
+from django.views.decorators.cache import never_cache
+
+@never_cache
 def login_view(request):
     """User login with admin detection"""
     if request.user.is_authenticated:
@@ -851,10 +855,8 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 
-                # Check if user is admin/staff
                 if user.is_staff or user.is_superuser:
                     messages.success(request, f'Welcome back, Admin {username}!')
-                    # Redirect admin to admin dashboard or home
                     next_page = request.GET.get('next', 'admin_dashboard')
                 else:
                     messages.success(request, f'Welcome back, {username}!')
@@ -870,6 +872,7 @@ def login_view(request):
     
     context = {'form': form}
     return render(request, 'registration/login.html', context)
+
 
 def logout_view(request):
     """User logout"""
@@ -967,130 +970,6 @@ def edit_profile(request):
     
     return render(request, 'profile/edit_profile.html', context)
 
-@login_required
-def post_detail(request, post_id):
-    """View individual post with full social features"""
-    post = get_object_or_404(Post, id=post_id, status='published')
-    
-    # Increment view count
-    post.views = F('views') + 1
-    post.save()
-    post.refresh_from_db()
-    
-    # Get comments with replies
-    comments = Comment.objects.filter(
-        post=post, 
-        parent__isnull=True, 
-        is_active=True
-    ).select_related('user', 'user__profile').order_by('-created_at')
-    
-    # Check user interactions
-    user_liked = False
-    user_bookmarked = False
-    
-    if request.user.is_authenticated:
-        user_liked = post.likes.filter(id=request.user.id).exists()
-        user_bookmarked = post.bookmarks.filter(id=request.user.id).exists()
-    
-    # Get related posts
-    related_posts = Post.objects.filter(
-        Q(category=post.category) | Q(is_auto_fetched=True),
-        status='published'
-    ).exclude(id=post.id).order_by('-published_at')[:5]
-    
-    # Get trending in category
-    trending_in_category = Post.objects.filter(
-        category=post.category,
-        status='published',
-        created_at__gte=timezone.now() - timedelta(days=7)
-    ).exclude(id=post.id).annotate(
-        like_count=Count('likes')
-    ).order_by('-like_count', '-views')[:5]
-    
-    # Handle comment submission
-    if request.method == 'POST' and request.user.is_authenticated:
-        if 'comment' in request.POST:  # Comment submission
-            content = request.POST.get('content', '').strip()
-            parent_id = request.POST.get('parent_id')
-            
-            if content:
-                comment = Comment.objects.create(
-                    post=post,
-                    user=request.user,
-                    content=content,
-                    parent_id=parent_id if parent_id else None
-                )
-                
-                # Update comment count
-                post.comments_count = F('comments_count') + 1
-                post.save()
-                
-                # Create notification if not commenting on own post
-                if post.author != request.user:
-                    Notification.objects.create(
-                        user=post.author,
-                        from_user=request.user,
-                        notification_type='comment',
-                        message=f'{request.user.username} commented on your post',
-                        post=post,
-                        comment=comment
-                    )
-                
-                # Also notify parent comment author if replying
-                if parent_id:
-                    try:
-                        parent_comment = Comment.objects.get(id=parent_id)
-                        if parent_comment.user != request.user:
-                            Notification.objects.create(
-                                user=parent_comment.user,
-                                from_user=request.user,
-                                notification_type='reply',
-                                message=f'{request.user.username} replied to your comment',
-                                post=post,
-                                comment=comment
-                            )
-                    except Comment.DoesNotExist:
-                        pass
-                
-                messages.success(request, 'Comment added successfully!')
-                return redirect('post_detail', post_id=post_id)
-        
-        elif 'like' in request.POST:  # Like/unlike
-            return redirect('like_post', post_id=post_id)
-        
-        elif 'bookmark' in request.POST:  # Bookmark/unbookmark
-            return redirect('bookmark_post', post_id=post_id)
-        
-        elif 'repost' in request.POST:  # Repost
-            content = request.POST.get('repost_content', '').strip()
-            repost, created = Repost.objects.get_or_create(
-                user=request.user,
-                original_post=post,
-                defaults={'content': content}
-            )
-            
-            if created:
-                post.repost_count = F('repost_count') + 1
-                messages.success(request, 'Post reposted!')
-            else:
-                repost.delete()
-                post.repost_count = F('repost_count') - 1
-                messages.info(request, 'Repost removed')
-            
-            post.save()
-            return redirect('post_detail', post_id=post_id)
-    
-    context = {
-        'post': post,
-        'comments': comments,
-        'related_posts': related_posts,
-        'trending_in_category': trending_in_category,
-        'user_liked': user_liked,
-        'user_bookmarked': user_bookmarked,
-        'title': post.title,
-    }
-    
-    return render(request, 'post/post_detail.html', context)
 
 @login_required
 def follow_user(request, username):

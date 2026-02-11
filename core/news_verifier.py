@@ -255,12 +255,6 @@ class NewsVerifier:
     
     def _external_verification(self, title: str, url: str) -> Dict:
         """External verification using fact-checking APIs"""
-        # Note: This requires API keys for services like Google Fact Check
-        # For now, we'll implement a placeholder
-        
-        # You can add actual API calls here later
-        # Example: Google Fact Check API
-        
         return {
             'score': 0.5,
             'method': 'external_api',

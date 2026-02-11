@@ -180,7 +180,7 @@ class Post(models.Model):
     # For external news
     external_source = models.CharField(max_length=200, blank=True)
     external_url =  models.URLField(max_length=1000, blank=True) 
-    external_id = models.CharField(max_length=200, blank=True, unique=True)
+    external_id = models.CharField(max_length=200, blank=True, null=True, unique=True)
     is_auto_fetched = models.BooleanField(default=False)  # New field to identify auto-fetched news
     
     # New fields
