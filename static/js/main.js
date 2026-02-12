@@ -286,50 +286,148 @@ function initShareButtons() {
 }
 
 // ===== FOLLOW BUTTONS =====
-function initFollowButtons() {
-    document.querySelectorAll('.follow-btn').forEach(btn => {
-        btn.addEventListener('click', async function(e) {
-            e.preventDefault();
-            
-            if (!isAuthenticated()) {
-                window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname);
-                return;
+// Follow button functionality
+document.querySelectorAll('.btn-follow').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const username = this.dataset.username;
+        const csrfToken = getCsrfToken();
+        
+        // Disable button to prevent double-click
+        this.disabled = true;
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        
+        fetch(`/follow/${username}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
             }
-            
-            const username = this.dataset.username;
-            const followerCount = document.querySelector('.follower-count');
-            
-            try {
-                const response = await fetch(`/profile/${username}/follow/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCSRFToken(),
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    if (data.followed) {
-                        this.textContent = 'Following';
-                        this.classList.add('following');
-                        showNotification(`You are now following @${username}`, 'success');
-                    } else {
-                        this.textContent = 'Follow';
-                        this.classList.remove('following');
-                        showNotification(`You unfollowed @${username}`, 'info');
-                    }
-                    
-                    if (followerCount) {
-                        followerCount.textContent = data.followers_count;
-                    }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                if (data.is_following || data.followed) {
+                    this.innerHTML = '<i class="fas fa-check"></i> Following';
+                    this.classList.add('following');
+                } else {
+                    this.innerHTML = '<i class="fas fa-plus"></i> Follow';
+                    this.classList.remove('following');
                 }
-            } catch (error) {
-                console.error('Error following user:', error);
+                
+                // Update follower count in profile stats if exists
+                const followerCountEl = document.querySelector('.follower-count, .stat-value.followers');
+                if (followerCountEl && data.followers_count !== undefined) {
+                    followerCountEl.textContent = data.followers_count;
+                }
+                
+                // Show success message
+                showNotification(data.message, 'success');
+            } else {
+                showNotification(data.error || 'An error occurred', 'error');
+                this.innerHTML = originalText;
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification(error.error || 'An error occurred. Please try again.', 'error');
+            this.innerHTML = originalText;
+        })
+        .finally(() => {
+            this.disabled = false;
         });
     });
+});
+
+// Helper function to get CSRF token
+function getCsrfToken() {
+    // Try to get from cookie
+    const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+    
+    if (cookieValue) return cookieValue;
+    
+    // Try to get from meta tag
+    const metaToken = document.querySelector('meta[name="csrf-token"]');
+    if (metaToken) return metaToken.getAttribute('content');
+    
+    // Try to get from form input
+    const inputToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    if (inputToken) return inputToken.value;
+    
+    return '{{ csrf_token }}';
+}
+
+// Notification function
+function showNotification(message, type = 'info') {
+    // Check if notification container exists, if not create it
+    let container = document.querySelector('.notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'notification-container';
+        document.body.appendChild(container);
+        
+        // Add styles if not exists
+        const style = document.createElement('style');
+        style.textContent = `
+            .notification-container {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+            }
+            .notification {
+                background: white;
+                border-radius: 8px;
+                padding: 12px 20px;
+                margin-bottom: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: slideIn 0.3s ease;
+                border-left: 4px solid;
+            }
+            .notification.success { border-left-color: #10b981; }
+            .notification.error { border-left-color: #ef4444; }
+            .notification.info { border-left-color: #3b82f6; }
+            .notification.warning { border-left-color: #f59e0b; }
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    let icon = '';
+    if (type === 'success') icon = '<i class="fas fa-check-circle"></i>';
+    else if (type === 'error') icon = '<i class="fas fa-exclamation-circle"></i>';
+    else if (type === 'warning') icon = '<i class="fas fa-exclamation-triangle"></i>';
+    else icon = '<i class="fas fa-info-circle"></i>';
+    
+    notification.innerHTML = `${icon} <span>${message}</span>`;
+    container.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
 }
 
 // ===== NEWS FILTERS =====
@@ -948,3 +1046,98 @@ function showNotification(message, type = 'info') {
         alert.remove();
     });
 }
+// Dark Mode Toggle
+function initDarkMode() {
+    const darkModeToggle = document.querySelector('.dark-mode-toggle');
+    const theme = localStorage.getItem('theme') || 'light';
+    
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    if (darkModeToggle) {
+        const icon = darkModeToggle.querySelector('i');
+        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        
+        darkModeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const icon = this.querySelector('i');
+            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        });
+    }
+}
+
+// Check system preference on first visit
+function setInitialTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setInitialTheme();
+    initDarkMode();
+});
+
+
+document.addEventListener('DOMContentLoaded', initDarkMode);
+
+function fixProfileTextVisibility() {
+    // Target all profile meta spans
+    const profileMetaSpans = document.querySelectorAll('.profile-header-meta span');
+    
+    profileMetaSpans.forEach(span => {
+        // Force text color
+        span.style.color = 'var(--text-tertiary)';
+        
+        // Also force any child elements
+        const childElements = span.querySelectorAll('*');
+        childElements.forEach(child => {
+            if (child.tagName !== 'I' && child.tagName !== 'A') {
+                child.style.color = 'var(--text-tertiary)';
+            }
+        });
+    });
+    
+    // Target location and date specifically
+    const locationSpans = document.querySelectorAll('.profile-header-meta span:has(.fa-map-marker-alt)');
+    locationSpans.forEach(span => {
+        const textNode = span.childNodes[1]; // The text node after the icon
+        if (textNode) {
+            span.style.color = 'var(--text-tertiary)';
+        }
+    });
+    
+    const dateSpans = document.querySelectorAll('.profile-header-meta span:has(.fa-calendar-alt), .profile-header-meta span:has(.fa-calendar)');
+    dateSpans.forEach(span => {
+        span.style.color = 'var(--text-tertiary)';
+    });
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fixProfileTextVisibility();
+});
+
+// Also run after any dynamic content changes
+const observer = new MutationObserver(function(mutations) {
+    fixProfileTextVisibility();
+});
+
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});

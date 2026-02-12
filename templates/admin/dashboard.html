@@ -164,7 +164,7 @@
                             <span class="category-count">{{ category.post_count }}</span>
                         </div>
                         <div class="category-progress">
-                            <div class="progress-bar" style="width: {{ category.post_count|divisibleby:stats.total_posts|multiply:100 }}%"></div>
+                            <div class="progress-bar" style="width: {{ category.percentage }}%"></div>
                         </div>
                     </div>
                     {% empty %}

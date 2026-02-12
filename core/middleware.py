@@ -16,20 +16,28 @@ class StaticFilesDebugMiddleware:
             print(f"STATICFILES_DIRS: {settings.STATICFILES_DIRS}")
         return response
     
+# Update GuestRestrictionMiddleware
 class GuestRestrictionMiddleware(MiddlewareMixin):
     """
     Restrict guest users to specific pages only
+    Guests can only view online news and public content
     """
     
     # Pages that guests can access
     ALLOWED_PATHS = [
-        '/',  # Home page
-        '/online-news/',  # Online news page
+        '/online-news/',  # Online news page - PUBLIC
         '/login/',  # Login page
         '/register/',  # Registration page
         '/static/',  # Static files
         '/media/',  # Media files
         '/api/banners/',  # Banner API
+        '/api/check-new-news/',  # Check news API
+    ]
+    
+    # Public post URLs that guests can view
+    ALLOWED_POST_PATHS = [
+        '/post/',  # Single post view
+        '/news/',  # News detail
     ]
     
     def process_request(self, request):
@@ -41,17 +49,22 @@ class GuestRestrictionMiddleware(MiddlewareMixin):
         if request.user.is_authenticated and (request.user.is_superuser or request.user.is_staff):
             return
         
-        # Check if path is allowed
-        if request.path in self.ALLOWED_PATHS or any(request.path.startswith(path) for path in self.ALLOWED_PATHS):
+        # Check if path is allowed for guests
+        if any(request.path.startswith(path) for path in self.ALLOWED_PATHS):
             return
         
-        # Check if user is authenticated
+        # Check if it's a public post view
+        if any(request.path.startswith(path) for path in self.ALLOWED_POST_PATHS):
+            # Allow guests to view individual posts
+            return
+        
+        # Check if user is authenticated for personal pages
         if not request.user.is_authenticated:
             # Store intended URL for redirect after login
             if request.method == 'GET':
                 request.session['next'] = request.get_full_path()
             
-            messages.warning(request, 'Please login or register to access this page')
+            messages.warning(request, 'Please login or register to access your personal homepage')
             return redirect('login')
         
         # Check business account restrictions

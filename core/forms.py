@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import URLValidator, ValidationError
 from django.utils import timezone
+from .models import SystemSettings
+from decimal import Decimal
 
 class RegistrationForm(UserCreationForm):
     ACCOUNT_TYPES = [
@@ -106,13 +108,35 @@ class PostForm(forms.ModelForm):
         initial='discussion'
     )
     
+    # Define privacy choices here instead of referencing Post.PRIVACY_CHOICES
+    PRIVACY_CHOICES = [
+        ('public', 'Public - Everyone can view'),
+        ('followers', 'Followers Only - Only my followers can view'),
+        ('private', 'Private - Only me'),
+        ('specific', 'Specific Followers - Select specific followers'),
+    ]
+    
+    privacy = forms.ChoiceField(
+        choices=PRIVACY_CHOICES,
+        widget=forms.RadioSelect,
+        initial='public',
+        required=True
+    )
+    
+    allowed_viewers = forms.ModelMultipleChoiceField(
+        queryset=None,  # Will be set in __init__
+        widget=forms.SelectMultiple(attrs={'class': 'form-control', 'size': '10'}),
+        required=False,
+        help_text='Select specific followers who can view this post'
+    )
+    
     class Meta:
         # Import Post model here to avoid circular import
         from .models import Post
         model = Post
         fields = [
-            'title', 'content', 'post_type', 'category', 
-            'source_url', 'source_name', 'image',
+            'title', 'content', 'post_type', 'privacy', 'allowed_viewers',
+            'category', 'source_url', 'source_name', 'image',
             'allow_comments', 'allow_sharing'
         ]
         widgets = {
@@ -140,9 +164,23 @@ class PostForm(forms.ModelForm):
             'allow_sharing': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
     
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        # Set allowed_viewers queryset to user's followers
+        if self.user:
+            from django.contrib.auth.models import User
+            from .models import Follow
+            self.fields['allowed_viewers'].queryset = User.objects.filter(
+                followers__follower=self.user
+            ).distinct()
+    
     def clean(self):
         cleaned_data = super().clean()
         post_type = cleaned_data.get('post_type')
+        privacy = cleaned_data.get('privacy')
+        allowed_viewers = cleaned_data.get('allowed_viewers')
         source_url = cleaned_data.get('source_url')
         
         if post_type == 'user_news' and not source_url:
@@ -160,8 +198,14 @@ class PostForm(forms.ModelForm):
         if post_type == 'profile_post':
             cleaned_data['category'] = None
         
+        # Validate specific followers selection
+        if privacy == 'specific' and not allowed_viewers:
+            raise forms.ValidationError('Please select at least one follower to view this post')
+        
         return cleaned_data
-
+    
+    
+    
 class AdSubmissionForm(forms.ModelForm):
     ad_type = forms.ChoiceField(
         # Choices will be set in __init__ to avoid circular import
@@ -331,22 +375,251 @@ class GroupForm(forms.ModelForm):
 
 class SystemSettingsForm(forms.ModelForm):
     class Meta:
-        # Import SystemSettings model here
-        from .models import SystemSettings
         model = SystemSettings
         fields = '__all__'
         widgets = {
+            # AI Settings
             'verification_threshold': forms.NumberInput(attrs={
                 'step': '0.01',
                 'min': '0',
-                'max': '1'
+                'max': '1',
+                'class': 'form-control'
+            }),
+            'max_posts_to_verify': forms.NumberInput(attrs={
+                'min': '1',
+                'max': '500',
+                'class': 'form-control'
+            }),
+            'verification_schedule': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            
+            # News Fetching
+            'fetch_schedule': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'max_news_per_fetch': forms.NumberInput(attrs={
+                'min': '1',
+                'max': '200',
+                'class': 'form-control'
+            }),
+            'trusted_sources': forms.Textarea(attrs={
+                'rows': 3,
+                'placeholder': 'e.g. punchng.com, vanguardngr.com, premiumtimesng.com',
+                'class': 'form-control'
+            }),
+            'blocked_sources': forms.Textarea(attrs={
+                'rows': 3,
+                'placeholder': 'e.g. fakenews.com, clickbait.net',
+                'class': 'form-control'
+            }),
+            
+            # Post Settings
+            'max_posts_per_day': forms.NumberInput(attrs={
+                'min': '1',
+                'max': '100',
+                'class': 'form-control'
+            }),
+            'max_post_length': forms.NumberInput(attrs={
+                'min': '100',
+                'max': '50000',
+                'class': 'form-control'
+            }),
+            'max_image_size': forms.NumberInput(attrs={
+                'min': '1',
+                'max': '20',
+                'step': '1',
+                'class': 'form-control'
+            }),
+            'allowed_image_types': forms.TextInput(attrs={
+                'placeholder': 'jpg,jpeg,png,gif,webp',
+                'class': 'form-control'
+            }),
+            
+            # Ad Settings
+            'max_ads_per_business': forms.NumberInput(attrs={
+                'min': '1',
+                'max': '50',
+                'class': 'form-control'
+            }),
+            'banner_rotation_interval': forms.NumberInput(attrs={
+                'min': '5',
+                'max': '3600',
+                'class': 'form-control'
+            }),
+            'min_ad_budget': forms.NumberInput(attrs={
+                'step': '100',
+                'min': '100',
+                'class': 'form-control'
             }),
             'ad_impression_rate': forms.NumberInput(attrs={
                 'step': '0.0001',
-                'min': '0'
+                'min': '0.0001',
+                'class': 'form-control'
+            }),
+            'ad_click_rate': forms.NumberInput(attrs={
+                'step': '0.01',
+                'min': '0.01',
+                'class': 'form-control'
+            }),
+            
+            # Group Settings
+            'max_groups_per_user': forms.NumberInput(attrs={
+                'min': '1',
+                'max': '20',
+                'class': 'form-control'
+            }),
+            'min_members_for_public_group': forms.NumberInput(attrs={
+                'min': '1',
+                'max': '100',
+                'class': 'form-control'
+            }),
+            
+            # Trending Settings
+            'trending_calculation_interval': forms.NumberInput(attrs={
+                'min': '1',
+                'max': '72',
+                'class': 'form-control'
+            }),
+            'trending_time_window': forms.NumberInput(attrs={
+                'min': '1',
+                'max': '168',
+                'class': 'form-control'
+            }),
+            'engagement_weight_like': forms.NumberInput(attrs={
+                'step': '0.1',
+                'min': '0',
+                'class': 'form-control'
+            }),
+            'engagement_weight_comment': forms.NumberInput(attrs={
+                'step': '0.1',
+                'min': '0',
+                'class': 'form-control'
+            }),
+            'engagement_weight_share': forms.NumberInput(attrs={
+                'step': '0.1',
+                'min': '0',
+                'class': 'form-control'
+            }),
+            'engagement_weight_view': forms.NumberInput(attrs={
+                'step': '0.001',
+                'min': '0',
+                'class': 'form-control'
+            }),
+            
+            # Cache & Performance
+            'cache_timeout': forms.NumberInput(attrs={
+                'min': '0',
+                'max': '86400',
+                'class': 'form-control'
+            }),
+            
+            # Maintenance
+            'maintenance_message': forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'form-control'
+            }),
+            
+            # SEO
+            'meta_description': forms.Textarea(attrs={
+                'rows': 2,
+                'class': 'form-control'
+            }),
+            'meta_keywords': forms.Textarea(attrs={
+                'rows': 2,
+                'class': 'form-control',
+                'placeholder': 'news, nigeria, breaking news, politics'
+            }),
+            'robots_txt': forms.Textarea(attrs={
+                'rows': 5,
+                'class': 'form-control code-editor',
+                'style': 'font-family: monospace;'
+            }),
+            
+            # Social Media
+            'facebook_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://facebook.com/yourpage'
+            }),
+            'twitter_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://twitter.com/yourhandle'
+            }),
+            'instagram_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://instagram.com/yourpage'
+            }),
+            'linkedin_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://linkedin.com/company/yourcompany'
+            }),
+            'youtube_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://youtube.com/c/yourchannel'
+            }),
+            'telegram_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://t.me/yourgroup'
+            }),
+            'whatsapp_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '+2348012345678'
+            }),
+            
+            # Contact
+            'contact_email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'contact@yourdomain.com'
+            }),
+            'support_email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'support@yourdomain.com'
+            }),
+            'contact_phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '+2348012345678'
+            }),
+            'address': forms.Textarea(attrs={
+                'rows': 2,
+                'class': 'form-control'
+            }),
+            
+            # User Settings
+            'default_user_role': forms.Select(attrs={
+                'class': 'form-control'
             }),
         }
-
+    
+    def clean_verification_threshold(self):
+        threshold = self.cleaned_data['verification_threshold']
+        if threshold < 0 or threshold > 1:
+            raise forms.ValidationError('Threshold must be between 0 and 1')
+        return threshold
+    
+    def clean_trusted_sources(self):
+        sources = self.cleaned_data['trusted_sources']
+        if sources:
+            # Clean up the input
+            sources_list = [s.strip() for s in sources.split(',') if s.strip()]
+            return ', '.join(sources_list)
+        return sources
+    
+    def clean_blocked_sources(self):
+        sources = self.cleaned_data['blocked_sources']
+        if sources:
+            sources_list = [s.strip() for s in sources.split(',') if s.strip()]
+            return ', '.join(sources_list)
+        return sources
+    
+    def clean_allowed_image_types(self):
+        types = self.cleaned_data['allowed_image_types']
+        if types:
+            types_list = [t.strip().lower() for t in types.split(',') if t.strip()]
+            return ', '.join(types_list)
+        return 'jpg,jpeg,png,gif,webp'
+    
+    
+    
 # Keep existing forms
 class CommentForm(forms.ModelForm):
     class Meta:

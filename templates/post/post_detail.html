@@ -47,7 +47,7 @@
                                 {% if post.category %}
                                 <span class="post-category">
                                     <i class="far fa-folder"></i> 
-                                    <a href="{% url 'category_view' category.slug %}">{{ post.category.name }}</a>
+                                    <a href="{% url 'category_view' post.category.slug %}">{{ post.category.name }}</a>
                                 </span>
                                 {% endif %}
                                 <span class="post-views">

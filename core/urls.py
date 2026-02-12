@@ -6,6 +6,7 @@ from . import views
 urlpatterns = [
     # Home and posts
     path('', views.home, name='home'),
+    
     path('online-news/', views.online_news, name='online_news'),
     
     # Post URLs - THIS IS WHAT'S MISSING
@@ -13,7 +14,7 @@ urlpatterns = [
     path('post/create/', views.create_post, name='create_post'),
     path('post/<int:post_id>/like/', views.like_post, name='like_post'),
     path('post/<int:post_id>/bookmark/', views.bookmark_post, name='bookmark_post'),
-    # path('post/<int:post_id>/repost/', views.repost_post, name='repost_post'),
+    path('post/<int:post_id>/repost/', views.repost_post, name='repost_post'),
     
     # Category URLs
     path('category/<slug:category_slug>/', views.category_view, name='category_view'),
@@ -32,19 +33,24 @@ urlpatterns = [
     path('comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
     
     # Admin URLs
-    path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
-    path('admin/posts/', views.admin_posts, name='admin_posts'),
-    path('admin/fetch-news/', views.fetch_news, name='fetch_news'),
+    path('dashboard/admin/', views.admin_dashboard, name='admin_dashboard'),
+    path('dashboard/posts/', views.admin_posts, name='admin_posts'),
+    path('dashboard/fetch-news/', views.fetch_news, name='fetch_news'),
+    path('dashboard/business-verification/', views.admin_business_verification, name='admin_business_verification'),
+    path('dashboard/system-settings/', views.admin_system_settings, name='admin_system_settings'),
     
     # Other URLs
     path('trending/', views.trending_posts, name='trending_posts'),
     path('bookmarks/', views.bookmarks, name='bookmarks'),
     path('search/', views.search, name='search'),
+    path('activity/', views.activity_feed, name='activity_feed'),
+    path('follow/<str:username>/', views.follow_user, name='follow_user'),
     
     # API URLs
     path('api/fetch-news/', views.api_fetch_news, name='api_fetch_news'),
     path('api/banners/', views.api_banners, name='api_banners'),
     path('api/check-new-news/', views.check_new_news, name='check_new_news'),
+    
     
     # Settings
     path('api/toggle-dark-mode/', views.toggle_dark_mode, name='toggle_dark_mode'),

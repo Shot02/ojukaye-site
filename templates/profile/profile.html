@@ -456,22 +456,33 @@
             <button class="modal-close">&times;</button>
         </div>
         <div class="modal-body">
-            {% for follower in followers %}
-            <a href="{% url 'profile_view' username=follower.username %}" class="follow-item">
-                <div class="follow-avatar">
-                    {% if follower.profile.profile_pic %}
-                    <img src="{{ follower.profile.profile_pic.url }}" alt="{{ follower.username }}">
-                    {% else %}
-                    <div class="avatar-placeholder">{{ follower.username|first|upper }}</div>
-                    {% endif %}
+            {% for follower_user in followers %}
+                {% if follower_user and follower_user.username %}
+                <a href="{% url 'profile_view' username=follower_user.username %}" class="follow-item">
+                {% else %}
+                <div class="follow-item disabled">
+                {% endif %}
+                    <div class="follow-avatar">
+                        {% if follower_user.profile.profile_pic %}
+                        <img src="{{ follower_user.profile.profile_pic.url }}" alt="{{ follower_user.username|default:'User' }}">
+                        {% else %}
+                        <div class="avatar-placeholder">{{ follower_user.username|first|upper|default:'U' }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="follow-info">
+                        <span class="follow-name">{{ follower_user.get_full_name|default:follower_user.username|default:'Unknown User' }}</span>
+                        <span class="follow-username">@{{ follower_user.username|default:'unknown' }}</span>
+                    </div>
+                {% if follower_user and follower_user.username %}
+                </a>
+                {% else %}
                 </div>
-                <div class="follow-info">
-                    <span class="follow-name">{{ follower.get_full_name|default:follower.username }}</span>
-                    <span class="follow-username">@{{ follower.username }}</span>
-                </div>
-            </a>
+                {% endif %}
             {% empty %}
-            <p class="text-muted">No followers yet</p>
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <p>No followers yet</p>
+            </div>
             {% endfor %}
         </div>
     </div>
@@ -485,21 +496,27 @@
         </div>
         <div class="modal-body">
             {% for following_user in following %}
-            <a href="{% url 'profile_view' username=following_user.username %}" class="follow-item">
-                <div class="follow-avatar">
-                    {% if following_user.profile.profile_pic %}
-                    <img src="{{ following_user.profile.profile_pic.url }}" alt="{{ following_user.username }}">
-                    {% else %}
-                    <div class="avatar-placeholder">{{ following_user.username|first|upper }}</div>
-                    {% endif %}
+                {% if following_user and following_user.username %}
+                <a href="{% url 'profile_view' username=following_user.username %}" class="follow-item">
+                {% else %}
+                <div class="follow-item disabled">
+                {% endif %}
+                    <div class="follow-avatar">
+                        {% if following_user.profile.profile_pic %}
+                        <img src="{{ following_user.profile.profile_pic.url }}" alt="{{ following_user.username|default:'User' }}">
+                        {% else %}
+                        <div class="avatar-placeholder">{{ following_user.username|first|upper|default:'U' }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="follow-info">
+                        <span class="follow-name">{{ following_user.get_full_name|default:following_user.username|default:'Unknown User' }}</span>
+                        <span class="follow-username">@{{ following_user.username|default:'unknown' }}</span>
+                    </div>
+                {% if following_user and following_user.username %}
+                </a>
+                {% else %}
                 </div>
-                <div class="follow-info">
-                    <span class="follow-name">{{ following_user.get_full_name|default:following_user.username }}</span>
-                    <span class="follow-username">@{{ following_user.username }}</span>
-                </div>
-            </a>
-            {% empty %}
-            <p class="text-muted">Not following anyone yet</p>
+                {% endif %}
             {% endfor %}
         </div>
     </div>
@@ -1880,6 +1897,44 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (label === 'Following') {
                 showFollowing();
             }
+        });
+    });
+});
+document.querySelectorAll('.follow-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const username = this.dataset.username;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch(`/follow/${username}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.followed) {
+                this.innerHTML = '<i class="fas fa-user-check"></i> Following';
+                this.classList.add('following');
+            } else {
+                this.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+                this.classList.remove('following');
+            }
+            
+            // Update follower count
+            const followerCountEl = document.querySelector('.follower-count');
+            if (followerCountEl) {
+                followerCountEl.textContent = data.followers_count;
+            }
+            
+            // Show notification
+            showNotification(data.message, data.followed ? 'success' : 'info');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred. Please try again.', 'error');
         });
     });
 });

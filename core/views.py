@@ -32,8 +32,21 @@ from django.contrib.auth import logout as auth_logout
 @staff_member_required
 def admin_dashboard(request):
     """Enhanced admin dashboard"""
+    total_posts = Post.objects.count()
+    
+    top_categories = Category.objects.annotate(
+        post_count=Count('post')
+    ).order_by('-post_count')[:5]
+    
+    # Calculate percentages in the view
+    for category in top_categories:
+        if total_posts > 0:
+            category.percentage = (category.post_count / total_posts) * 100
+        else:
+            category.percentage = 0
+    
     stats = {
-        'total_posts': Post.objects.count(),
+        'total_posts': total_posts,
         'total_users': User.objects.count(),
         'pending_verification': Post.objects.filter(
             verification_status='pending'
@@ -42,9 +55,7 @@ def admin_dashboard(request):
             verification_status='fake'
         ).count(),
         'recent_users': User.objects.order_by('-date_joined')[:10],
-        'top_categories': Category.objects.annotate(
-            post_count=Count('post')
-        ).order_by('-post_count')[:5],
+        'top_categories': top_categories,  # Now with percentage attribute
     }
     
     # Recent activities
@@ -99,219 +110,196 @@ def toggle_dark_mode(request):
     return JsonResponse({'error': 'Not authenticated'}, status=401)
 
 
+@login_required
 def home(request):
-    """Homepage - shows mixed content: approved news + user posts with banner"""
-    # Get filter from query params
-    filter_type = request.GET.get('filter', 'latest')
-    category_slug = request.GET.get('category', 'all')
-    search_query = request.GET.get('q', '')
-    
-    # Base queryset - approved news + user posts
-    approved_news = Post.objects.filter(
-        status='published',
-        is_auto_fetched=True,
-        is_approved=True
-    )
-    
+    """Personal user homepage - shows user's own posts and activities"""
+    # Get user's own posts
     user_posts = Post.objects.filter(
-        status='published',
-        is_auto_fetched=False
-    ).exclude(post_type='news')
-    
-    # Combine both querysets using union - FIXED THIS SECTION
-    all_posts = approved_news.union(user_posts) if approved_news.exists() and user_posts.exists() else (
-        approved_news if approved_news.exists() else user_posts
-    )
-    
-    # If no posts were found from either source, use empty queryset
-    if not all_posts:
-        all_posts = Post.objects.none()
-    
-    # Apply category filter
-    if category_slug != 'all':
-        try:
-            category = Category.objects.get(slug=category_slug)
-            all_posts = all_posts.filter(category=category)
-        except Category.DoesNotExist:
-            category_slug = 'all'
-    
-    # Apply search
-    if search_query:
-        all_posts = all_posts.filter(
-            Q(title__icontains=search_query) |
-            Q(content__icontains=search_query) |
-            Q(author__username__icontains=search_query) |
-            Q(external_source__icontains=search_query)
-        )
-    
-    # Apply filters
-    if filter_type == 'trending':
-        time_threshold = timezone.now() - timedelta(hours=48)
-        # Get trending posts - optimized version
-        trending_posts_qs = Post.objects.filter(
-            status='published',
-            created_at__gte=time_threshold
-        ).annotate(
-            like_count=Count('likes'),
-            comment_count_val=Count('comments', filter=Q(comments__is_active=True))
-        ).annotate(
-            engagement=models.F('like_count') + models.F('comment_count_val') * 2 + models.F('views') / 100
-        ).order_by('-engagement')[:50]
-        
-        # Get IDs and filter
-        trending_ids = trending_posts_qs.values_list('id', flat=True)
-        all_posts = all_posts.filter(id__in=trending_ids)
-    elif filter_type == 'popular':
-        all_posts = all_posts.order_by('-views', '-published_at')
-    else:  # latest
-        all_posts = all_posts.order_by('-published_at')
-    
-    banner_posts = Post.objects.filter(
-        status='published',
-        is_featured=True
-    )[:4]
-    
-    # If not enough featured posts, add trending ones
-    if banner_posts.count() < 4:
-        trending = Post.objects.filter(
-            status='published',
-            created_at__gte=timezone.now() - timedelta(days=7)
-        ).annotate(
-            like_count=Count('likes'),
-            comment_count_val=Count('comments', filter=Q(comments__is_active=True))
-        ).annotate(
-            engagement=models.F('like_count') + models.F('comment_count_val') * 2 + models.F('views') / 100
-        ).order_by('-engagement')[:4 - banner_posts.count()]
-        
-        # Convert to list to avoid property assignment issues
-        banner_posts_list = list(banner_posts)
-        for post in trending:
-            banner_posts_list.append(post)
-        banner_posts = banner_posts_list
-    
-    # Get stats for banner
-    total_users = User.objects.filter(is_active=True).count()
-    total_posts_count = Post.objects.filter(status='published').count()
-    total_comments = Comment.objects.filter(is_active=True).count()
-    
-    # Get approved news count for stats
-    approved_news_count = Post.objects.filter(
-        is_auto_fetched=True,
-        is_approved=True,
+        author=request.user,
         status='published'
+    ).order_by('-published_at')[:20]
+    
+    # Get posts from people the user follows (for feed)
+    following_ids = list(Follow.objects.filter(
+        follower=request.user
+    ).values_list('following_id', flat=True))
+    
+    # Get public posts and follower-only posts from followed users
+    feed_posts = Post.objects.none()
+    if following_ids:
+        feed_posts = Post.objects.filter(
+            status='published',
+            author_id__in=following_ids
+        ).filter(
+            Q(privacy='public') | 
+            Q(privacy='followers') |
+            Q(privacy='specific', allowed_viewers=request.user)
+        ).exclude(
+            author=request.user
+        ).order_by('-published_at')[:20]
+    
+    # Get posts the user has interacted with - COLLECT IDs FIRST
+    interacted_posts_ids = set()
+    
+    # Liked posts - get IDs first, then add to set
+    liked_posts_ids = list(Post.objects.filter(
+        likes=request.user,
+        status='published'
+    ).values_list('id', flat=True)[:20])
+    interacted_posts_ids.update(liked_posts_ids)
+    
+    # Commented posts - get IDs first, then add to set
+    commented_posts_ids = list(Post.objects.filter(
+        comments__user=request.user,
+        status='published'
+    ).distinct().values_list('id', flat=True)[:20])
+    interacted_posts_ids.update(commented_posts_ids)
+    
+    # Reposted posts - get IDs first, then add to set
+    reposted_posts_ids = list(Post.objects.filter(
+        repost_instances__user=request.user,
+        status='published'
+    ).values_list('id', flat=True)[:20])
+    interacted_posts_ids.update(reposted_posts_ids)
+    
+    # Get interacted posts with interaction flags
+    interacted_posts = []
+    if interacted_posts_ids:
+        # Convert set to list and slice to limit
+        interacted_id_list = list(interacted_posts_ids)[:20]
+        
+        posts_qs = Post.objects.filter(
+            id__in=interacted_id_list,
+            status='published'
+        ).order_by('-published_at')
+        
+        # Create a dictionary of flags for quick lookup
+        liked_set = set(liked_posts_ids)
+        commented_set = set(commented_posts_ids)
+        reposted_set = set(reposted_posts_ids)
+        
+        for post in posts_qs:
+            post_data = {
+                'post': post,
+                'user_liked': post.id in liked_set,
+                'user_commented': post.id in commented_set,
+                'user_reposted': post.id in reposted_set,
+            }
+            interacted_posts.append(post_data)
+    
+    # Get user's recent activities
+    recent_activities = UserActivity.objects.filter(
+        user=request.user
+    ).select_related('post', 'comment', 'target_user').order_by('-created_at')[:20]
+    
+    # Get suggested users (who to follow) - WITHOUT subquery LIMIT
+    suggested_users = []
+    
+    # First, get users with posts
+    users_with_posts = User.objects.exclude(
+        Q(id=request.user.id) | Q(id__in=following_ids)
+    ).filter(
+        is_active=True,
+        posts__isnull=False
+    ).annotate(
+        posts_count=Count('posts')
+    ).order_by('-posts_count')[:10]
+    
+    # Convert to list and add to suggested users
+    for user in users_with_posts:
+        if len(suggested_users) < 5:
+            suggested_users.append(user)
+    
+    # If not enough, add random active users
+    if len(suggested_users) < 5:
+        # Get IDs of already suggested users
+        suggested_ids = [u.id for u in suggested_users]
+        
+        additional_users = User.objects.exclude(
+            Q(id=request.user.id) | 
+            Q(id__in=following_ids) | 
+            Q(id__in=suggested_ids)
+        ).filter(
+            is_active=True
+        ).order_by('?')[:5 - len(suggested_users)]
+        
+        suggested_users.extend(additional_users)
+    
+    # Get user stats
+    total_posts = Post.objects.filter(author=request.user, status='published').count()
+    total_likes_given = Post.objects.filter(likes=request.user, status='published').count()
+    total_comments = Comment.objects.filter(user=request.user, is_active=True).count()
+    total_reposts = Repost.objects.filter(user=request.user).count()
+    
+    # Get followers and following counts
+    followers_count = Follow.objects.filter(following=request.user).count()
+    following_count = len(following_ids)
+    
+    # Get unread notifications count
+    unread_notifications_count = Notification.objects.filter(
+        user=request.user,
+        is_read=False
     ).count()
     
-    # Get trending posts for sidebar - optimized (use different annotation name)
-    trending_posts = Post.objects.filter(
-        status='published',
-        created_at__gte=timezone.now() - timedelta(hours=48)
-    ).annotate(
-        like_count=Count('likes'),
-        actual_comment_count=Count('comments', filter=Q(comments__is_active=True))
-    ).annotate(
-        engagement=models.F('like_count') + models.F('actual_comment_count') * 2 + models.F('views') / 100
-    ).order_by('-engagement')[:5]
-    
-    # Get categories - use cached_post_count instead of property
-    categories = Category.objects.filter(
-        parent__isnull=True
-    ).annotate(
-        actual_post_count=models.Count('post', filter=Q(post__status='published'))
-    ).filter(actual_post_count__gt=0).order_by('-actual_post_count')[:10]
-    
-    # Update cached counts for these categories
-    for category in categories:
-        category.cached_post_count = category.actual_post_count
-        # Don't save here to avoid multiple saves, just update the object
-    
-    # Pagination
-    paginator = Paginator(all_posts, 15)
-    page_number = request.GET.get('page', 1)
-    
-    try:
-        page_obj = paginator.page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
-    except PageNotAnInteger:
-        page_obj = paginator.page(1)
-        
-    sponsored_posts = Post.objects.filter(
-        is_sponsored=True,
-        status='published',
-        advertisement__is_active=True,
-        advertisement__start_date__lte=timezone.now(),
-        advertisement__end_date__gte=timezone.now()
-    ).order_by('?')[:3]  # Random 3 sponsored posts
-    
-    mixed_posts = []
-    regular_posts = list(all_posts)
-    
-    for i, post in enumerate(regular_posts):
-        mixed_posts.append(post)
-        # Insert sponsored post after every 5th regular post
-        if (i + 1) % 5 == 0 and sponsored_posts:
-            mixed_posts.append(sponsored_posts.pop(0))
-    
     context = {
-        'posts': mixed_posts,
-        'page_obj': page_obj,
-        'categories': categories,
-        'trending_posts': trending_posts,
-        'filter_type': filter_type,
-        'current_category': category_slug,
-        'search_query': search_query,
-        'banner_posts': banner_posts,
-        'total_users': total_users,
-        'total_posts': total_posts_count,
+        'user_posts': user_posts,
+        'feed_posts': feed_posts,
+        'interacted_posts': interacted_posts,
+        'recent_activities': recent_activities,
+        'suggested_users': suggested_users,
+        'total_posts': total_posts,
+        'total_likes_given': total_likes_given,
         'total_comments': total_comments,
-        'approved_news_count': approved_news_count,
-        'sponsored_posts_count': len(sponsored_posts),
-        'sponsored_posts': sponsored_posts,
-        'title': 'Home',
+        'total_reposts': total_reposts,
+        'unread_notifications_count': unread_notifications_count,
+        'following_count': following_count,
+        'followers_count': followers_count,
+        'title': f"{request.user.username}'s Home",
     }
     
     return render(request, 'index.html', context)
 
 
 def online_news(request):
-    """Page for auto-fetched online news with filters and categories"""
+    """General news page - shows only news posts, accessible to guests"""
     # Get filter from query params
     filter_type = request.GET.get('filter', 'latest')
     category_slug = request.GET.get('category', 'all')
     search_query = request.GET.get('q', '')
     
-    # DEBUG: Print to console
-    print(f"[DEBUG] online_news called. Filter: {filter_type}, Category: {category_slug}")
-    
-    # Base queryset - Show ALL auto-fetched news
+    # Base queryset - Only news posts (auto-fetched OR user-submitted news)
     news_posts = Post.objects.filter(
         status='published',
-        is_auto_fetched=True
+        post_type__in=['news', 'user_news'],  # Only news posts
+        is_auto_fetched=True  # Auto-fetched news
+    ) | Post.objects.filter(
+        status='published',
+        post_type='user_news',  # User-submitted news
+        is_approved=True  # Only approved user news
     )
     
-    print(f"[DEBUG] Found {news_posts.count()} auto-fetched posts")
-    
     # If no auto-fetched posts, try to fetch some
-    if news_posts.count() == 0:
-        print("[DEBUG] No auto-fetched posts found. Trying to fetch news...")
+    if news_posts.filter(is_auto_fetched=True).count() == 0:
         from .news_fetcher import NewsFetcher
         fetcher = NewsFetcher()
         saved_count = fetcher.fetch_all_news()
-        print(f"[DEBUG] Fetched {saved_count} new articles")
         
         # Refresh the queryset
         news_posts = Post.objects.filter(
             status='published',
+            post_type__in=['news', 'user_news'],
             is_auto_fetched=True
+        ) | Post.objects.filter(
+            status='published',
+            post_type='user_news',
+            is_approved=True
         )
-        print(f"[DEBUG] Now have {news_posts.count()} auto-fetched posts")
     
     # Apply category filter
     if category_slug != 'all':
         try:
             category = Category.objects.get(slug=category_slug)
             news_posts = news_posts.filter(category=category)
-            print(f"[DEBUG] After category filter: {news_posts.count()} posts")
         except Category.DoesNotExist:
             category_slug = 'all'
     
@@ -322,7 +310,6 @@ def online_news(request):
             Q(content__icontains=search_query) |
             Q(external_source__icontains=search_query)
         )
-        print(f"[DEBUG] After search: {news_posts.count()} posts")
     
     # Apply time filter
     if filter_type == 'today':
@@ -336,15 +323,14 @@ def online_news(request):
         news_posts = news_posts.filter(published_at__gte=month_ago)
     elif filter_type == 'trending':
         time_threshold = timezone.now() - timedelta(hours=48)
-        # Use annotation instead of calling update_engagement_score on each post
         news_posts = news_posts.filter(
             created_at__gte=time_threshold
         ).annotate(
             like_count=Count('likes'),
-            actual_comment_count=Count('comments', filter=Q(comments__is_active=True))
+            comment_count_val=Count('comments', filter=Q(comments__is_active=True))
         ).annotate(
             engagement_score_calc=models.F('like_count') + 
-                                  models.F('actual_comment_count') * 2 + 
+                                  models.F('comment_count_val') * 2 + 
                                   models.F('views') / 100
         ).order_by('-engagement_score_calc')
     elif filter_type == 'popular':
@@ -352,73 +338,107 @@ def online_news(request):
     else:  # latest
         news_posts = news_posts.order_by('-published_at')
     
-    print(f"[DEBUG] Final posts count: {news_posts.count()}")
+    # Get banner posts (featured news)
+    banner_posts = Post.objects.filter(
+        status='published',
+        is_featured=True,
+        post_type__in=['news', 'user_news']
+    )[:4]
     
-    for post in news_posts:
-        post.verification_percentage = post.verification_score * 100
+    # If not enough featured posts, add trending ones
+    if banner_posts.count() < 4:
+        trending = Post.objects.filter(
+            status='published',
+            post_type__in=['news', 'user_news'],
+            created_at__gte=timezone.now() - timedelta(days=7)
+        ).annotate(
+            like_count=Count('likes'),
+            comment_count_val=Count('comments', filter=Q(comments__is_active=True))
+        ).annotate(
+            engagement=models.F('like_count') + models.F('comment_count_val') * 2 + models.F('views') / 100
+        ).order_by('-engagement')[:4 - banner_posts.count()]
+        
+        banner_posts_list = list(banner_posts)
+        for post in trending:
+            banner_posts_list.append(post)
+        banner_posts = banner_posts_list
+    
+    # Get sponsored posts for online news page
+    sponsored_posts = Post.objects.filter(
+        is_sponsored=True,
+        status='published',
+        post_type__in=['news', 'user_news', 'sponsored'],
+        advertisement__is_active=True,
+        advertisement__start_date__lte=timezone.now(),
+        advertisement__end_date__gte=timezone.now()
+    ).order_by('?')[:3]
     
     # Pagination
     paginator = Paginator(news_posts, 20)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
     
-    # Get categories for auto-fetched news - FIXED QUERY
+    # Get categories for news posts
     categories = Category.objects.filter(
-        post__is_auto_fetched=True,
-        post__status='published'
+        post__status='published',
+        post__post_type__in=['news', 'user_news']
     ).annotate(
-        news_count=Count('post', filter=Q(post__is_auto_fetched=True, post__status='published'))
+        news_count=Count('post', filter=Q(
+            post__status='published',
+            post__post_type__in=['news', 'user_news']
+        ))
     ).filter(news_count__gt=0).distinct().order_by('-news_count')[:10]
-    
-    print(f"[DEBUG] Found {categories.count()} categories with news")
     
     # Get top sources
     top_sources = Post.objects.filter(
-        is_auto_fetched=True,
+        post_type__in=['news', 'user_news'],
         status='published'
     ).exclude(external_source__isnull=True).exclude(external_source='').values('external_source').annotate(
         count=Count('id')
     ).order_by('-count')[:10]
     
+    # Get trending news for sidebar
+    trending_news = Post.objects.filter(
+        status='published',
+        post_type__in=['news', 'user_news'],
+        created_at__gte=timezone.now() - timedelta(hours=48)
+    ).annotate(
+        like_count=Count('likes'),
+        actual_comment_count=Count('comments', filter=Q(comments__is_active=True))
+    ).annotate(
+        engagement=models.F('like_count') + models.F('actual_comment_count') * 2 + models.F('views') / 100
+    ).order_by('-engagement')[:5]
+    
     # Get breaking news (banner posts)
     breaking_news = Post.objects.filter(
         is_banner=True,
         status='published',
-        is_auto_fetched=True
+        post_type__in=['news', 'user_news']
     ).order_by('-published_at')[:3]
     
-    # Get last fetched time
-    last_post = Post.objects.filter(is_auto_fetched=True).order_by('-published_at').first()
-    last_fetched_time = last_post.published_at if last_post else None
-    
-    # Get verification stats
-    verified_count = Post.objects.filter(
-        is_auto_fetched=True,
-        verification_status='verified'
+    # Get stats
+    total_users = User.objects.filter(is_active=True).count()
+    total_news = Post.objects.filter(
+        status='published',
+        post_type__in=['news', 'user_news']
     ).count()
-    
-    pending_count = Post.objects.filter(
-        is_auto_fetched=True,
-        verification_status='pending'
-    ).count()
-    
-    checked_count = Post.objects.filter(
-        is_auto_fetched=True
-    ).exclude(verification_score=0).count()
+    total_comments = Comment.objects.filter(is_active=True).count()
     
     context = {
         'posts': page_obj,
         'page_obj': page_obj,
         'categories': categories,
         'top_sources': top_sources,
+        'trending_news': trending_news,
         'breaking_news': breaking_news,
+        'banner_posts': banner_posts,
+        'sponsored_posts': sponsored_posts,
         'filter_type': filter_type,
         'current_category': category_slug,
         'search_query': search_query,
-        'last_fetched_time': last_fetched_time,
-        'verified_count': verified_count,
-        'pending_count': pending_count,
-        'checked_count': checked_count,
+        'total_users': total_users,
+        'total_news': total_news,
+        'total_comments': total_comments,
     }
     
     return render(request, 'online_news.html', context)
@@ -579,8 +599,16 @@ def news_detail(request, post_id):
     return render(request, 'news_detail.html', context)
 
 def post_detail(request, post_id):
-    """View individual post with full content and social features"""
+    """View individual post with privacy check"""
     post = get_object_or_404(Post, id=post_id, status='published')
+    
+    # Check if user can view this post
+    if not can_view_post(request.user, post):
+        messages.error(request, 'You do not have permission to view this post')
+        if request.user.is_authenticated:
+            return redirect('home')
+        else:
+            return redirect('online_news')
     
     # Increment view count
     post.views = F('views') + 1
@@ -712,11 +740,11 @@ def post_detail(request, post_id):
 
 @login_required
 def create_post(request):
-    """Updated create post with new post types"""
+    """Create a new post with privacy settings"""
     categories = Category.objects.all()
     
     if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)
+        form = PostForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -729,6 +757,7 @@ def create_post(request):
             elif post.post_type == 'profile_post':
                 post.status = 'published'
                 post.profile_only = True
+                post.privacy = 'private'  # Profile posts are private by default
                 post.category = None  # Profile posts don't have categories
             else:  # discussion
                 post.status = 'published'
@@ -736,12 +765,18 @@ def create_post(request):
             
             post.save()
             
+            # Save many-to-many fields
+            form.save_m2m()
+            
             # Create activity
             UserActivity.objects.create(
                 user=request.user,
                 activity_type='post_created',
                 post=post,
-                details={'post_type': post.post_type}
+                details={
+                    'post_type': post.post_type,
+                    'privacy': post.privacy
+                }
             )
             
             messages.success(request, 'Post created successfully!')
@@ -752,14 +787,56 @@ def create_post(request):
             else:
                 return redirect('post_detail', post_id=post.id)
     else:
-        form = PostForm()
+        form = PostForm(user=request.user)
+        
+        # Pre-fill post type from URL parameter
+        post_type = request.GET.get('type')
+        if post_type in ['discussion', 'user_news', 'profile_post']:
+            form.fields['post_type'].initial = post_type
     
     context = {
         'form': form,
         'categories': categories,
+        'followers_count': Follow.objects.filter(following=request.user).count(),
         'title': 'Create Post',
     }
     return render(request, 'create_post.html', context)
+
+def can_view_post(user, post):
+    """Check if a user can view a specific post based on privacy settings"""
+    # Admin/staff can view everything
+    if user.is_authenticated and (user.is_staff or user.is_superuser):
+        return True
+    
+    # Author can always view their own posts
+    if user.is_authenticated and post.author == user:
+        return True
+    
+    # Check privacy settings
+    if post.privacy == 'public':
+        return True
+    
+    elif post.privacy == 'private':
+        return user.is_authenticated and post.author == user
+    
+    elif post.privacy == 'followers':
+        if not user.is_authenticated:
+            return False
+        # Check if user is following the author
+        return Follow.objects.filter(
+            follower=user,
+            following=post.author
+        ).exists()
+    
+    elif post.privacy == 'specific':
+        if not user.is_authenticated:
+            return False
+        # Check if user is in allowed viewers list
+        return post.allowed_viewers.filter(id=user.id).exists()
+    
+    return False
+
+
 
 @login_required
 def like_post(request, post_id):
@@ -879,11 +956,12 @@ def logout_view(request):
     """User logout"""
     auth_logout(request)
     messages.success(request, 'You have been logged out successfully!')
-    return redirect('index')
+    return redirect('home')
+
 
 @login_required
 def profile_view(request, username=None):
-    """Enhanced profile view with tabs and activity feed"""
+    """Enhanced profile view with follow functionality"""
     if username:
         user = get_object_or_404(User, username=username)
     else:
@@ -898,18 +976,34 @@ def profile_view(request, username=None):
     # Get user's activities
     activities = UserActivity.objects.filter(user=user).order_by('-created_at')[:50]
     
-    # Get user's posts
-    posts = Post.objects.filter(author=user, status='published').order_by('-published_at')
+    # Get user's posts - filter by privacy
+    user_posts = Post.objects.filter(
+        author=user, 
+        status='published'
+    )
+    
+    # Filter posts based on viewer permissions
+    if request.user != user:
+        filtered_posts = []
+        for post in user_posts:
+            if can_view_post(request.user, post):
+                filtered_posts.append(post.id)
+        user_posts = user_posts.filter(id__in=filtered_posts)
+    
+    user_posts = user_posts.order_by('-published_at')
     
     # Get user's comments
     comments = Comment.objects.filter(user=user, is_active=True).order_by('-created_at')
     
     # Get liked posts
-    liked_posts = Post.objects.filter(likes=user).order_by('-published_at')
+    liked_posts = Post.objects.filter(likes=user, status='published')
     
-    # Get followers and following
-    followers = User.objects.filter(followers__following=user)
-    following = User.objects.filter(following__follower=user)
+    # Get followers and following - FIXED: Get User objects directly
+    followers = User.objects.filter(followers__following=user).distinct()
+    following = User.objects.filter(following__follower=user).distinct()
+    
+    followers_count = followers.count()
+    following_count = following.count()
     
     # Check if current user is following this profile
     is_following = False
@@ -929,13 +1023,16 @@ def profile_view(request, username=None):
         'profile': profile,
         'tab': tab,
         'activities': activities,
-        'posts': posts,
+        'posts': user_posts,
         'comments': comments,
         'liked_posts': liked_posts,
-        'followers': followers,
-        'following': following,
+        'followers': followers,  # Now these are User objects
+        'following': following,  # Now these are User objects
+        'followers_count': followers_count,
+        'following_count': following_count,
         'is_following': is_following,
         'is_own_profile': user == request.user,
+        'can_view_posts': True,
     }
     
     return render(request, 'profile/profile.html', context)
@@ -999,29 +1096,74 @@ def update_cover_photo(request):
     return JsonResponse({'success': False}, status=400)
 
 @login_required
+@require_POST
 def follow_user(request, username):
-    """Follow/Unfollow a user"""
-    if request.method == 'POST':
+    """Follow/Unfollow a user with proper AJAX response"""
+    try:
         user_to_follow = get_object_or_404(User, username=username)
         
         if user_to_follow == request.user:
-            return JsonResponse({'error': 'You cannot follow yourself'}, status=400)
+            return JsonResponse({
+                'error': 'You cannot follow yourself',
+                'success': False
+            }, status=400)
         
+        # Check if already following
         follow, created = Follow.objects.get_or_create(
             follower=request.user,
             following=user_to_follow
         )
         
         if not created:
+            # Unfollow
             follow.delete()
+            followed = False
+            message = f'Unfollowed {user_to_follow.username}'
+        else:
+            # Follow
+            followed = True
+            message = f'Now following {user_to_follow.username}'
+            
+            # Create notification
+            Notification.objects.create(
+                user=user_to_follow,
+                from_user=request.user,
+                notification_type='follow',
+                message=f'{request.user.username} started following you'
+            )
+            
+            # Create activity
+            UserActivity.objects.create(
+                user=request.user,
+                activity_type='followed_user',
+                target_user=user_to_follow,
+                details={'username': user_to_follow.username}
+            )
+        
+        # Get updated counts
+        followers_count = Follow.objects.filter(following=user_to_follow).count()
+        following_count = Follow.objects.filter(follower=request.user).count()
+        
+        # Check if current user is following (for button state)
+        is_following = Follow.objects.filter(
+            follower=request.user,
+            following=user_to_follow
+        ).exists()
         
         return JsonResponse({
-            'followed': created,
-            'followers_count': Follow.objects.filter(following=user_to_follow).count(),
-            'following_count': Follow.objects.filter(follower=request.user).count()
+            'followed': followed,
+            'is_following': is_following,
+            'followers_count': followers_count,
+            'following_count': following_count,
+            'message': message,
+            'success': True
         })
-    
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+        
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'success': False
+        }, status=500)
 
 @login_required
 def activity_feed(request):
