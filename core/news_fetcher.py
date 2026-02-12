@@ -34,27 +34,30 @@ class NewsFetcher:
         """Fetch news using multiple methods with full content scraping"""
         logger.info("Starting hybrid news fetch...")
         
-        # Define all fetching methods
+        # Define all fetching methods with weights
         methods = [
             (self.fetch_google_news_scrape, 3),
-            (self.fetch_rss_feeds, 3),
+            (self.fetch_african_news, 3),
+            (self.fetch_rss_feeds, 2),
             (self.fetch_newsapi_general, 2),
-            (self.fetch_african_news, 2),
-            (self.fetch_web_scrape_detailed, 1),
+            (self.fetch_web_scrape_detailed, 2),
+            (self.fetch_reddit_news, 1),
         ]
         
         # Execute methods
         for method, weight in methods:
             try:
                 logger.info(f"Executing: {method.__name__}")
-                sleep(random.uniform(2, 4))  # Increased delay to avoid rate limiting
+                sleep(random.uniform(1, 2))  # Delay to avoid rate limiting
                 method()
+                logger.info(f"Completed: {method.__name__}")
             except Exception as e:
                 logger.error(f"Error in {method.__name__}: {e}")
                 continue
         
         # Remove duplicates
         unique_articles = self.remove_duplicates(self.articles)
+        logger.info(f"Found {len(unique_articles)} unique articles out of {len(self.articles)} total")
         
         # Save to database with full content
         saved_count = self.save_articles_with_full_content(unique_articles)
@@ -63,6 +66,268 @@ class NewsFetcher:
         logger.info(f"Articles saved: {saved_count}")
         
         return saved_count
+
+    def fetch_newsapi_general(self):
+        """Fetch news from NewsAPI.org using your API key"""
+        api_key = getattr(settings, 'NEWS_API_KEY', '')
+        
+        if not api_key:
+            logger.warning("NewsAPI key not found. Skipping NewsAPI fetch.")
+            return
+        
+        try:
+            # Multiple queries to get more news
+            queries = [
+                {'country': 'ng', 'pageSize': 100},  # Nigeria headlines
+                {'country': 'us', 'category': 'general', 'pageSize': 50},  # International
+                {'country': 'gb', 'category': 'general', 'pageSize': 50},  # UK
+                {'category': 'technology', 'country': 'ng', 'pageSize': 50},
+                {'category': 'business', 'country': 'ng', 'pageSize': 50},
+                {'category': 'sports', 'country': 'ng', 'pageSize': 50},
+                {'category': 'entertainment', 'country': 'ng', 'pageSize': 50},
+                {'category': 'health', 'country': 'ng', 'pageSize': 50},
+                {'category': 'science', 'country': 'ng', 'pageSize': 50},
+                {'q': 'Nigeria', 'pageSize': 100},  # Specific Nigeria search
+                {'q': 'Lagos', 'pageSize': 50},
+                {'q': 'Abuja', 'pageSize': 50},
+                {'q': 'Africa', 'pageSize': 100},
+            ]
+            
+            for params in queries:
+                try:
+                    url = "https://newsapi.org/v2/top-headlines"
+                    if 'q' in params:
+                        url = "https://newsapi.org/v2/everything"  # Use everything endpoint for search
+                    
+                    params['apiKey'] = api_key
+                    params['language'] = 'en'
+                    
+                    response = requests.get(url, params=params, timeout=15)
+                    if response.status_code == 200:
+                        data = response.json()
+                        articles = data.get('articles', [])
+                        
+                        for article in articles[:20]:  # Limit per query
+                            self._process_newsapi_article(article)
+                        
+                        logger.info(f"Fetched {len(articles)} articles from NewsAPI with params: {params}")
+                    else:
+                        logger.warning(f"NewsAPI returned {response.status_code}: {response.text}")
+                    
+                    sleep(0.5)  # Rate limiting
+                    
+                except Exception as e:
+                    logger.error(f"Error in NewsAPI query {params}: {e}")
+                    continue
+                    
+        except Exception as e:
+            logger.error(f"Error in NewsAPI fetch: {e}")
+        
+        # Also fetch technology news
+        try:
+            params = {
+                'category': 'technology',
+                'country': 'ng',
+                'apiKey': api_key,
+                'pageSize': 20
+            }
+            response = requests.get(url, params=params, timeout=15)
+            if response.status_code == 200:
+                data = response.json()
+                articles = data.get('articles', [])
+                
+                for article in articles[:10]:
+                    # Similar processing as above
+                    self._process_newsapi_article(article, 'Technology')
+                    
+        except Exception as e:
+            logger.error(f"Error in NewsAPI tech fetch: {e}")
+        
+        # Fetch business news
+        try:
+            params = {
+                'category': 'business',
+                'country': 'ng',
+                'apiKey': api_key,
+                'pageSize': 20
+            }
+            response = requests.get(url, params=params, timeout=15)
+            if response.status_code == 200:
+                data = response.json()
+                articles = data.get('articles', [])
+                
+                for article in articles[:10]:
+                    self._process_newsapi_article(article, 'Business')
+                    
+        except Exception as e:
+            logger.error(f"Error in NewsAPI business fetch: {e}")
+            
+        # Fetch sports news
+        try:
+            params = {
+                'category': 'sports',
+                'country': 'ng',
+                'apiKey': api_key,
+                'pageSize': 20
+            }
+            response = requests.get(url, params=params, timeout=15)
+            if response.status_code == 200:
+                data = response.json()
+                articles = data.get('articles', [])
+                
+                for article in articles[:10]:
+                    self._process_newsapi_article(article, 'Sports')
+                    
+        except Exception as e:
+            logger.error(f"Error in NewsAPI sports fetch: {e}")
+    
+    def _process_newsapi_article(self, article, default_category='News'):
+        """Helper method to process NewsAPI articles"""
+        try:
+            title = article.get('title', '').strip()
+            url = article.get('url', '')
+            
+            if not title or not url or '[Removed]' in title:
+                return
+            
+            external_id = hashlib.md5(url.encode()).hexdigest()
+            
+            if Post.objects.filter(external_id=external_id).exists():
+                return
+            
+            content = article.get('content', '') or article.get('description', '')
+            
+            # Try to extract full content
+            if not content or len(content) < 200:
+                full_content = self.extract_full_content(url)
+                if full_content:
+                    content = full_content
+            
+            if content:
+                content = self.clean_html(content)
+            
+            source_name = article.get('source', {}).get('name', 'NewsAPI')
+            image_url = article.get('urlToImage', '')
+            
+            if not image_url:
+                image_url = self.scrape_page_image(url)
+            
+            published_at = self.parse_date(article.get('publishedAt', ''))
+            
+            self.articles.append({
+                'title': title,
+                'content': content or title[:500],
+                'url': url,
+                'source': f"NewsAPI: {source_name}",
+                'image_url': image_url,
+                'published_at': published_at,
+                'category': default_category,
+                'external_id': external_id,
+                'method': 'newsapi',
+                'is_banner': self.is_trending_title(title),
+                'full_content_scraped': bool(content and len(content) > 500),
+            })
+            
+        except Exception as e:
+            logger.error(f"Error processing NewsAPI article in helper: {e}")
+    
+    def fetch_reddit_news(self):
+        """Fetch news from Reddit"""
+        try:
+            # Nigeria subreddits
+            subreddits = ['Nigeria', 'Africa', 'worldnews', 'technology', 'business']
+            
+            for subreddit in subreddits:
+                try:
+                    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=15"
+                    headers = {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                    }
+                    
+                    response = requests.get(url, headers=headers, timeout=10)
+                    if response.status_code == 200:
+                        data = response.json()
+                        posts = data.get('data', {}).get('children', [])
+                        
+                        for post in posts:
+                            try:
+                                post_data = post.get('data', {})
+                                title = post_data.get('title', '').strip()
+                                url = post_data.get('url', '')
+                                
+                                if not title or not url:
+                                    continue
+                                
+                                # Filter for Nigeria/Africa if in international subreddits
+                                if subreddit in ['worldnews', 'technology', 'business']:
+                                    title_lower = title.lower()
+                                    if not any(k in title_lower for k in ['nigeria', 'africa', 'nigerian', 'lagos', 'abuja']):
+                                        continue
+                                
+                                external_id = hashlib.md5(url.encode()).hexdigest()
+                                
+                                if Post.objects.filter(external_id=external_id).exists():
+                                    continue
+                                
+                                # Get content
+                                content = post_data.get('selftext', '') or title
+                                
+                                # Try to extract full content for external links
+                                if not post_data.get('is_self', False):
+                                    full_content = self.extract_full_content(url)
+                                    if full_content:
+                                        content = full_content
+                                
+                                # Clean content
+                                if content:
+                                    content = self.clean_html(content)
+                                
+                                # Get image
+                                image_url = ''
+                                if not post_data.get('is_self', False):
+                                    if url.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp')):
+                                        image_url = url
+                                    else:
+                                        image_url = self.scrape_page_image(url)
+                                
+                                if not image_url and 'thumbnail' in post_data:
+                                    thumb = post_data.get('thumbnail', '')
+                                    if thumb and thumb not in ['self', 'default', 'nsfw']:
+                                        image_url = thumb
+                                
+                                # Detect category
+                                category = self.detect_category_from_content(title, content)
+                                if subreddit == 'technology':
+                                    category = 'Technology'
+                                elif subreddit == 'business':
+                                    category = 'Business'
+                                
+                                self.articles.append({
+                                    'title': title,
+                                    'content': content[:5000],
+                                    'url': url,
+                                    'source': f"Reddit r/{subreddit}",
+                                    'image_url': image_url,
+                                    'published_at': timezone.now(),
+                                    'category': category or 'News',
+                                    'external_id': external_id,
+                                    'method': 'reddit',
+                                    'is_banner': self.is_trending_title(title),
+                                    'full_content_scraped': bool(content and len(content) > 500),
+                                })
+                                
+                            except Exception as e:
+                                logger.error(f"Error processing Reddit post: {e}")
+                                continue
+                                
+                    sleep(1)  # Be nice to Reddit
+                    
+                except Exception as e:
+                    logger.error(f"Error fetching from r/{subreddit}: {e}")
+                    continue
+                    
+        except Exception as e:
+            logger.error(f"Error in Reddit fetch: {e}")
 
     def fetch_african_news(self):
         """Fetch African news with full content scraping"""
@@ -78,6 +343,10 @@ class NewsFetcher:
             ('TechCabal', 'https://techcabal.com/feed/', 'Africa', 'Technology'),
             ('Africa News', 'https://www.africanews.com/feed/rss', 'Africa', 'News'),
             ('Sahara Reporters', 'https://saharareporters.com/feeds/latest/feed', 'Nigeria', 'News'),
+            ('The Guardian NG', 'https://guardian.ng/feed/', 'Nigeria', 'News'),
+            ('Tribune', 'https://tribuneonlineng.com/feed/', 'Nigeria', 'News'),
+            ('ThisDay', 'https://www.thisdaylive.com/index.php/feed/', 'Nigeria', 'News'),
+            ('The Cable', 'https://www.thecable.ng/feed', 'Nigeria', 'News'),
         ]
         
         for source_name, feed_url, country, default_category in african_sources:
@@ -85,7 +354,7 @@ class NewsFetcher:
                 logger.info(f"Fetching from {source_name}...")
                 feed = feedparser.parse(feed_url)
                 
-                for entry in feed.entries[:10]:  # Get 10 from each source
+                for entry in feed.entries[:15]:  # Get 15 from each source
                     try:
                         title = entry.get('title', '').strip()
                         if not title:
@@ -108,6 +377,8 @@ class NewsFetcher:
                         # If content extraction failed, use summary
                         if not content and 'summary' in entry:
                             content = entry.summary
+                        elif not content and 'description' in entry:
+                            content = entry.description
                         
                         # Clean HTML from content
                         if content:
@@ -127,7 +398,7 @@ class NewsFetcher:
                         
                         self.articles.append({
                             'title': title,
-                            'content': content or title[:500],  # Use full content if available
+                            'content': content or title[:500],
                             'url': url,
                             'source': source_name,
                             'image_url': image_url,
@@ -139,7 +410,7 @@ class NewsFetcher:
                             'full_content_scraped': bool(content and len(content) > 500),
                         })
                         
-                        sleep(1)  # Delay between articles
+                        sleep(0.5)  # Small delay between articles
                         
                     except Exception as e:
                         logger.error(f"Error processing article from {source_name}: {e}")
@@ -159,14 +430,27 @@ class NewsFetcher:
             soup = BeautifulSoup(response.content, 'html.parser')
             
             # Remove unwanted elements
-            for element in soup.find_all(['script', 'style', 'nav', 'footer', 'aside', 'form']):
+            for element in soup.find_all(['script', 'style', 'nav', 'footer', 'aside', 'form', 'header', 'iframe']):
                 element.decompose()
             
             # Try to find article content using common selectors
             content_selectors = [
-                'article', '.article-content', '.post-content', '.entry-content',
-                '.story-content', '.content-area', '#content', '.main-content',
-                '[itemprop="articleBody"]', '.article-body', '.article-text'
+                'article', 
+                '.article-content', 
+                '.post-content', 
+                '.entry-content',
+                '.story-content', 
+                '.content-area', 
+                '#content', 
+                '.main-content',
+                '[itemprop="articleBody"]', 
+                '.article-body', 
+                '.article-text',
+                '.post-body',
+                '.entry',
+                '.story',
+                '.news-detail',
+                '.detail-content'
             ]
             
             article_content = None
@@ -182,8 +466,18 @@ class NewsFetcher:
                 if main_content:
                     article_content = main_content
                 else:
-                    # Get all text content from body
-                    article_content = soup.find('body')
+                    # Get all paragraphs from body
+                    paragraphs = soup.find_all('p')
+                    if len(paragraphs) > 3:
+                        # Join meaningful paragraphs
+                        article_text = []
+                        for p in paragraphs[:20]:  # First 20 paragraphs
+                            text = p.get_text(strip=True)
+                            if len(text) > 50:  # Only meaningful paragraphs
+                                article_text.append(text)
+                        
+                        if article_text:
+                            return '\n\n'.join(article_text)
             
             if article_content:
                 # Extract text
@@ -191,13 +485,13 @@ class NewsFetcher:
                 
                 # Clean up text
                 lines = [line.strip() for line in text.split('\n') if line.strip()]
-                lines = [line for line in lines if len(line) > 50]  # Remove short lines
+                lines = [line for line in lines if len(line) > 40]  # Remove short lines
                 
                 # Join lines and limit to reasonable length
-                full_text = '\n\n'.join(lines[:100])  # First 100 paragraphs
+                full_text = '\n\n'.join(lines[:75])  # First 75 paragraphs
                 
-                if len(full_text) > 1000:  # Ensure we have substantial content
-                    return full_text
+                if len(full_text) > 800:  # Ensure we have substantial content
+                    return full_text[:15000]  # Limit to 15k chars
             
             return None
             
@@ -279,7 +573,7 @@ class NewsFetcher:
             # Try to find large content images
             images = soup.find_all('img')
             for img in images:
-                src = img.get('src') or img.get('data-src')
+                src = img.get('src') or img.get('data-src') or img.get('data-original')
                 if not src:
                     continue
                 
@@ -290,7 +584,7 @@ class NewsFetcher:
                 height = img.get('height')
                 
                 # Skip small images and icons
-                if any(word in classes for word in ['icon', 'logo', 'avatar', 'thumb']):
+                if any(word in classes for word in ['icon', 'logo', 'avatar', 'thumb', 'spinner']):
                     continue
                 if any(word in alt for word in ['icon', 'logo', 'avatar']):
                     continue
@@ -327,22 +621,26 @@ class NewsFetcher:
             'Business': 'https://images.unsplash.com/photo-1665686306577-32e6bfa1d1d1?w=800&q=80',
             'Health': 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800&q=80',
             'Education': 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80',
+            'Crime': 'https://images.unsplash.com/photo-1589571894960-20bbe2828d0a?w=800&q=80',
+            'News': 'https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?w=800&q=80',
         }
-        return placeholders.get(category, 'https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?w=800&q=80')
+        return placeholders.get(category, placeholders['News'])
 
     def detect_category_from_content(self, title, content):
         """Detect category from title and content"""
         text = (title + ' ' + content).lower()
         
         categories = {
-            'Politics': ['president', 'senate', 'governor', 'election', 'politic', 'minister', 'assembly', 'vote', 'campaign'],
-            'Economy': ['naira', 'dollar', 'economy', 'inflation', 'budget', 'finance', 'market', 'stock', 'investment', 'business'],
-            'Sports': ['sport', 'football', 'basketball', 'athlete', 'match', 'league', 'championship', 'goal', 'player'],
-            'Technology': ['tech', 'digital', 'app', 'software', 'internet', 'phone', 'computer', 'startup', 'ai', 'artificial intelligence'],
-            'Entertainment': ['music', 'movie', 'actor', 'actress', 'celebrity', 'nollywood', 'film', 'show', 'award'],
-            'Health': ['health', 'hospital', 'doctor', 'medical', 'disease', 'vaccine', 'treatment', 'patient'],
-            'Education': ['school', 'university', 'student', 'teacher', 'education', 'exam', 'learning', 'college'],
-            'Crime': ['crime', 'robber', 'kill', 'murder', 'police', 'arrest', 'court', 'judge', 'law'],
+            'Politics': ['president', 'senate', 'governor', 'election', 'politic', 'minister', 'assembly', 'vote', 'campaign', 'party', 'government', 'parliament', 'tinubu', 'buhari', 'obia', 'atiku', 'apc', 'pdp', 'labour'],
+            'Economy': ['naira', 'dollar', 'economy', 'inflation', 'budget', 'finance', 'market', 'stock', 'investment', 'business', 'bank', 'cbn', 'exchange', 'tax', 'revenue', 'trade', 'import', 'export'],
+            'Sports': ['sport', 'football', 'basketball', 'athlete', 'match', 'league', 'championship', 'goal', 'player', 'super eagles', 'nfl', 'nba', 'super falcons', 'world cup'],
+            'Technology': ['tech', 'digital', 'app', 'software', 'internet', 'phone', 'computer', 'startup', 'ai', 'artificial intelligence', 'data', 'cyber', '5g', 'mobile', 'innovation'],
+            'Entertainment': ['music', 'movie', 'actor', 'actress', 'celebrity', 'nollywood', 'film', 'show', 'award', 'bobrisky', 'davido', 'burna boy', 'wizkid', 'tiwa savage'],
+            'Health': ['health', 'hospital', 'doctor', 'medical', 'disease', 'vaccine', 'treatment', 'patient', 'covid', 'malaria', 'fever', 'medicine', 'clinic'],
+            'Education': ['school', 'university', 'student', 'teacher', 'education', 'exam', 'learning', 'college', 'polytechnic', 'waec', 'neco', 'jamb'],
+            'Crime': ['crime', 'robber', 'kill', 'murder', 'police', 'arrest', 'court', 'judge', 'law', 'theft', 'fraud', 'kidnap', 'bandit', 'terrorist'],
+            'Business': ['business', 'company', 'entrepreneur', 'ceo', 'startup', 'enterprise', 'corporate', 'industry', 'manufacturing'],
+            'World': ['world', 'international', 'global', 'foreign', 'united nations', 'usa', 'uk', 'china', 'russia', 'europe'],
         }
         
         for category, keywords in categories.items():
@@ -353,12 +651,16 @@ class NewsFetcher:
 
     def is_trending_title(self, title):
         """Check if title indicates trending/breaking news"""
+        if not title:
+            return False
+        
         title_lower = title.lower()
         trending_keywords = [
             'breaking', 'exclusive', 'latest', 'just in',
             'urgent', 'alert', 'crisis', 'emergency',
             'shocking', 'unbelievable', 'amazing',
-            'happening now', 'live', 'developing'
+            'happening now', 'live', 'developing',
+            'updated', 'update', 'confirmed', 'report'
         ]
         return any(keyword in title_lower for keyword in trending_keywords)
 
@@ -376,6 +678,7 @@ class NewsFetcher:
                 '%Y-%m-%d %H:%M:%S',
                 '%Y-%m-%d',
                 '%d %b %Y',
+                '%B %d, %Y',
             ]:
                 try:
                     parsed = datetime.strptime(date_str, fmt)
@@ -408,7 +711,10 @@ class NewsFetcher:
                 'Lagos+news',
                 'Abuja+news',
                 'Nigeria+sports',
-                'Nigeria+entertainment'
+                'Nigeria+entertainment',
+                'Nigeria+business',
+                'Nigeria+crime',
+                'Africa+news',
             ]
             
             for term in search_terms:
@@ -416,7 +722,7 @@ class NewsFetcher:
                     url = f"https://news.google.com/rss/search?q={term}&hl=en-NG&gl=NG&ceid=NG:en"
                     feed = feedparser.parse(url)
                     
-                    for entry in feed.entries[:15]:
+                    for entry in feed.entries[:12]:  # Limit per term
                         try:
                             title = entry.get('title', '').strip()
                             if not title:
@@ -424,7 +730,8 @@ class NewsFetcher:
                             
                             # Remove source from title (Google News format)
                             if ' - ' in title:
-                                title = title.split(' - ')[0].strip()
+                                title_parts = title.split(' - ')
+                                title = ' - '.join(title_parts[:-1]) if len(title_parts) > 1 else title_parts[0]
                             
                             url = entry.get('link', '')
                             if not url:
@@ -473,7 +780,7 @@ class NewsFetcher:
                                 'full_content_scraped': bool(content and len(content) > 500),
                             })
                             
-                            sleep(1)  # Delay between articles
+                            sleep(0.5)  # Delay between articles
                             
                         except Exception as e:
                             logger.error(f"Error processing Google News article: {e}")
@@ -493,20 +800,22 @@ class NewsFetcher:
             ('Reuters Africa', 'http://feeds.reuters.com/reuters/AFRICAfricaNews', 'Africa'),
             ('CNN Africa', 'http://rss.cnn.com/rss/edition_africa.rss', 'International'),
             ('Al Jazeera', 'https://www.aljazeera.com/xml/rss/all.xml', 'International'),
+            ('France24 Africa', 'https://www.france24.com/en/africa/rss', 'Africa'),
         ]
         
         for source_name, feed_url, default_category in rss_feeds:
             try:
                 feed = feedparser.parse(feed_url)
                 
-                for entry in feed.entries[:10]:
+                for entry in feed.entries[:15]:
                     try:
                         title = entry.get('title', '').strip()
                         
                         # Filter for Nigeria/Africa relevance
                         title_lower = title.lower()
-                        if not any(keyword in title_lower for keyword in ['nigeria', 'africa', 'nigerian', 'lagos', 'abuja']):
-                            continue
+                        if source_name in ['CNN Africa', 'Al Jazeera']:
+                            if not any(keyword in title_lower for keyword in ['nigeria', 'africa', 'nigerian', 'lagos', 'abuja']):
+                                continue
                         
                         url = entry.get('link', '')
                         if not url:
@@ -551,7 +860,7 @@ class NewsFetcher:
                             'full_content_scraped': bool(content and len(content) > 500),
                         })
                         
-                        sleep(1)  # Delay between articles
+                        sleep(0.5)  # Delay between articles
                         
                     except Exception as e:
                         logger.error(f"Error processing {source_name} article: {e}")
@@ -588,6 +897,14 @@ class NewsFetcher:
                 'title_selector': 'h2 a',
                 'link_selector': 'h2 a',
             },
+            {
+                'name': 'Daily Trust',
+                'url': 'https://dailytrust.com/category/news/',
+                'base_url': 'https://dailytrust.com',
+                'article_selector': 'article',
+                'title_selector': 'h3 a',
+                'link_selector': 'h3 a',
+            },
         ]
         
         for paper in newspapers:
@@ -598,7 +915,7 @@ class NewsFetcher:
                     continue
                 
                 soup = BeautifulSoup(response.content, 'html.parser')
-                articles = soup.select(paper['article_selector'])[:10]
+                articles = soup.select(paper['article_selector'])[:8]
                 
                 for article in articles:
                     try:
@@ -646,7 +963,7 @@ class NewsFetcher:
                             'full_content_scraped': bool(content and len(content) > 500),
                         })
                         
-                        sleep(2)  # Longer delay for web scraping
+                        sleep(1)  # Longer delay for web scraping
                         
                     except Exception as e:
                         logger.error(f"Error parsing {paper['name']} article: {e}")
@@ -686,7 +1003,7 @@ class NewsFetcher:
             is_similar = False
             for seen_title in seen_titles:
                 similarity = self.calculate_similarity(title, seen_title)
-                if similarity > 0.7:  # 70% similarity threshold
+                if similarity > 0.6:  # 60% similarity threshold
                     is_similar = True
                     break
             
@@ -737,6 +1054,10 @@ class NewsFetcher:
                 if not title or not url:
                     continue
                 
+                # Truncate title if too long
+                if len(title) > 200:
+                    title = title[:197] + '...'
+                
                 # Check if already exists by external_id or URL
                 if external_id and Post.objects.filter(external_id=external_id).exists():
                     continue
@@ -759,18 +1080,18 @@ class NewsFetcher:
                 content = article.get('content', title)
                 
                 # If content is too short, try to fetch more
-                if len(content) < 1000 and article.get('full_content_scraped', False):
-                    # Content was already scraped but is short
-                    pass
-                elif len(content) < 1000:
-                    # Try to extract more content
+                if len(content) < 800 and not article.get('full_content_scraped', False):
                     more_content = self.extract_full_content(url)
                     if more_content and len(more_content) > len(content):
                         content = more_content
                 
                 # Clean and truncate content
                 content = self.clean_html(content)
-                content = content[:10000]  # Limit to 10,000 chars
+                content = content[:15000]  # Limit to 15,000 chars
+                
+                # If content is still too short, use title with some filler
+                if len(content) < 200:
+                    content = f"{title}\n\nRead more at: {url}"
                 
                 # Get source
                 source = article.get('source', 'Unknown')[:100]
@@ -783,7 +1104,7 @@ class NewsFetcher:
                 
                 # Create the post
                 post = Post.objects.create(
-                    title=title[:200],
+                    title=title,
                     content=content,
                     post_type='news',
                     category=category,
@@ -798,10 +1119,11 @@ class NewsFetcher:
                     is_approved=True,
                     verification_status='verified',
                     meta_description=content[:160] if content else title[:160],
+                    views=random.randint(10, 100),  # Random starting views
                 )
                 
                 saved_count += 1
-                logger.info(f"✓ Saved: {title[:50]}...")
+                logger.info(f"✓ Saved ({saved_count}): {title[:50]}...")
                 
                 # Update category count
                 category.update_post_count()

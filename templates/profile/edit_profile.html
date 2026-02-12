@@ -343,7 +343,7 @@
                     <h3><i class="fas fa-cog"></i> Account</h3>
                 </div>
                 <div class="account-actions">
-                    <a href="{% url 'password_change' %}" class="account-action-item">
+                    {% comment %} <a href="{% url 'password_change' %}" class="account-action-item"> {% endcomment %}
                         <i class="fas fa-key"></i>
                         <span>Change Password</span>
                         <i class="fas fa-chevron-right"></i>
@@ -354,7 +354,7 @@
                         <i class="fas fa-chevron-right"></i>
                     </a>
                     {% if user.profile.account_type == 'individual' %}
-                    <a href="{% url 'business_registration' %}" class="account-action-item upgrade">
+                    {% comment %} <a href="{% url 'business_registration' %}" class="account-action-item upgrade"> {% endcomment %}
                         <i class="fas fa-building"></i>
                         <span>Upgrade to Business</span>
                         <i class="fas fa-chevron-right"></i>

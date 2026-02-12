@@ -19,8 +19,10 @@ urlpatterns = [
     path('category/<slug:category_slug>/', views.category_view, name='category_view'),
     
     # User URLs
+    path('profile/edit/', views.edit_profile, name='edit_profile'), 
     path('profile/<str:username>/', views.profile_view, name='profile_view'),
-    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('profile/update-pic/', views.update_profile_pic, name='update_profile_pic'),
+    path('profile/update-cover/', views.update_cover_photo, name='update_cover_photo'),
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),

@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from decimal import Decimal, InvalidOperation
 from django.db import models  
+from django.core.files.base import ContentFile
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST, require_http_methods
@@ -958,7 +959,8 @@ def edit_profile(request):
             )
             
             messages.success(request, 'Your profile has been updated!')
-            return redirect('profile')
+            # FIX THIS LINE - Change 'profile' to 'profile_view'
+            return redirect('profile_view', username=request.user.username)  # <-- FIX HERE
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = UserProfileForm(instance=request.user.profile)
@@ -970,6 +972,31 @@ def edit_profile(request):
     
     return render(request, 'profile/edit_profile.html', context)
 
+@login_required
+def update_profile_pic(request):
+    if request.method == 'POST' and request.FILES.get('profile_pic'):
+        profile = request.user.profile
+        profile.profile_pic = request.FILES['profile_pic']
+        profile.save()
+        
+        return JsonResponse({
+            'success': True,
+            'image_url': profile.profile_pic.url
+        })
+    return JsonResponse({'success': False}, status=400)
+
+@login_required
+def update_cover_photo(request):
+    if request.method == 'POST' and request.FILES.get('cover_photo'):
+        profile = request.user.profile
+        profile.cover_photo = request.FILES['cover_photo']
+        profile.save()
+        
+        return JsonResponse({
+            'success': True,
+            'image_url': profile.cover_photo.url
+        })
+    return JsonResponse({'success': False}, status=400)
 
 @login_required
 def follow_user(request, username):
