@@ -3071,8 +3071,6 @@ def admin_system_settings(request):
 @staff_member_required
 def admin_news_submissions(request):
     """Admin view for managing news submissions"""
-    from django.db.models import Q
-    
     filter_type = request.GET.get('filter', 'pending')
     search_query = request.GET.get('q', '')
     
@@ -3091,10 +3089,6 @@ def admin_news_submissions(request):
         submissions = submissions.filter(submission_status='rejected')
     elif filter_type == 'flagged':
         submissions = submissions.filter(submission_status='flagged')
-    elif filter_type == 'ai_verified':
-        submissions = submissions.filter(verification_status='verified')
-    elif filter_type == 'ai_fake':
-        submissions = submissions.filter(verification_status='fake')
     
     # Search
     if search_query:
@@ -3111,8 +3105,6 @@ def admin_news_submissions(request):
         'approved': Post.objects.filter(is_news_submission=True, submission_status='approved').count(),
         'rejected': Post.objects.filter(is_news_submission=True, submission_status='rejected').count(),
         'flagged': Post.objects.filter(is_news_submission=True, submission_status='flagged').count(),
-        'ai_verified': Post.objects.filter(is_news_submission=True, verification_status='verified').count(),
-        'ai_fake': Post.objects.filter(is_news_submission=True, verification_status='fake').count(),
     }
     
     # Pagination
@@ -3135,8 +3127,6 @@ def admin_news_submissions(request):
 @staff_member_required
 def admin_auto_fetched_news(request):
     """Admin view for managing auto-fetched news"""
-    from django.db.models import Q
-    
     filter_type = request.GET.get('filter', 'all')
     search_query = request.GET.get('q', '')
     source_filter = request.GET.get('source', '')
@@ -3213,30 +3203,51 @@ def admin_news_detail(request, post_id):
     if request.method == 'POST':
         action = request.POST.get('action')
         notes = request.POST.get('notes', '')
-        
-        from .news_verifier import NewsApprovalManager
-        approval_manager = NewsApprovalManager()
+        rejection_reason = request.POST.get('rejection_reason', '')
         
         if action == 'approve':
-            approval_manager.manual_approve(post, request.user, notes)
-            messages.success(request, f'News article "{post.title}" approved and published!')
-        elif action == 'reject':
-            reason = request.POST.get('rejection_reason', 'Not suitable for publication')
-            approval_manager.manual_reject(post, request.user, reason)
-            messages.warning(request, f'News article "{post.title}" rejected.')
-        elif action == 'flag':
-            approval_manager.flag_for_review(post, request.user)
-            messages.info(request, f'News article "{post.title}" flagged for review.')
-        elif action == 'run_ai':
-            # Re-run AI verification
-            from .news_verifier import NewsVerifier
-            verifier = NewsVerifier()
-            results = verifier.verify_news_post(post)
-            post.verification_details = results
-            post.verification_score = results['overall_score']
-            post.verification_status = results['status']
+            post.submission_status = 'approved'
+            post.status = 'published'
+            post.reviewed_by = request.user
+            post.reviewed_at = timezone.now()
+            post.review_notes = notes
             post.save()
-            messages.success(request, f'AI verification re-run. Score: {results["overall_score"]}')
+            
+            # Create notification for user
+            from .models import Notification
+            Notification.objects.create(
+                user=post.author,
+                notification_type='news_approved',
+                message=f'Your news article "{post.title}" has been approved and published!',
+                post=post
+            )
+            
+            messages.success(request, f'News article "{post.title}" approved and published!')
+            
+        elif action == 'reject':
+            post.submission_status = 'rejected'
+            post.status = 'draft'
+            post.reviewed_by = request.user
+            post.reviewed_at = timezone.now()
+            post.rejection_reason = rejection_reason or 'Not suitable for publication'
+            post.save()
+            
+            # Create notification for user
+            from .models import Notification
+            Notification.objects.create(
+                user=post.author,
+                notification_type='news_rejected',
+                message=f'Your news article "{post.title}" was rejected. Reason: {post.rejection_reason}',
+                post=post
+            )
+            
+            messages.warning(request, f'News article "{post.title}" rejected.')
+            
+        elif action == 'run_ai':
+            # Run AI verification
+            from .news_verifier import process_news_submission
+            process_news_submission(post)
+            messages.success(request, f'AI verification completed. Score: {post.verification_score}')
         
         return redirect('admin_news_submissions')
     
@@ -3248,9 +3259,11 @@ def admin_news_detail(request, post_id):
 
 
 @staff_member_required
-@require_POST
 def admin_bulk_news_action(request):
     """Bulk actions for news submissions"""
+    if request.method != 'POST':
+        return redirect('admin_news_submissions')
+    
     action = request.POST.get('bulk_action')
     post_ids = request.POST.getlist('post_ids')
     
@@ -3259,26 +3272,25 @@ def admin_bulk_news_action(request):
         return redirect('admin_news_submissions')
     
     posts = Post.objects.filter(id__in=post_ids)
-    from .news_verifier import NewsApprovalManager
-    approval_manager = NewsApprovalManager()
     
     if action == 'approve':
         for post in posts:
-            approval_manager.manual_approve(post, request.user, 'Bulk approved')
+            post.submission_status = 'approved'
+            post.status = 'published'
+            post.save()
         messages.success(request, f'{posts.count()} posts approved')
+        
     elif action == 'reject':
         for post in posts:
-            approval_manager.manual_reject(post, request.user, 'Bulk rejected')
-        messages.success(request, f'{posts.count()} posts rejected')
-    elif action == 'run_ai':
-        from .news_verifier import NewsVerifier
-        verifier = NewsVerifier()
-        for post in posts:
-            results = verifier.verify_news_post(post)
-            post.verification_details = results
-            post.verification_score = results['overall_score']
-            post.verification_status = results['status']
+            post.submission_status = 'rejected'
+            post.status = 'draft'
             post.save()
+        messages.success(request, f'{posts.count()} posts rejected')
+        
+    elif action == 'run_ai':
+        from .news_verifier import process_news_submission
+        for post in posts:
+            process_news_submission(post)
         messages.success(request, f'AI verification run for {posts.count()} posts')
     
     return redirect('admin_news_submissions')

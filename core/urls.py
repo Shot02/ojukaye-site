@@ -41,11 +41,10 @@ urlpatterns = [
     path('dashboard/admin/', views.admin_dashboard, name='admin_dashboard'),
     path('dashboard/posts/', views.admin_posts, name='admin_posts'),
     path('dashboard/fetch-news/', views.fetch_news, name='fetch_news'),
-    path('admin/news/submissions/', admin_news_submissions, name='admin_news_submissions'),
-    path('admin/news/auto-fetched/', admin_auto_fetched_news, name='admin_auto_fetched_news'),
-    path('admin/news/<int:post_id>/', admin_news_detail, name='admin_news_detail'),
-    path('admin/news/bulk-action/', admin_bulk_news_action, name='admin_bulk_news_action'),
-    # path('dashboard/business-verification/', views.admin_business_verification, name='admin_business_verification'),
+    path('admin/news/submissions/', views.admin_news_submissions, name='admin_news_submissions'),
+    path('admin/news/auto-fetched/', views.admin_auto_fetched_news, name='admin_auto_fetched_news'),
+    path('admin/news/<int:post_id>/', views.admin_news_detail, name='admin_news_detail'),
+    path('admin/news/bulk-action/', views.admin_bulk_news_action, name='admin_bulk_news_action'),
     path('dashboard/system-settings/', views.admin_system_settings, name='admin_system_settings'),
     
     # Other URLs
