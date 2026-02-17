@@ -7,7 +7,8 @@ from django.contrib import messages
 from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import timedelta
-
+from .models import Post
+from .news_verifier import process_news_submission
 # Import models
 from .models import (
     Post, Category, Comment, UserProfile, Notification, 

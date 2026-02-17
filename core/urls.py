@@ -16,6 +16,11 @@ urlpatterns = [
     path('post/<int:post_id>/bookmark/', views.bookmark_post, name='bookmark_post'),
     path('post/<int:post_id>/repost/', views.repost_post, name='repost_post'),
     
+    # following views
+    path('api/users/<str:username>/following/', views.api_following, name='api_following'),
+    path('api/users/<str:username>/followers/', views.api_followers, name='api_followers'),
+
+    
     # Category URLs
     path('category/<slug:category_slug>/', views.category_view, name='category_view'),
     
@@ -36,7 +41,11 @@ urlpatterns = [
     path('dashboard/admin/', views.admin_dashboard, name='admin_dashboard'),
     path('dashboard/posts/', views.admin_posts, name='admin_posts'),
     path('dashboard/fetch-news/', views.fetch_news, name='fetch_news'),
-    path('dashboard/business-verification/', views.admin_business_verification, name='admin_business_verification'),
+    path('admin/news/submissions/', admin_news_submissions, name='admin_news_submissions'),
+    path('admin/news/auto-fetched/', admin_auto_fetched_news, name='admin_auto_fetched_news'),
+    path('admin/news/<int:post_id>/', admin_news_detail, name='admin_news_detail'),
+    path('admin/news/bulk-action/', admin_bulk_news_action, name='admin_bulk_news_action'),
+    # path('dashboard/business-verification/', views.admin_business_verification, name='admin_business_verification'),
     path('dashboard/system-settings/', views.admin_system_settings, name='admin_system_settings'),
     
     # Other URLs
@@ -61,7 +70,7 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     
     # Settings pages
-    path('settings/', views.settings, name='settings'),
+    # path('settings/', views.settings, name='settings'),
     path('privacy/', views.privacy_policy, name='privacy'),
     path('terms/', views.terms_of_service, name='terms'),
     path('about/', views.about, name='about'),

@@ -3,9 +3,111 @@
 
 {% block title %}{{ post.title }} - Ojukaye{% endblock %}
 
+
 {% block content %}
 <div class="post-detail-page">
     <div class="post-detail-grid">
+        <!-- ===== LEFT SIDEBAR ===== -->
+        <aside class="left-sidebar">
+            <!-- Welcome Card for Guests -->
+            {% if not user.is_authenticated %}
+            <div class="sidebar-card guest-welcome">
+                <div class="guest-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <h3>Welcome to Ojukaye News</h3>
+                <p>Stay informed with the latest news from Nigeria and around the world</p>
+                <div class="guest-actions">
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-block">Sign In</a>
+                    <a href="{% url 'register' %}" class="btn btn-outline btn-block">Register</a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Categories Card -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tags" style="color: var(--primary);"></i> News Categories</h3>
+                </div>
+                <div class="categories-list">
+                    <a href="{% url 'online_news' %}?category=all" class="category-item">
+                        <span class="category-name">All News</span>
+                        <span class="category-count">{{ total_news|default:"0" }}</span>
+                    </a>
+                    {% for category in categories %}
+                    <a href="{% url 'online_news' %}?category={{ category.slug }}" class="category-item">
+                        <span class="category-name">
+                            {% if category.icon %}
+                            <i class="fas fa-{{ category.icon }}"></i>
+                            {% endif %}
+                            {{ category.name }}
+                        </span>
+                        <span class="category-count">{{ category.news_count }}</span>
+                    </a>
+                    {% empty %}
+                    <div class="empty-state small">
+                        <p>No categories yet</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Top News Sources -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-globe" style="color: var(--primary);"></i> Top Sources</h3>
+                </div>
+                <div class="sources-list">
+                    {% for source in top_sources %}
+                    <div class="source-item">
+                        <span class="source-name">{{ source.external_source|truncatechars:25 }}</span>
+                        <span class="source-count">{{ source.count }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state small">
+                        <p>No sources yet</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Trending News -->
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-fire" style="color: var(--primary);"></i> Trending News</h3>
+                </div>
+                <div class="trending-list">
+                    {% for news in trending_news %}
+                    <a href="{% url 'post_detail' news.id %}" class="trending-item">
+                        <div class="trending-rank">#{{ forloop.counter }}</div>
+                        <div class="trending-content">
+                            <h4>{{ news.title|truncatechars:50 }}</h4>
+                            <div class="trending-meta">
+                                <span><i class="fas fa-eye"></i> {{ news.views }}</span>
+                                <span><i class="fas fa-heart"></i> {{ news.likes.count }}</span>
+                                <span><i class="fas fa-comment"></i> {{ news.comments_count }}</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="empty-state small">
+                        <i class="fas fa-chart-line"></i>
+                        <p>No trending news yet</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Footer Links -->
+            <div class="sidebar-footer">
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'privacy' %}">Privacy</a>
+                <a href="{% url 'terms' %}">Terms</a>
+                <a href="{% url 'help' %}">Help</a>
+                <p class="copyright">© {% now "Y" %} Ojukaye News</p>
+            </div>
+        </aside>
+
         <!-- Main Content -->
         <main class="post-detail-main">
             <!-- Post Card -->
@@ -53,6 +155,15 @@
                                 <span class="post-views">
                                     <i class="fas fa-eye"></i> {{ post.views }} views
                                 </span>
+                                <!-- Reading Time -->
+                                <span class="reading-time">
+                                    <i class="far fa-clock"></i> 
+                                    {{ post.content|wordcount|divisibleby:200|add:1 }} min read
+                                </span>
+                                <!-- Word Count -->
+                                <span class="word-count">
+                                    {{ post.content|wordcount }} words
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -65,7 +176,7 @@
                             </button>
                             <div class="menu-dropdown" id="postMenuDropdown">
                                 {% if user == post.author %}
-                                <a href="#" onclick="editPost({{ post.id }})">
+                                <a href="{% url 'edit_post' post.id %}">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
                                 <a href="#" onclick="deletePost({{ post.id }})" style="color: var(--danger);">
@@ -87,54 +198,251 @@
                 <!-- Post Title -->
                 <h1 class="post-detail-title">{{ post.title }}</h1>
                 
-                <!-- Verification Status -->
-                {% if post.is_auto_fetched %}
-                <div class="verification-status">
-                    {% if post.verification_status == 'verified' %}
-                    <span class="status-badge verified">
-                        <i class="fas fa-check-circle"></i> Verified News
-                    </span>
-                    <span class="verification-score">Confidence: {{ post.verification_score|floatformat:0 }}%</span>
-                    {% elif post.verification_status == 'fake' %}
-                    <span class="status-badge fake">
-                        <i class="fas fa-exclamation-triangle"></i> Fake News Detected
-                    </span>
-                    {% elif post.verification_status == 'pending' %}
-                    <span class="status-badge pending">
-                        <i class="fas fa-clock"></i> Verification Pending
-                    </span>
+                <!-- External Source Attribution (for fetched news) -->
+                {% if post.external_source %}
+                <div class="source-attribution">
+                    {% with post.external_url|cut:"https://"|cut:"http://"|cut:"www."|slice:":30" as domain %}
+                    <img src="https://www.google.com/s2/favicons?domain={{ domain }}&sz=32" 
+                         alt="{{ post.external_source }}" 
+                         class="source-favicon"
+                         onerror="this.src='{% static 'images/default-favicon.png' %}'">
+                    {% endwith %}
+                    <div class="source-info">
+                        <div class="source-name">
+                            Source: 
+                            <a href="{{ post.external_url }}" target="_blank" rel="nofollow noopener">
+                                {{ post.external_source }}
+                            </a>
+                            {% if post.is_auto_fetched %}
+                            <span class="fetch-badge">
+                                <i class="fas fa-robot"></i> Auto-fetched
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="source-url">
+                            {{ post.external_url|truncatechars:60 }}
+                        </div>
+                    </div>
+                    <a href="{{ post.external_url }}" target="_blank" rel="nofollow noopener" class="btn btn-outline btn-sm">
+                        <i class="fas fa-external-link-alt"></i> Visit Source
+                    </a>
+                </div>
+                {% endif %}
+                
+                <!-- Verification Details (for fetched news) -->
+                {% if post.is_auto_fetched and verification_info %}
+                <div class="verification-details">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <!-- Verification Score Circle -->
+                        <div class="verification-score-circle" 
+                             style="background: conic-gradient(
+                                 var(--{% if verification_info.overall_color == 'success' %}success{% elif verification_info.overall_color == 'warning' %}warning{% elif verification_info.overall_color == 'danger' %}danger{% else %}primary{% endif %}) 
+                                 {{ verification_info.score_percentage|floatformat:0 }}%, 
+                                 var(--gray-200) {{ verification_info.score_percentage|floatformat:0 }}%
+                             )">
+                            <span>{{ verification_info.score_percentage|floatformat:0 }}%</span>
+                        </div>
+                        <div>
+                            <h3 style="margin-bottom: 0.25rem;">
+                                Verification Status: 
+                                <span class="status-badge {{ verification_info.status }}">
+                                    {% if verification_info.status == 'verified' %}
+                                    <i class="fas fa-check-circle"></i> Verified
+                                    {% elif verification_info.status == 'pending' %}
+                                    <i class="fas fa-clock"></i> Pending
+                                    {% elif verification_info.status == 'fake' %}
+                                    <i class="fas fa-exclamation-triangle"></i> Fake News Detected
+                                    {% endif %}
+                                </span>
+                            </h3>
+                            <p style="color: var(--gray-600); margin: 0;">
+                                Overall Assessment: 
+                                <strong style="color: var(--{% if verification_info.overall_color == 'success' %}success{% elif verification_info.overall_color == 'warning' %}warning{% elif verification_info.overall_color == 'danger' %}danger{% else %}primary{% endif %})">
+                                    {{ verification_info.overall }}
+                                </strong>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Strengths and Concerns -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        {% if verification_info.strengths %}
+                        <div>
+                            <h4 style="color: var(--success); margin-bottom: 0.5rem;">
+                                <i class="fas fa-check-circle"></i> Strengths
+                            </h4>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                                {% for strength in verification_info.strengths %}
+                                <li class="strength-item">
+                                    <i class="fas fa-check-circle"></i> {{ strength }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        
+                        {% if verification_info.concerns %}
+                        <div>
+                            <h4 style="color: var(--warning); margin-bottom: 0.5rem;">
+                                <i class="fas fa-exclamation-triangle"></i> Concerns
+                            </h4>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                                {% for concern in verification_info.concerns %}
+                                <li class="concern-item">
+                                    <i class="fas fa-exclamation-triangle"></i> {{ concern }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Fact-check Sources -->
+                    {% if verification_info.fact_check_sources %}
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+                        <h4 style="margin-bottom: 0.5rem;">
+                            <i class="fas fa-balance-scale"></i> Fact-check Sources
+                        </h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            {% for source in verification_info.fact_check_sources %}
+                            <span class="badge badge-info">{{ source }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Verification Timestamp -->
+                    {% if verification_info.verified_at %}
+                    <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-500);">
+                        Verified on: {{ verification_info.verified_at|date:"F j, Y, g:i a" }}
+                        {% if verification_info.verification_method %}
+                        • Method: {{ verification_info.verification_method }}
+                        {% endif %}
+                    </div>
                     {% endif %}
                 </div>
                 {% endif %}
                 
-                <!-- Post Content -->
-                <div class="post-detail-content">
+                <!-- Table of Contents (for long content) -->
+                {% if post.content|wordcount > 500 %}
+                <div class="table-of-contents">
+                    <div class="toc-title">
+                        <i class="fas fa-list"></i> Table of Contents
+                    </div>
+                    <ul class="toc-list" id="tableOfContents"></ul>
+                </div>
+                {% endif %}
+                
+                <!-- Full Post Content -->
+                <div class="post-detail-content" id="postContent">
                     {{ post.content|linebreaks }}
                 </div>
                 
-                <!-- Post Media -->
-                {% if post.image %}
-                <div class="post-detail-image">
-                    <img src="{{ post.image.url }}" alt="{{ post.title }}">
-                </div>
-                {% elif post.image_url %}
-                <div class="post-detail-image">
-                    <img src="{{ post.image_url }}" alt="{{ post.title }}">
+                <!-- Content Highlight if available -->
+                {% if post.meta_description and post.content|wordcount > 300 %}
+                <div class="content-highlight">
+                    <i class="fas fa-quote-left" style="color: var(--primary); opacity: 0.5; margin-right: 0.5rem;"></i>
+                    {{ post.meta_description }}
                 </div>
                 {% endif %}
                 
-                <!-- External Source -->
-                {% if post.external_source %}
-                <div class="external-source">
-                    <i class="fas fa-link"></i>
-                    <span>Source:</span>
-                    <a href="{{ post.external_url }}" target="_blank" rel="nofollow noopener">
-                        {{ post.external_source }}
-                    </a>
-                    {% if post.is_auto_fetched %}
-                    <span class="auto-fetched-badge">Auto-fetched</span>
+                <!-- Main Image (if not already in content) -->
+                {% if post.image and post.image.url not in post.content %}
+                <div class="post-detail-image">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy">
+                    {% if post.image_caption %}
+                    <figcaption class="image-caption">{{ post.image_caption }}</figcaption>
                     {% endif %}
                 </div>
+                {% elif post.image_url and post.image_url not in post.content %}
+                <div class="post-detail-image">
+                    <img src="{{ post.image_url }}" alt="{{ post.title }}" loading="lazy">
+                </div>
+                {% endif %}
+                
+                <!-- Media Gallery (Videos and Audio) -->
+                {% if processed_media.videos or processed_media.audios %}
+                <div class="media-gallery">
+                    <!-- Videos -->
+                    {% for video in processed_media.videos %}
+                    <div class="media-item {% if video.type == 'direct' %}direct-video{% endif %}">
+                        {% if video.type == 'youtube' %}
+                        <iframe src="{{ video.embed_url }}" 
+                                title="{{ video.title }}"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen
+                                loading="lazy"></iframe>
+                        <span class="media-label">YouTube</span>
+                        
+                        {% elif video.type == 'vimeo' %}
+                        <iframe src="{{ video.embed_url }}" 
+                                allow="autoplay; fullscreen; picture-in-picture" 
+                                allowfullscreen
+                                loading="lazy"></iframe>
+                        <span class="media-label">Vimeo</span>
+                        
+                        {% elif video.type == 'dailymotion' %}
+                        <iframe src="{{ video.embed_url }}" 
+                                allowfullscreen
+                                loading="lazy"></iframe>
+                        <span class="media-label">Dailymotion</span>
+                        
+                        {% elif video.type == 'facebook' %}
+                        <iframe src="{{ video.embed_url }}" 
+                                allowfullscreen="true" 
+                                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                                loading="lazy"></iframe>
+                        <span class="media-label">Facebook</span>
+                        
+                        {% elif video.type == 'instagram' %}
+                        <iframe src="{{ video.embed_url }}" 
+                                allowfullscreen
+                                loading="lazy"></iframe>
+                        <span class="media-label">Instagram</span>
+                        
+                        {% elif video.type == 'tiktok' %}
+                        <iframe src="{{ video.embed_url }}" 
+                                allowfullscreen
+                                loading="lazy"></iframe>
+                        <span class="media-label">TikTok</span>
+                        
+                        {% elif video.type == 'direct' %}
+                        <video controls poster="{{ video.poster }}" preload="metadata">
+                            <source src="{{ video.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <span class="media-label">Video</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Audio Players -->
+                {% for audio in processed_media.audios %}
+                <div class="audio-player">
+                    {% if audio.type == 'spotify' %}
+                    <iframe src="{{ audio.embed_url }}" 
+                            allow="encrypted-media"
+                            loading="lazy"></iframe>
+                    
+                    {% elif audio.type == 'soundcloud' %}
+                    <iframe src="{{ audio.embed_url }}" 
+                            allow="encrypted-media"
+                            loading="lazy"></iframe>
+                    
+                    {% elif audio.type == 'apple_podcast' %}
+                    <a href="{{ audio.embed_url }}" target="_blank" class="btn btn-outline btn-block">
+                        <i class="fas fa-podcast"></i> Listen on Apple Podcasts
+                    </a>
+                    
+                    {% elif audio.type == 'direct' %}
+                    <audio controls class="direct-audio" preload="metadata">
+                        <source src="{{ audio.url }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    {% endif %}
+                </div>
+                {% endfor %}
                 {% endif %}
                 
                 <!-- Post Stats -->
@@ -145,7 +453,7 @@
                     </div>
                     <div class="stat-item">
                         <i class="fas fa-comment"></i>
-                        <span>{{ post.comments.count }}</span> comments
+                        <span>{{ post.comments_count }}</span> comments
                     </div>
                     <div class="stat-item">
                         <i class="fas fa-retweet"></i>
@@ -154,6 +462,10 @@
                     <div class="stat-item">
                         <i class="fas fa-bookmark"></i>
                         <span>{{ post.bookmarks.count }}</span> saved
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-share-alt"></i>
+                        <span>{{ post.shares|default:0 }}</span> shares
                     </div>
                 </div>
                 
@@ -169,7 +481,7 @@
                     <a href="#comments" class="interaction-btn">
                         <i class="far fa-comment"></i>
                         <span>Comment</span>
-                        <span class="count">{{ post.comments.count }}</span>
+                        <span class="count">{{ post.comments_count }}</span>
                     </a>
                     
                     <button class="interaction-btn repost-btn" onclick="showRepostModal()">
@@ -195,7 +507,7 @@
             <!-- Comments Section -->
             <div id="comments" class="comments-section">
                 <div class="comments-header">
-                    <h2><i class="fas fa-comments"></i> Comments ({{ post.comments.count }})</h2>
+                    <h2><i class="fas fa-comments"></i> Comments ({{ post.comments_count }})</h2>
                 </div>
                 
                 <!-- Comment Form -->
@@ -208,7 +520,7 @@
                         <div class="avatar-placeholder">{{ user.username|first|upper }}</div>
                         {% endif %}
                     </div>
-                    <form method="post" action="{% url 'post_detail' post.id %}" class="comment-form">
+                    <form method="post" action="{% url 'post_detail' post.id %}" class="comment-form" id="commentForm">
                         {% csrf_token %}
                         <input type="hidden" name="parent_id" id="parentCommentId" value="">
                         <div class="comment-input-wrapper">
@@ -217,10 +529,14 @@
                                       class="comment-input" 
                                       placeholder="Add a comment..."
                                       rows="2"
+                                      maxlength="1000"
                                       required></textarea>
+                            <div class="comment-character-count">
+                                <span id="charCount">0</span>/1000
+                            </div>
                             <div class="comment-actions">
                                 <span class="reply-indicator" id="replyIndicator" style="display: none;">
-                                    Replying to <span id="replyToName"></span>
+                                    <i class="fas fa-reply"></i> Replying to <span id="replyToName"></span>
                                     <button type="button" onclick="cancelReply()">
                                         <i class="fas fa-times"></i>
                                     </button>
@@ -234,7 +550,7 @@
                 </div>
                 {% else %}
                 <div class="comment-login-prompt">
-                    <p><a href="{% url 'login' %}?next={{ request.path }}">Sign in</a> to join the discussion</p>
+                    <p><i class="fas fa-lock"></i> <a href="{% url 'login' %}?next={{ request.path }}">Sign in</a> to join the discussion</p>
                 </div>
                 {% endif %}
                 
@@ -256,7 +572,9 @@
                                         <a href="{% url 'profile_view' username=comment.user.username %}" class="comment-author-name">
                                             {{ comment.user.get_full_name|default:comment.user.username }}
                                         </a>
-                                        <span class="comment-time">{{ comment.created_at|timesince }} ago</span>
+                                        <span class="comment-time" title="{{ comment.created_at }}">
+                                            <i class="far fa-clock"></i> {{ comment.created_at|timesince }} ago
+                                        </span>
                                     </div>
                                 </div>
                                 
@@ -268,7 +586,7 @@
                             </div>
                             
                             <div class="comment-body">
-                                <p>{{ comment.content }}</p>
+                                <p>{{ comment.content|linebreaksbr }}</p>
                             </div>
                             
                             <div class="comment-footer">
@@ -313,7 +631,7 @@
                                 </div>
                                 
                                 <div class="comment-body">
-                                    <p><span class="reply-to">@{{ comment.user.username }}</span> {{ reply.content }}</p>
+                                    <p><span class="reply-to">@{{ comment.user.username }}</span> {{ reply.content|linebreaksbr }}</p>
                                 </div>
                                 
                                 <div class="comment-footer">
@@ -339,13 +657,13 @@
                     {% endfor %}
                     
                     <!-- Load More Comments -->
-                    {% if comments.count > 12 %}
+                    {% if comments.count < post.comments_count %}
                     <div class="load-more-comments-container">
                         <button id="loadMoreComments" class="btn btn-outline btn-block" 
                                 data-post-id="{{ post.id }}" 
                                 data-offset="12"
-                                data-total="{{ post.comments.count }}">
-                            Load More Comments
+                                data-total="{{ post.comments_count }}">
+                            <i class="fas fa-chevron-down"></i> Load More Comments
                         </button>
                     </div>
                     {% endif %}
@@ -353,12 +671,12 @@
             </div>
         </main>
         
-        <!-- Sidebar -->
+        <!-- Right Sidebar -->
         <aside class="post-detail-sidebar">
             <!-- Author Card -->
             <div class="sidebar-card author-card">
                 <div class="author-card-header">
-                    <h3>About the Author</h3>
+                    <h3><i class="fas fa-user"></i> About the Author</h3>
                 </div>
                 <div class="author-card-body">
                     <div class="author-card-avatar">
@@ -389,6 +707,10 @@
                                 <span class="stat-value">{{ post.author.followers.count }}</span>
                                 <span class="stat-label">Followers</span>
                             </div>
+                            <div class="stat">
+                                <span class="stat-value">{{ post.author.following.count }}</span>
+                                <span class="stat-label">Following</span>
+                            </div>
                         </div>
                         
                         {% if user.is_authenticated and user != post.author %}
@@ -398,6 +720,10 @@
                             {% if is_following %}Following{% else %}Follow{% endif %}
                         </button>
                         {% endif %}
+                        
+                        <a href="{% url 'profile_view' username=post.author.username %}" class="btn btn-outline btn-sm btn-block" style="margin-top: 0.5rem;">
+                            <i class="fas fa-user"></i> View Profile
+                        </a>
                     </div>
                 </div>
             </div>
@@ -425,6 +751,7 @@
                             <div class="related-post-meta">
                                 <span><i class="fas fa-eye"></i> {{ related.views }}</span>
                                 <span><i class="fas fa-heart"></i> {{ related.likes.count }}</span>
+                                <span><i class="fas fa-clock"></i> {{ related.published_at|timesince }} ago</span>
                             </div>
                         </div>
                     </a>
@@ -437,7 +764,7 @@
             {% if trending_in_category %}
             <div class="sidebar-card">
                 <div class="card-header">
-                    <h3><i class="fas fa-fire"></i> Trending in {{ post.category.name }}</h3>
+                    <h3><i class="fas fa-fire"></i> Trending in {{ post.category.name|default:"News" }}</h3>
                 </div>
                 <div class="trending-list">
                     {% for trending in trending_in_category %}
@@ -448,9 +775,26 @@
                             <div class="trending-meta">
                                 <span><i class="fas fa-eye"></i> {{ trending.views }}</span>
                                 <span><i class="fas fa-heart"></i> {{ trending.likes.count }}</span>
+                                {% if trending.has_media %}
+                                <span><i class="fas fa-play-circle"></i> Media</span>
+                                {% endif %}
                             </div>
                         </div>
                     </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Tags/Keywords -->
+            {% if post.tags %}
+            <div class="sidebar-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tags"></i> Tags</h3>
+                </div>
+                <div class="tags-cloud">
+                    {% for tag in post.tags.all %}
+                    <a href="{% url 'online_news' %}?q={{ tag.name }}" class="tag">{{ tag.name }}</a>
                     {% endfor %}
                 </div>
             </div>
@@ -475,7 +819,11 @@
                               id="repostContent" 
                               class="form-control" 
                               rows="3"
+                              maxlength="500"
                               placeholder="What do you think about this post?"></textarea>
+                    <small class="form-text text-muted">
+                        <span id="repostCharCount">0</span>/500 characters
+                    </small>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline" onclick="closeRepostModal()">Cancel</button>
@@ -488,7 +836,52 @@
     </div>
 </div>
 
+<!-- Share Modal -->
+<div id="shareModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-share-alt"></i> Share</h3>
+            <button class="modal-close" onclick="closeShareModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="share-options">
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                   target="_blank" 
+                   class="share-option facebook">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title|urlencode }}" 
+                   target="_blank" 
+                   class="share-option twitter">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ post.title|urlencode }}" 
+                   target="_blank" 
+                   class="share-option linkedin">
+                    <i class="fab fa-linkedin-in"></i> LinkedIn
+                </a>
+                <a href="https://wa.me/?text={{ post.title|urlencode }}%20{{ request.build_absolute_uri }}" 
+                   target="_blank" 
+                   class="share-option whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="mailto:?subject={{ post.title|urlencode }}&body=Check out this post: {{ request.build_absolute_uri }}" 
+                   class="share-option email">
+                    <i class="fas fa-envelope"></i> Email
+                </a>
+                <button onclick="copyToClipboard()" class="share-option copy">
+                    <i class="fas fa-link"></i> Copy Link
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    // Global variables
+    const csrfToken = '{{ csrf_token }}';
+    const isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+    
     // Like Post
     document.querySelectorAll('.like-btn').forEach(btn => {
         btn.addEventListener('click', async function(e) {
@@ -502,7 +895,7 @@
             const postId = this.dataset.postId;
             
             try {
-                const response = await fetch(`/post/${postId}/like/`, {
+                const response = await fetch(`/like/${postId}/`, {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': csrfToken,
@@ -521,14 +914,17 @@
                         this.classList.add('liked');
                         this.querySelector('i').classList.remove('far');
                         this.querySelector('i').classList.add('fas');
+                        showNotification('Post liked!', 'success');
                     } else {
                         this.classList.remove('liked');
                         this.querySelector('i').classList.remove('fas');
                         this.querySelector('i').classList.add('far');
+                        showNotification('Post unliked', 'info');
                     }
                 }
             } catch (error) {
                 console.error('Error liking post:', error);
+                showNotification('Error liking post', 'error');
             }
         });
     });
@@ -546,7 +942,7 @@
             const postId = this.dataset.postId;
             
             try {
-                const response = await fetch(`/post/${postId}/bookmark/`, {
+                const response = await fetch(`/bookmark/${postId}/`, {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': csrfToken,
@@ -571,28 +967,16 @@
                 }
             } catch (error) {
                 console.error('Error bookmarking post:', error);
+                showNotification('Error bookmarking post', 'error');
             }
         });
     });
     
-    // Share Post
+    // Share functionality
     document.querySelectorAll('.share-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            const title = this.dataset.title;
-            const url = this.dataset.url;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: title,
-                    url: url
-                }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    showNotification('Link copied to clipboard!', 'success');
-                });
-            }
+            showShareModal();
         });
     });
     
@@ -624,14 +1008,17 @@
                         this.classList.remove('btn-primary');
                         this.classList.add('btn-outline');
                         this.innerHTML = '<i class="fas fa-user-check"></i> Following';
+                        showNotification(`You are now following @${username}`, 'success');
                     } else {
                         this.classList.remove('btn-outline');
                         this.classList.add('btn-primary');
                         this.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+                        showNotification(`You unfollowed @${username}`, 'info');
                     }
                 }
             } catch (error) {
                 console.error('Error following user:', error);
+                showNotification('Error following user', 'error');
             }
         });
     });
@@ -642,6 +1029,7 @@
         document.getElementById('replyToName').textContent = '@' + username;
         document.getElementById('replyIndicator').style.display = 'flex';
         document.getElementById('commentContent').focus();
+        document.getElementById('commentContent').placeholder = `Reply to @${username}...`;
     }
     
     function cancelReply() {
@@ -667,6 +1055,10 @@
         .then(data => {
             const btn = document.querySelector(`#comment-${commentId} .comment-like-btn .like-count`);
             if (btn) btn.textContent = data.like_count;
+        })
+        .catch(error => {
+            console.error('Error liking comment:', error);
+            showNotification('Error liking comment', 'error');
         });
     }
     
@@ -683,7 +1075,13 @@
                 if (response.ok) {
                     document.getElementById(`comment-${commentId}`).remove();
                     showNotification('Comment deleted successfully', 'success');
+                } else {
+                    showNotification('Error deleting comment', 'error');
                 }
+            })
+            .catch(error => {
+                console.error('Error deleting comment:', error);
+                showNotification('Error deleting comment', 'error');
             });
         }
     }
@@ -691,20 +1089,39 @@
     // Repost Modal
     function showRepostModal() {
         document.getElementById('repostModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
     }
     
     function closeRepostModal() {
         document.getElementById('repostModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Share Modal
+    function showShareModal() {
+        document.getElementById('shareModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeShareModal() {
+        document.getElementById('shareModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Copy to clipboard
+    function copyToClipboard() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showNotification('Link copied to clipboard!', 'success');
+            closeShareModal();
+        }).catch(() => {
+            showNotification('Failed to copy link', 'error');
+        });
     }
     
     // Post Management
     function togglePostMenu() {
         const menu = document.getElementById('postMenuDropdown');
         menu.classList.toggle('active');
-    }
-    
-    function editPost(postId) {
-        window.location.href = `/post/${postId}/edit/`;
     }
     
     function deletePost(postId) {
@@ -720,7 +1137,13 @@
                 if (response.ok) {
                     window.location.href = '/';
                     showNotification('Post deleted successfully', 'success');
+                } else {
+                    showNotification('Error deleting post', 'error');
                 }
+            })
+            .catch(error => {
+                console.error('Error deleting post:', error);
+                showNotification('Error deleting post', 'error');
             });
         }
     }
@@ -732,7 +1155,7 @@
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', async function() {
                 const postId = this.dataset.postId;
-                const offset = this.dataset.offset;
+                const offset = parseInt(this.dataset.offset);
                 
                 try {
                     const response = await fetch(`/post/${postId}/comments/?offset=${offset}`, {
@@ -745,451 +1168,115 @@
                         const html = await response.text();
                         document.querySelector('.comments-list').insertAdjacentHTML('beforeend', html);
                         
-                        this.dataset.offset = parseInt(offset) + 12;
+                        const newOffset = offset + 12;
+                        this.dataset.offset = newOffset;
                         
-                        if (parseInt(this.dataset.offset) >= parseInt(this.dataset.total)) {
+                        if (newOffset >= parseInt(this.dataset.total)) {
                             this.style.display = 'none';
                         }
                     }
                 } catch (error) {
                     console.error('Error loading more comments:', error);
+                    showNotification('Error loading more comments', 'error');
                 }
             });
         }
+        
+        // Character counter for comments
+        const commentInput = document.getElementById('commentContent');
+        const charCount = document.getElementById('charCount');
+        
+        if (commentInput && charCount) {
+            commentInput.addEventListener('input', function() {
+                charCount.textContent = this.value.length;
+            });
+        }
+        
+        // Character counter for repost
+        const repostInput = document.getElementById('repostContent');
+        const repostCharCount = document.getElementById('repostCharCount');
+        
+        if (repostInput && repostCharCount) {
+            repostInput.addEventListener('input', function() {
+                repostCharCount.textContent = this.value.length;
+            });
+        }
+        
+        // Generate Table of Contents
+        generateTableOfContents();
     });
     
-    // Close dropdowns when clicking outside
+    // Generate Table of Contents from headings
+    function generateTableOfContents() {
+        const content = document.getElementById('postContent');
+        const toc = document.getElementById('tableOfContents');
+        
+        if (!content || !toc) return;
+        
+        const headings = content.querySelectorAll('h2, h3, h4');
+        
+        if (headings.length === 0) return;
+        
+        headings.forEach((heading, index) => {
+            // Add ID to heading if not present
+            if (!heading.id) {
+                heading.id = `heading-${index}`;
+            }
+            
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = `#${heading.id}`;
+            a.textContent = heading.textContent;
+            
+            // Indent based on heading level
+            a.style.paddingLeft = `${(parseInt(heading.tagName[1]) - 2) * 20}px`;
+            
+            li.appendChild(a);
+            toc.appendChild(li);
+        });
+    }
+    
+    // Close modals when clicking outside
     window.addEventListener('click', function(e) {
+        const repostModal = document.getElementById('repostModal');
+        const shareModal = document.getElementById('shareModal');
+        
+        if (e.target === repostModal) {
+            closeRepostModal();
+        }
+        
+        if (e.target === shareModal) {
+            closeShareModal();
+        }
+        
+        // Close dropdowns
         if (!e.target.closest('.post-admin-menu')) {
             const menu = document.getElementById('postMenuDropdown');
             if (menu) menu.classList.remove('active');
         }
     });
+    
+    // Show notification
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
 </script>
-
-<style>
-    .post-detail-page {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-    }
-    
-    .post-detail-grid {
-        display: grid;
-        grid-template-columns: 1fr 300px;
-        gap: 2rem;
-    }
-    
-    .post-detail-card {
-        background: var(--white);
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--gray-200);
-        padding: 2rem;
-        margin-bottom: 2rem;
-    }
-    
-    .post-detail-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-    }
-    
-    .post-author {
-        display: flex;
-        gap: 1rem;
-    }
-    
-    .author-avatar.large {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .author-avatar.large img,
-    .author-avatar.large .avatar-placeholder {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-    }
-    
-    .post-type-badge {
-        background: var(--gray-200);
-        color: var(--gray-700);
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: var(--radius-full);
-        margin-left: 0.5rem;
-    }
-    
-    .post-detail-title {
-        font-size: 2.25rem;
-        font-weight: 800;
-        line-height: 1.3;
-        margin-bottom: 1rem;
-        color: var(--gray-900);
-    }
-    
-    .verification-status {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem;
-        background: var(--gray-50);
-        border-radius: var(--radius-md);
-        margin-bottom: 1.5rem;
-    }
-    
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375rem;
-        padding: 0.25rem 0.75rem;
-        border-radius: var(--radius-full);
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    
-    .status-badge.verified {
-        background: #dcfce7;
-        color: #166534;
-    }
-    
-    .status-badge.fake {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-    
-    .status-badge.pending {
-        background: #fef3c7;
-        color: #92400e;
-    }
-    
-    .post-detail-content {
-        font-size: 1.125rem;
-        line-height: 1.8;
-        color: var(--gray-800);
-        margin-bottom: 2rem;
-    }
-    
-    .post-detail-image {
-        margin: 1.5rem 0;
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-    }
-    
-    .post-detail-image img {
-        width: 100%;
-        max-height: 600px;
-        object-fit: cover;
-    }
-    
-    .external-source {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 1rem;
-        background: var(--gray-50);
-        border-radius: var(--radius-md);
-        margin: 1.5rem 0;
-    }
-    
-    .auto-fetched-badge {
-        background: var(--primary-soft);
-        color: var(--primary-dark);
-        padding: 0.125rem 0.5rem;
-        border-radius: var(--radius-full);
-        font-size: 0.75rem;
-        margin-left: 0.5rem;
-    }
-    
-    .post-detail-stats {
-        display: flex;
-        gap: 2rem;
-        padding: 1.5rem 0;
-        border-top: 1px solid var(--gray-200);
-        border-bottom: 1px solid var(--gray-200);
-        margin: 1.5rem 0;
-    }
-    
-    .post-interaction-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-        margin-top: 1.5rem;
-    }
-    
-    .interaction-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.625rem 1rem;
-        background: none;
-        border: none;
-        color: var(--gray-700);
-        font-size: 0.9375rem;
-        font-weight: 500;
-        cursor: pointer;
-        border-radius: var(--radius-full);
-        transition: all 0.2s;
-    }
-    
-    .interaction-btn:hover {
-        background: var(--gray-100);
-        color: var(--primary);
-    }
-    
-    .interaction-btn.liked {
-        color: #ef4444;
-    }
-    
-    .interaction-btn.bookmarked {
-        color: var(--primary);
-    }
-    
-    .comments-section {
-        background: var(--white);
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--gray-200);
-        padding: 2rem;
-    }
-    
-    .comments-header {
-        margin-bottom: 1.5rem;
-    }
-    
-    .comments-header h2 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .comment-form-wrapper {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-    
-    .comment-form {
-        flex: 1;
-    }
-    
-    .comment-input {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1.5px solid var(--gray-200);
-        border-radius: var(--radius-lg);
-        resize: vertical;
-        transition: all 0.2s;
-    }
-    
-    .comment-input:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-    }
-    
-    .comment-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 0.5rem;
-    }
-    
-    .reply-indicator {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.875rem;
-        color: var(--primary);
-        background: var(--primary-soft);
-        padding: 0.375rem 0.75rem;
-        border-radius: var(--radius-full);
-    }
-    
-    .reply-indicator button {
-        background: none;
-        border: none;
-        color: var(--primary);
-        cursor: pointer;
-    }
-    
-    .comment-thread {
-        margin-bottom: 1.5rem;
-    }
-    
-    .comment-card {
-        padding: 1.5rem;
-        background: var(--gray-50);
-        border-radius: var(--radius-lg);
-        margin-bottom: 0.5rem;
-    }
-    
-    .comment-card.reply {
-        margin-left: 3rem;
-        background: var(--white);
-        border: 1px solid var(--gray-200);
-    }
-    
-    .comment-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        margin-bottom: 0.75rem;
-    }
-    
-    .comment-author {
-        display: flex;
-        gap: 0.75rem;
-    }
-    
-    .comment-avatar.small {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .reply-to {
-        color: var(--primary);
-        font-weight: 600;
-        margin-right: 0.5rem;
-    }
-    
-    .comment-footer {
-        display: flex;
-        gap: 1rem;
-        margin-top: 0.75rem;
-    }
-    
-    .comment-like-btn,
-    .comment-reply-btn {
-        background: none;
-        border: none;
-        color: var(--gray-600);
-        font-size: 0.75rem;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
-    
-    .comment-like-btn:hover,
-    .comment-reply-btn:hover {
-        color: var(--primary);
-    }
-    
-    .author-card {
-        margin-bottom: 1.5rem;
-    }
-    
-    .author-card-body {
-        padding: 1.5rem;
-        text-align: center;
-    }
-    
-    .author-card-avatar {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 1rem;
-    }
-    
-    .author-card-avatar img,
-    .author-card-avatar .avatar-placeholder {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-    }
-    
-    .related-posts-list {
-        padding: 0.5rem;
-    }
-    
-    .related-post-item {
-        display: flex;
-        gap: 0.75rem;
-        padding: 0.75rem;
-        text-decoration: none;
-        border-radius: var(--radius-md);
-        transition: background 0.2s;
-    }
-    
-    .related-post-item:hover {
-        background: var(--gray-100);
-    }
-    
-    .related-post-image {
-        width: 80px;
-        height: 60px;
-        border-radius: var(--radius-md);
-        overflow: hidden;
-        flex-shrink: 0;
-    }
-    
-    .related-post-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .related-post-content {
-        flex: 1;
-    }
-    
-    .related-post-content h4 {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--gray-900);
-        margin-bottom: 0.25rem;
-    }
-    
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        z-index: 1000;
-    }
-    
-    .modal-content {
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-        max-width: 500px;
-        margin: 0 auto;
-        background: white;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-xl);
-    }
-    
-    @media (max-width: 992px) {
-        .post-detail-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .post-detail-sidebar {
-            display: none;
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .post-detail-title {
-            font-size: 1.75rem;
-        }
-        
-        .post-interaction-bar {
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .interaction-btn {
-            flex: 1;
-            justify-content: center;
-        }
-        
-        .comment-card.reply {
-            margin-left: 1rem;
-        }
-    }
-</style>
 {% endblock %}

@@ -200,15 +200,12 @@ SITE_DESCRIPTION = 'Nigeria\'s Modern News & Discussion Platform'
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
     }
 }
 
-# Cache timeouts
+# Keep your existing CACHE_TIMEOUTS
 CACHE_TIMEOUTS = {
     'banners': 300,  # 5 minutes
     'categories': 3600,  # 1 hour

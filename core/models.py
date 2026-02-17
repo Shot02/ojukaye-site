@@ -44,6 +44,24 @@ class Category(models.Model):
 class SystemSettings(models.Model):
     """System-wide settings controlled by admin"""
     
+    
+    # News verification settings
+    auto_approve_threshold = models.FloatField(default=0.8, help_text="AI score threshold for auto-approval (0.0-1.0)")
+    require_manual_review_for_fake = models.BooleanField(default=True, help_text="Require manual review for posts marked as fake")
+    notify_admin_on_submission = models.BooleanField(default=True)
+    notify_user_on_approval = models.BooleanField(default=True)
+    
+    # Source reputation settings
+    trusted_sources = models.TextField(blank=True, help_text="Comma-separated list of trusted news sources")
+    blocked_sources = models.TextField(blank=True, help_text="Comma-separated list of blocked sources")
+    
+    def get_trusted_sources_list(self):
+        return [s.strip() for s in self.trusted_sources.split(',') if s.strip()]
+    
+    def get_blocked_sources_list(self):
+        return [s.strip() for s in self.blocked_sources.split(',') if s.strip()]
+
+
     # AI & Automation Settings
     auto_verify_news = models.BooleanField(
         default=True,
@@ -472,6 +490,65 @@ class Post(models.Model):
     )
     
     
+    # News approval fields
+    is_news_submission = models.BooleanField(default=False)
+    submission_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending Review'),
+            ('approved', 'Approved'),
+            ('rejected', 'Rejected'),
+            ('flagged', 'Flagged for Review'),
+        ],
+        default='pending'
+    )
+    reviewed_by = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='reviewed_news'
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    review_notes = models.TextField(blank=True)
+    rejection_reason = models.TextField(blank=True)
+    
+    # Auto-fetched news fields
+    is_auto_fetched = models.BooleanField(default=False)
+    external_source = models.CharField(max_length=255, blank=True)
+    external_url = models.URLField(blank=True)
+    original_published_at = models.DateTimeField(null=True, blank=True)
+    
+    # AI verification fields
+    verification_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('unverified', 'Unverified'),
+            ('pending', 'Pending AI Verification'),
+            ('verified', 'Verified'),
+            ('fake', 'Fake News'),
+            ('questionable', 'Questionable'),
+        ],
+        default='unverified'
+    )
+    verification_score = models.FloatField(default=0.0)
+    verification_details = models.JSONField(default=dict, blank=True)
+    verification_method = models.CharField(max_length=50, default='manual')
+    
+    # Source reputation
+    source_reputation_score = models.FloatField(default=0.0)
+    source_trust_level = models.CharField(
+        max_length=20,
+        choices=[
+            ('unknown', 'Unknown'),
+            ('trusted', 'Trusted'),
+            ('questionable', 'Questionable'),
+            ('untrusted', 'Untrusted'),
+        ],
+        default='unknown'
+    )
+    
+    
     
     title = models.CharField(max_length=500)
     content = models.TextField()
@@ -501,6 +578,11 @@ class Post(models.Model):
     banner_priority = models.IntegerField(default=0)  # Higher number = higher priority
     banner_clicks = models.PositiveIntegerField(default=0)
     banner_impressions = models.PositiveIntegerField(default=0)
+    
+    # New media fields
+    video_urls = models.JSONField(null=True, blank=True, default=list, help_text="List of video URLs found in the article")
+    audio_urls = models.JSONField(null=True, blank=True, default=list, help_text="List of audio URLs found in the article")
+    has_media = models.BooleanField(default=False, help_text="Whether post contains video/audio")
     
     # Add group relation
     group = models.ForeignKey('Group', on_delete=models.SET_NULL, null=True, blank=True, related_name='group_posts')
