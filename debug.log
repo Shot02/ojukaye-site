@@ -5996,3 +5996,250 @@ C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py changed, reloading.
 Watching for file changes with StatReloader
 C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\models.py changed, reloading.
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\admin.py changed, reloading.
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\admin.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 59427
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /media/profile_pics/logo.jpeg HTTP/1.1" 200 3824
+"GET /media/profile_pics/Nigeria_Coat_Of_Arm_Sticker.jpg HTTP/1.1" 200 51359
+"GET / HTTP/1.1" 200 59427
+"GET /online-news/ HTTP/1.1" 200 184068
+"GET /post/create/ HTTP/1.1" 200 38504
+"GET / HTTP/1.1" 200 59427
+"GET /profile/Silver/ HTTP/1.1" 200 31783
+"GET /media/cover_photos/Nigeria_Coat_Of_Arm_Sticker.jpg HTTP/1.1" 200 51359
+"GET / HTTP/1.1" 200 59427
+"GET /online-news/ HTTP/1.1" 200 184068
+"GET /post/create/ HTTP/1.1" 200 38504
+"GET /online-news/ HTTP/1.1" 200 184068
+"GET /post/1974/ HTTP/1.1" 200 64710
+"GET / HTTP/1.1" 200 59427
+"GET /profile/sha/ HTTP/1.1" 200 30814
+"GET / HTTP/1.1" 200 59427
+"GET /online-news/ HTTP/1.1" 200 184068
+"GET /post/1976/ HTTP/1.1" 200 64628
+"GET / HTTP/1.1" 200 59427
+"GET /online-news/ HTTP/1.1" 200 184068
+"GET /online-news/?verification=verified&filter=latest&category=all HTTP/1.1" 200 190115
+"GET /online-news/?verification=pending&filter=latest&category=all HTTP/1.1" 200 184074
+"GET /online-news/?verification=pending&filter=latest&category=all HTTP/1.1" 200 184074
+"GET /online-news/?verification=verified&filter=latest&category=all HTTP/1.1" 200 190115
+"GET /api/check-new-news/?last_check=2026-02-17T12%3A56%3A12.223Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T12%3A57%3A12.416Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T12%3A58%3A12.404Z HTTP/1.1" 200 80
+"GET /online-news/?has_media=any&filter=latest&category=all HTTP/1.1" 200 49842
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /online-news/?filter=latest HTTP/1.1" 200 184068
+"GET /api/check-new-news/?last_check=2026-02-17T12%3A59%3A36.415Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A00%3A36.402Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A01%3A36.407Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A02%3A36.400Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A03%3A36.415Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A04%3A36.402Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A06%3A14.420Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A07%3A14.424Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A08%3A14.425Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A09%3A14.423Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A10%3A14.411Z HTTP/1.1" 200 80
+"GET /api/check-new-news/?last_check=2026-02-17T13%3A11%3A14.420Z HTTP/1.1" 200 80
+Watching for file changes with StatReloader
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+"GET / HTTP/1.1" 302 0
+"GET /login/ HTTP/1.1" 200 12481
+"GET / HTTP/1.1" 302 0
+"GET /login/ HTTP/1.1" 200 12481
+"GET /static/css/styles.css HTTP/1.1" 200 189320
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+"GET /static/js/main.js HTTP/1.1" 200 40731
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+"POST /login/ HTTP/1.1" 302 0
+"GET /dashboard/admin/ HTTP/1.1" 200 43708
+"GET /media/profile_pics/logo.jpeg HTTP/1.1" 200 3824
+"GET /admin/core/post/ HTTP/1.1" 200 130326
+"GET /static/admin/css/base.css HTTP/1.1" 200 23100
+"GET /static/admin/css/dark_mode.css HTTP/1.1" 200 3538
+"GET /static/admin/css/responsive.css HTTP/1.1" 200 16273
+"GET /static/admin/css/changelists.css HTTP/1.1" 200 7501
+"GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 200 347
+"GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+"GET /static/admin/js/actions.js HTTP/1.1" 200 8076
+"GET /static/admin/js/core.js HTTP/1.1" 200 6208
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1531
+"GET /static/admin/js/urlify.js HTTP/1.1" 200 7887
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 9777
+"GET /static/admin/img/search.svg HTTP/1.1" 200 607
+"GET /static/admin/img/icon-no.svg HTTP/1.1" 200 645
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 285314
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 325171
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 928
+"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 200 593
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 593
+"GET /static/admin/js/filters.js HTTP/1.1" 200 978
+"GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+"GET /admin/core/userprofile/ HTTP/1.1" 200 20213
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+Not Found: /admin/news/submissions/
+"GET /admin/news/submissions/ HTTP/1.1" 404 9011
+"GET /dashboard/system-settings/ HTTP/1.1" 200 43204
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+"GET /dashboard/admin/ HTTP/1.1" 200 43219
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+Not Found: /admin/news/auto-fetched/
+"GET /admin/news/auto-fetched/ HTTP/1.1" 404 9014
+Internal Server Error: /dashboard/fetch-news/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py", line 2484, in fetch_news
+    saved_count = fetcher.fetch_all_news()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NewsFetcher' object has no attribute 'fetch_all_news'
+"GET /dashboard/fetch-news/ HTTP/1.1" 500 77070
+"GET /admin/core/post/ HTTP/1.1" 200 130326
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"POST /admin/core/post/ HTTP/1.1" 302 0
+"GET /admin/core/post/ HTTP/1.1" 200 130519
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/img/icon-alert.svg HTTP/1.1" 200 684
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+"POST /admin/core/post/ HTTP/1.1" 302 0
+"GET /admin/core/post/ HTTP/1.1" 200 130834
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/img/icon-info.svg HTTP/1.1" 200 630
+"POST /admin/core/post/ HTTP/1.1" 302 0
+"GET /admin/core/post/ HTTP/1.1" 200 130832
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+"POST /admin/core/post/ HTTP/1.1" 302 0
+"GET /admin/core/post/ HTTP/1.1" 200 130816
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/ HTTP/1.1" 200 15000
+"GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 978
+"GET / HTTP/1.1" 200 69514
+"GET /media/cover_photos/Nigeria_Coat_Of_Arm_Sticker.jpg HTTP/1.1" 200 51359
+"GET /media/profile_pics/Nigeria_Coat_Of_Arm_Sticker.jpg HTTP/1.1" 200 51359
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1.jpg HTTP/1.1" 200 24614
+"GET /profile/Samuel/ HTTP/1.1" 200 40761
+"GET /media/cover_photos/4a0944c9-01ba-4184-8d5b-6015ad627a96.jpg HTTP/1.1" 200 47196
+"GET /profile/edit/ HTTP/1.1" 200 45488
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+"GET /dashboard/admin/ HTTP/1.1" 200 43219
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+Not Found: /admin/news/auto-fetched/
+"GET /admin/news/auto-fetched/ HTTP/1.1" 404 9014
+Internal Server Error: /dashboard/fetch-news/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py", line 2484, in fetch_news
+    saved_count = fetcher.fetch_all_news()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NewsFetcher' object has no attribute 'fetch_all_news'
+"GET /dashboard/fetch-news/ HTTP/1.1" 500 77070
+"GET /admin/ HTTP/1.1" 200 15000
+"GET /admin/core/userprofile/ HTTP/1.1" 200 20213
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+"GET /admin/core/post/ HTTP/1.1" 200 130686
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/core/systemsettings/ HTTP/1.1" 200 15683
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/core/useractivity/ HTTP/1.1" 200 22846
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/img/sorting-icons.svg HTTP/1.1" 200 1761
+"GET /admin/core/userprofile/ HTTP/1.1" 200 20213
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/core/useractivity/ HTTP/1.1" 200 22846
+"GET /admin/core/systemsettings/ HTTP/1.1" 200 15683
+"GET /admin/core/post/ HTTP/1.1" 200 130686
+"GET /admin/core/category/add/ HTTP/1.1" 200 20637
+"GET /static/admin/css/forms.css HTTP/1.1" 200 8788
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/js/prepopulate_init.js HTTP/1.1" 200 586
+"GET /static/admin/css/widgets.css HTTP/1.1" 200 11811
+"GET /static/admin/js/change_form.js HTTP/1.1" 200 606
+"GET /dashboard/system-settings/ HTTP/1.1" 200 43204
+Not Found: /admin/news/submissions/
+"GET /admin/news/submissions/ HTTP/1.1" 404 9011
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 14826
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 19076
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /dashboard/admin/ HTTP/1.1" 200 46840
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 19076
+"GET /dashboard/news/submissions/ HTTP/1.1" 200 25454
+"GET /dashboard/news/submissions/?filter=ai_verified HTTP/1.1" 200 25458
+"GET /dashboard/news/submissions/?filter=pending HTTP/1.1" 200 25454
+"GET /dashboard/admin/ HTTP/1.1" 200 46840
+"GET /dashboard/news/auto-fetched/ HTTP/1.1" 200 118134
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 19076
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 19076
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 19076
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 19076
+"GET /dashboard/news/auto-fetched/ HTTP/1.1" 200 130050
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /dashboard/admin/ HTTP/1.1" 200 46840
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 19076
+Not Found: /api/notification-counts/
+"GET /api/notification-counts/ HTTP/1.1" 404 19076
+Not Found: /debtors/
+"GET /debtors/ HTTP/1.1" 404 19028
+"GET /admin/core/post/ HTTP/1.1" 200 130686
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"POST /admin/core/post/ HTTP/1.1" 302 0
+"GET /admin/core/post/ HTTP/1.1" 200 130834
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/core/post/ HTTP/1.1" 200 130691
+"GET /dashboard/news/submissions/ HTTP/1.1" 200 25454
+"GET /dashboard/admin/ HTTP/1.1" 200 46840

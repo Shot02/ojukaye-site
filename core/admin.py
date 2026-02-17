@@ -1,4 +1,3 @@
-# core/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import path, reverse
@@ -7,6 +6,7 @@ from django.contrib import messages
 from django.db.models import Count, Q, Sum
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib.auth.models import User
 from .models import (
     Post, Category, Comment, UserProfile, Notification, 
     Advertisement, Group, GroupMember, SystemSettings, AdAnalytics,
@@ -19,7 +19,10 @@ from .news_verifier import process_news_submission, verify_existing_posts
 @admin.register(SystemSettings)
 class SystemSettingsAdmin(admin.ModelAdmin):
     """System Settings Admin"""
-    list_display = ['site_name', 'maintenance_mode', 'auto_approve_threshold', 'updated_at']
+    # Fixed: Use actual field names from SystemSettings model
+    list_display = ['id', 'maintenance_mode', 'auto_approve_threshold', 'updated_at']
+    # Or if you want to show site name, you'll need to add it to the model first
+    # For now, we'll use id or other existing fields
     
     def has_add_permission(self, request):
         # Only allow one instance
@@ -708,7 +711,9 @@ class UserActivityAdmin(admin.ModelAdmin):
     list_display = ['user', 'activity_type', 'post_title', 'created_at']
     list_filter = ['activity_type', 'created_at']
     search_fields = ['user__username', 'details']
-    readonly_fields = ['user', 'activity_type', 'post', 'comment', 'target_user', 'details', 'ip_address', 'user_agent']
+    # Fixed: Removed ip_address and user_agent from readonly_fields
+    # since they don't exist in the model
+    readonly_fields = ['user', 'activity_type', 'post', 'comment', 'target_user', 'details', 'created_at']
     
     def post_title(self, obj):
         return obj.post.title[:50] if obj.post else '-'

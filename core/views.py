@@ -2971,43 +2971,137 @@ def update_cover_photo(request):
 
 @staff_member_required
 def admin_dashboard(request):
-    """Enhanced admin dashboard"""
+    """Enhanced admin dashboard with accurate statistics"""
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    now = timezone.now()
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    # Calculate statistics
     total_posts = Post.objects.count()
+    total_users = User.objects.count()
     
-    top_categories = Category.objects.annotate(
-        post_count=Count('post')
-    ).order_by('-post_count')[:5]
+    # News statistics
+    pending_news = Post.objects.filter(
+        is_news_submission=True,
+        submission_status='pending'
+    ).count()
     
-    # Calculate percentages in the view
-    for category in top_categories:
-        if total_posts > 0:
-            category.percentage = (category.post_count / total_posts) * 100
-        else:
-            category.percentage = 0
+    auto_fetched = Post.objects.filter(is_auto_fetched=True).count()
+    auto_fetched_today = Post.objects.filter(
+        is_auto_fetched=True,
+        created_at__gte=today_start
+    ).count()
     
-    stats = {
-        'total_posts': total_posts,
-        'total_users': User.objects.count(),
-        'pending_verification': Post.objects.filter(
-            verification_status='pending'
-        ).count(),
-        'fake_news': Post.objects.filter(
-            verification_status='fake'
-        ).count(),
-        'recent_users': User.objects.order_by('-date_joined')[:10],
-        'top_categories': top_categories,
-    }
+    # Verification statistics
+    verified_posts = Post.objects.filter(verification_status='verified').count()
+    fake_posts = Post.objects.filter(verification_status='fake').count()
+    pending_verification = Post.objects.filter(verification_status='pending').count()
+    
+    # Posts today
+    posts_today = Post.objects.filter(created_at__gte=today_start).count()
+    users_today = User.objects.filter(date_joined__gte=today_start).count()
+    
+    # Calculate percentages
+    verified_percent = 0
+    fake_percent = 0
+    if total_posts > 0:
+        verified_percent = round((verified_posts / total_posts) * 100, 1)
+        fake_percent = round((fake_posts / total_posts) * 100, 1)
     
     # Recent activities
     recent_activities = UserActivity.objects.select_related(
         'user', 'post', 'target_user'
-    ).order_by('-created_at')[:20]
+    ).order_by('-created_at')[:15]
+    
+    # Pending submissions (latest 5)
+    pending_submissions = Post.objects.filter(
+        is_news_submission=True,
+        submission_status='pending'
+    ).select_related('author').order_by('-created_at')[:5]
+    
+    # Recent users (latest 5)
+    recent_users = User.objects.filter(is_active=True).order_by('-date_joined')[:5]
+    
+    # Top categories
+    top_categories = Category.objects.annotate(
+        post_count=Count('post', filter=Q(post__status='published'))
+    ).filter(post_count__gt=0).order_by('-post_count')[:5]
+    
+    # Calculate percentages for categories
+    for category in top_categories:
+        if total_posts > 0:
+            category.percentage = round((category.post_count / total_posts) * 100, 1)
+        else:
+            category.percentage = 0
+    
+    # Additional stats
+    total_comments = Comment.objects.filter(is_active=True).count()
+    total_groups = Group.objects.count()
+    total_ads = Advertisement.objects.count()
+    total_categories = Category.objects.count()
+    
+    # News with media
+    news_with_media = Post.objects.filter(
+        post_type__in=['news', 'user_news'],
+        has_media=True
+    ).count()
+    
+    # User submitted news
+    user_submitted = Post.objects.filter(
+        is_news_submission=True
+    ).count()
+    
+    # Unique news sources
+    news_sources = Post.objects.filter(
+        is_auto_fetched=True
+    ).exclude(
+        external_source__isnull=True
+    ).exclude(
+        external_source=''
+    ).values('external_source').distinct().count()
+    
+    # Average verification score
+    avg_verification_score = Post.objects.filter(
+        verification_score__isnull=False
+    ).aggregate(avg=Avg('verification_score'))['avg'] or 0
     
     trending_topics = get_trending_topics()
     
     context = {
-        'stats': stats,
+        # Main stats
+        'total_posts': total_posts,
+        'total_users': total_users,
+        'pending_news': pending_news,
+        'auto_fetched': auto_fetched,
+        'verified_posts': verified_posts,
+        'fake_posts': fake_posts,
+        
+        # Additional stats
+        'posts_today': posts_today,
+        'users_today': users_today,
+        'verified_percent': verified_percent,
+        'fake_percent': fake_percent,
+        'auto_fetched_today': auto_fetched_today,
+        'pending_verification': pending_verification,
+        
+        # Lists
         'recent_activities': recent_activities,
+        'pending_submissions': pending_submissions,
+        'recent_users': recent_users,
+        'top_categories': top_categories,
+        
+        # System stats
+        'total_comments': total_comments,
+        'total_groups': total_groups,
+        'total_ads': total_ads,
+        'total_categories': total_categories,
+        'news_with_media': news_with_media,
+        'user_submitted': user_submitted,
+        'news_sources': news_sources,
+        'avg_verification_score': avg_verification_score,
+        
         'trending_topics': trending_topics,
         'is_admin': True,
         'title': 'Admin Dashboard',
@@ -3023,13 +3117,65 @@ def admin_posts(request):
     
     # Filtering
     filter_type = request.GET.get('filter', 'all')
+    search_query = request.GET.get('q', '')
+    category_id = request.GET.get('category', '')
+    post_type = request.GET.get('type', '')
+    verification = request.GET.get('verification', '')
+    
     if filter_type == 'pending':
         posts = posts.filter(verification_status='pending')
+    elif filter_type == 'verified':
+        posts = posts.filter(verification_status='verified')
     elif filter_type == 'fake':
         posts = posts.filter(verification_status='fake')
-    elif filter_type == 'unverified':
-        posts = posts.filter(is_verified=False)
+    elif filter_type == 'news':
+        posts = posts.filter(post_type__in=['news', 'user_news'])
+    elif filter_type == 'discussion':
+        posts = posts.filter(post_type='discussion')
+    elif filter_type == 'profile':
+        posts = posts.filter(post_type='profile_post')
+    elif filter_type == 'featured':
+        posts = posts.filter(is_featured=True)
+    elif filter_type == 'sponsored':
+        posts = posts.filter(is_sponsored=True)
+    elif filter_type == 'banner':
+        posts = posts.filter(is_banner=True)
     
+    # Category filter
+    if category_id and category_id.isdigit():
+        posts = posts.filter(category_id=int(category_id))
+    
+    # Post type filter
+    if post_type:
+        posts = posts.filter(post_type=post_type)
+    
+    # Verification filter
+    if verification:
+        posts = posts.filter(verification_status=verification)
+    
+    # Search
+    if search_query:
+        posts = posts.filter(
+            Q(title__icontains=search_query) |
+            Q(content__icontains=search_query) |
+            Q(author__username__icontains=search_query) |
+            Q(external_source__icontains=search_query)
+        )
+    
+    # Statistics
+    stats = {
+        'total_posts': Post.objects.count(),
+        'verified_posts': Post.objects.filter(verification_status='verified').count(),
+        'pending_verification': Post.objects.filter(verification_status='pending').count(),
+        'fake_posts': Post.objects.filter(verification_status='fake').count(),
+        'news_posts': Post.objects.filter(post_type__in=['news', 'user_news']).count(),
+        'featured_posts': Post.objects.filter(is_featured=True).count(),
+    }
+    
+    # Categories for filter dropdown
+    categories = Category.objects.all()
+    
+    # Pagination
     paginator = Paginator(posts, 50)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
@@ -3039,7 +3185,13 @@ def admin_posts(request):
     context = {
         'posts': page_obj,
         'page_obj': page_obj,
+        'stats': stats,
         'filter_type': filter_type,
+        'search_query': search_query,
+        'selected_category': category_id,
+        'post_type': post_type,
+        'verification': verification,
+        'categories': categories,
         'trending_topics': trending_topics,
         'is_admin': True,
         'title': 'Manage Posts',
@@ -3064,9 +3216,11 @@ def admin_system_settings(request):
     
     context = {
         'form': form,
+        'settings': system_settings,
         'title': 'System Settings',
     }
     return render(request, 'admin/system_settings.html', context)
+
 
 @staff_member_required
 def admin_news_submissions(request):
