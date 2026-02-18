@@ -37,7 +37,7 @@ from .forms import (
     BusinessProfileForm, GroupForm, SystemSettingsForm, 
     RegistrationForm, AdSubmissionForm
 )
-from .news_fetcher import NewsFetcher
+from .news_fetcher_unified import UnifiedNewsFetcher
 from .news_verifier import EnhancedNewsVerifier
 
 logger = logging.getLogger(__name__)
@@ -375,6 +375,24 @@ def api_track_ad_click(request, ad_id):
 @login_required
 def home(request):
     """Personal user homepage - shows user's own posts and activities"""
+
+    # Debug: Check if posts exist
+    all_user_posts = Post.objects.filter(
+        author=request.user,
+        status='published'
+    ).count()
+    print(f"DEBUG: User has {all_user_posts} published posts")
+    
+    # Get user's own posts
+    user_posts = Post.objects.filter(
+        author=request.user,
+        status='published'
+    ).select_related('category').order_by('-published_at')[:20]
+    
+    # Debug: Print each post
+    for post in user_posts:
+        print(f"DEBUG: Post ID: {post.id}, Title: {post.title}, Status: {post.status}")
+        
     # Get user's own posts
     user_posts = Post.objects.filter(
         author=request.user,
@@ -916,18 +934,18 @@ def get_news_sidebar_data():
         now = timezone.now()
         week_ago = now - timedelta(days=7)
         
-        # Categories with counts
+        # FIXED: Changed all 'post' to 'posts'
         categories = Category.objects.filter(
-            post__status='published',
-            post__post_type__in=['news', 'user_news']
+            posts__status='published',  # ← FIXED: 'posts' not 'post'
+            posts__post_type__in=['news', 'user_news']
         ).annotate(
-            news_count=Count('post', filter=Q(
-                post__status='published',
-                post__post_type__in=['news', 'user_news']
+            news_count=Count('posts', filter=Q(  # ← FIXED: 'posts' not 'post'
+                posts__status='published',  # ← FIXED: 'posts' not 'post'
+                posts__post_type__in=['news', 'user_news']
             ))
         ).filter(news_count__gt=0).distinct().order_by('-news_count')[:10]
         
-        # Top sources
+        # Top sources (this is correct - querying Post directly)
         top_sources = Post.objects.filter(
             post_type__in=['news', 'user_news'],
             status='published'
@@ -944,7 +962,7 @@ def get_news_sidebar_data():
             if source['external_source']:
                 source['external_source'] = source['external_source'].replace('NewsAPI:', '').replace('NewsAPI', '').strip()
         
-        # Trending news
+        # Trending news (this is correct - querying Post directly)
         trending_news = Post.objects.filter(
             status='published',
             post_type__in=['news', 'user_news'],
@@ -956,14 +974,14 @@ def get_news_sidebar_data():
             engagement=F('like_count') + F('comment_count') * 2 + F('views') / 100
         ).order_by('-engagement')[:5]
         
-        # Breaking news
+        # Breaking news (this is correct - querying Post directly)
         breaking_news = Post.objects.filter(
             is_banner=True,
             status='published',
             post_type__in=['news', 'user_news']
         ).order_by('-published_at')[:3]
         
-        # Stats
+        # Stats (all correct - querying Post directly)
         total_users = User.objects.filter(is_active=True).count()
         total_news = Post.objects.filter(
             status='published',
@@ -1069,8 +1087,10 @@ def get_trending_topics(limit=5):
 
 # ==================== POST DETAIL PAGE (ENHANCED) ====================
 
+# ==================== POST DETAIL PAGE (FULL CONTENT & MEDIA READY) ====================
+
 def post_detail(request, post_id):
-    """Enhanced post detail with full content, media, and verification details"""
+    """Enhanced post detail with full content, video/audio playback, and media support"""
     post = get_object_or_404(Post, id=post_id, status='published')
     
     # Check permissions
@@ -1082,8 +1102,15 @@ def post_detail(request, post_id):
     Post.objects.filter(id=post_id).update(views=F('views') + 1)
     post.refresh_from_db()
     
-    # Process media for display
-    processed_media = process_post_media(post)
+    # CRITICAL: Process media for display - this extracts all videos and audio
+    processed_media = process_post_media_for_display(post)
+    
+    # Debug: Print what media we found
+    print(f"DEBUG - Post {post_id}: {post.title}")
+    print(f"DEBUG - Has video_urls: {bool(post.video_urls)}")
+    print(f"DEBUG - Has audio_urls: {bool(post.audio_urls)}")
+    print(f"DEBUG - Processed videos: {len(processed_media['videos'])}")
+    print(f"DEBUG - Processed audios: {len(processed_media['audios'])}")
     
     # Get full verification details
     verification_info = get_verification_info(post)
@@ -1111,12 +1138,12 @@ def post_detail(request, post_id):
     
     # Get categories for sidebar
     categories = Category.objects.filter(
-        post__status='published',
-        post__post_type__in=['news', 'user_news']
+        posts__status='published',
+        posts__post_type__in=['news', 'user_news']
     ).annotate(
-        news_count=Count('post', filter=Q(
-            post__status='published',
-            post__post_type__in=['news', 'user_news']
+        news_count=Count('posts', filter=Q(
+            posts__status='published',
+            posts__post_type__in=['news', 'user_news']
         ))
     ).filter(news_count__gt=0).distinct().order_by('-news_count')[:10]
     
@@ -1148,9 +1175,16 @@ def post_detail(request, post_id):
     if request.method == 'POST' and request.user.is_authenticated:
         return handle_comment_submission(request, post)
     
+    # Format the full content properly
+    full_content = post.content
+    if full_content:
+        # Ensure content is properly formatted for display
+        full_content = full_content.replace('\n', '<br>')
+    
     context = {
         'post': post,
-        'processed_media': processed_media,
+        'full_content': full_content,  # Pass full content separately
+        'processed_media': processed_media,  # This contains all videos/audio ready for display
         'verification_info': verification_info,
         'comments': comments,
         'related_posts': related_content['related_posts'],
@@ -1171,6 +1205,337 @@ def post_detail(request, post_id):
     }
     
     return render(request, 'post/post_detail.html', context)
+
+
+def process_post_media_for_display(post):
+    """
+    CRITICAL FUNCTION: Process post media for actual display in templates
+    This ensures videos and audio are properly formatted for playback
+    """
+    media = {
+        'videos': [],
+        'audios': [],
+        'images': [],
+        'has_video': False,
+        'has_audio': False,
+        'video_count': 0,
+        'audio_count': 0,
+    }
+    
+    # Process video URLs - this is where the magic happens
+    if post.video_urls:
+        try:
+            # Parse video URLs (could be string or list)
+            video_urls = post.video_urls
+            if isinstance(video_urls, str):
+                if video_urls.startswith('[') or video_urls.startswith('{'):
+                    video_urls = json.loads(video_urls)
+                else:
+                    # Simple string URL
+                    video_urls = [{'url': video_urls, 'type': 'direct'}]
+            
+            # Handle different formats
+            if isinstance(video_urls, list):
+                for video in video_urls:
+                    if isinstance(video, dict):
+                        video_url = video.get('url', '')
+                        video_type = video.get('type', '')
+                    else:
+                        video_url = str(video)
+                        video_type = self._detect_video_type(video_url)
+                    
+                    if video_url:
+                        processed_video = self._process_video_for_display(video_url, video_type, video if isinstance(video, dict) else {})
+                        if processed_video:
+                            media['videos'].append(processed_video)
+            
+            media['video_count'] = len(media['videos'])
+            media['has_video'] = media['video_count'] > 0
+            
+        except Exception as e:
+            print(f"DEBUG - Error processing video URLs: {e}")
+            logger.error(f"Error processing video URLs: {e}")
+    
+    # Process audio URLs
+    if post.audio_urls:
+        try:
+            # Parse audio URLs
+            audio_urls = post.audio_urls
+            if isinstance(audio_urls, str):
+                if audio_urls.startswith('[') or audio_urls.startswith('{'):
+                    audio_urls = json.loads(audio_urls)
+                else:
+                    audio_urls = [{'url': audio_urls, 'type': 'direct'}]
+            
+            if isinstance(audio_urls, list):
+                for audio in audio_urls:
+                    if isinstance(audio, dict):
+                        audio_url = audio.get('url', '')
+                        audio_type = audio.get('type', '')
+                    else:
+                        audio_url = str(audio)
+                        audio_type = self._detect_audio_type(audio_url)
+                    
+                    if audio_url:
+                        processed_audio = self._process_audio_for_display(audio_url, audio_type, audio if isinstance(audio, dict) else {})
+                        if processed_audio:
+                            media['audios'].append(processed_audio)
+            
+            media['audio_count'] = len(media['audios'])
+            media['has_audio'] = media['audio_count'] > 0
+            
+        except Exception as e:
+            print(f"DEBUG - Error processing audio URLs: {e}")
+            logger.error(f"Error processing audio URLs: {e}")
+    
+    # Process images
+    if post.image:
+        media['images'].append({
+            'url': post.image.url,
+            'type': 'local',
+            'title': post.title
+        })
+    
+    if post.image_url and not post.image:
+        media['images'].append({
+            'url': post.image_url,
+            'type': 'remote',
+            'title': post.title
+        })
+    
+    return media
+
+
+def _detect_video_type(url):
+    """Detect video platform from URL"""
+    url_lower = url.lower()
+    if 'youtube.com' in url_lower or 'youtu.be' in url_lower:
+        return 'youtube'
+    elif 'vimeo.com' in url_lower:
+        return 'vimeo'
+    elif 'dailymotion.com' in url_lower:
+        return 'dailymotion'
+    elif 'facebook.com' in url_lower:
+        return 'facebook'
+    elif 'instagram.com' in url_lower:
+        return 'instagram'
+    elif 'tiktok.com' in url_lower:
+        return 'tiktok'
+    elif url_lower.endswith(('.mp4', '.webm', '.ogg', '.mov')):
+        return 'direct'
+    else:
+        return 'embed'
+
+
+def _detect_audio_type(url):
+    """Detect audio platform from URL"""
+    url_lower = url.lower()
+    if 'spotify.com' in url_lower:
+        return 'spotify'
+    elif 'soundcloud.com' in url_lower:
+        return 'soundcloud'
+    elif 'apple.com' in url_lower and 'podcast' in url_lower:
+        return 'apple_podcast'
+    elif url_lower.endswith(('.mp3', '.m4a', '.ogg', '.wav', '.aac')):
+        return 'direct'
+    else:
+        return 'embed'
+
+
+def _process_video_for_display(url, video_type, metadata=None):
+    """Process video for display - generate proper embed URLs"""
+    if not url:
+        return None
+    
+    metadata = metadata or {}
+    
+    # YouTube
+    if video_type == 'youtube':
+        video_id = extract_youtube_id(url)
+        if video_id:
+            return {
+                'type': 'youtube',
+                'embed_url': f'https://www.youtube.com/embed/{video_id}',
+                'watch_url': f'https://www.youtube.com/watch?v={video_id}',
+                'thumbnail': f'https://img.youtube.com/vi/{video_id}/maxresdefault.jpg',
+                'id': video_id,
+                'title': metadata.get('title', 'YouTube Video'),
+                'platform': 'YouTube'
+            }
+    
+    # Vimeo
+    elif video_type == 'vimeo':
+        video_id = extract_vimeo_id(url)
+        if video_id:
+            return {
+                'type': 'vimeo',
+                'embed_url': f'https://player.vimeo.com/video/{video_id}',
+                'watch_url': url,
+                'id': video_id,
+                'title': metadata.get('title', 'Vimeo Video'),
+                'platform': 'Vimeo'
+            }
+    
+    # Dailymotion
+    elif video_type == 'dailymotion':
+        video_id = extract_dailymotion_id(url)
+        if video_id:
+            return {
+                'type': 'dailymotion',
+                'embed_url': f'https://www.dailymotion.com/embed/video/{video_id}',
+                'watch_url': url,
+                'id': video_id,
+                'platform': 'Dailymotion'
+            }
+    
+    # Facebook
+    elif video_type == 'facebook':
+        return {
+            'type': 'facebook',
+            'embed_url': f'https://www.facebook.com/plugins/video.php?href={url}',
+            'watch_url': url,
+            'platform': 'Facebook'
+        }
+    
+    # Instagram
+    elif video_type == 'instagram':
+        return {
+            'type': 'instagram',
+            'embed_url': f'{url}embed/',
+            'watch_url': url,
+            'platform': 'Instagram'
+        }
+    
+    # TikTok
+    elif video_type == 'tiktok':
+        return {
+            'type': 'tiktok',
+            'embed_url': url.replace('@', '').replace('video/', ''),
+            'watch_url': url,
+            'platform': 'TikTok'
+        }
+    
+    # Direct video file
+    elif video_type == 'direct':
+        return {
+            'type': 'direct',
+            'url': url,
+            'poster': metadata.get('poster', ''),
+            'platform': 'Direct'
+        }
+    
+    # Generic embed
+    else:
+        return {
+            'type': 'embed',
+            'url': url,
+            'platform': 'Unknown'
+        }
+
+
+def _process_audio_for_display(url, audio_type, metadata=None):
+    """Process audio for display - generate proper embed URLs"""
+    if not url:
+        return None
+    
+    metadata = metadata or {}
+    
+    # Spotify
+    if audio_type == 'spotify':
+        spotify_id = extract_spotify_id(url)
+        if spotify_id:
+            if 'track' in url:
+                embed_url = f'https://open.spotify.com/embed/track/{spotify_id}'
+            elif 'episode' in url:
+                embed_url = f'https://open.spotify.com/embed/episode/{spotify_id}'
+            elif 'album' in url:
+                embed_url = f'https://open.spotify.com/embed/album/{spotify_id}'
+            else:
+                embed_url = f'https://open.spotify.com/embed/{spotify_id}'
+            
+            return {
+                'type': 'spotify',
+                'embed_url': embed_url,
+                'open_url': url,
+                'id': spotify_id,
+                'platform': 'Spotify'
+            }
+    
+    # SoundCloud
+    elif audio_type == 'soundcloud':
+        return {
+            'type': 'soundcloud',
+            'embed_url': f'https://w.soundcloud.com/player/?url={url}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true',
+            'open_url': url,
+            'platform': 'SoundCloud'
+        }
+    
+    # Apple Podcasts
+    elif audio_type == 'apple_podcast':
+        return {
+            'type': 'apple_podcast',
+            'url': url,
+            'platform': 'Apple Podcasts'
+        }
+    
+    # Direct audio file
+    elif audio_type == 'direct':
+        return {
+            'type': 'direct',
+            'url': url,
+            'platform': 'Direct'
+        }
+    
+    # Generic embed
+    else:
+        return {
+            'type': 'embed',
+            'url': url,
+            'platform': 'Unknown'
+        }
+
+
+def extract_youtube_id(url):
+    """Extract YouTube video ID from URL"""
+    if not url:
+        return None
+    
+    patterns = [
+        r'youtube\.com/watch\?v=([a-zA-Z0-9_-]+)',
+        r'youtu\.be/([a-zA-Z0-9_-]+)',
+        r'youtube\.com/embed/([a-zA-Z0-9_-]+)',
+        r'youtube\.com/v/([a-zA-Z0-9_-]+)',
+        r'youtube\.com/shorts/([a-zA-Z0-9_-]+)'
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, str(url))
+        if match:
+            return match.group(1)
+    return None
+
+
+def extract_vimeo_id(url):
+    """Extract Vimeo video ID from URL"""
+    if not url:
+        return None
+    match = re.search(r'vimeo\.com/(?:video/)?(\d+)', str(url))
+    return match.group(1) if match else None
+
+
+def extract_dailymotion_id(url):
+    """Extract Dailymotion video ID from URL"""
+    if not url:
+        return None
+    match = re.search(r'dailymotion\.com/video/([a-zA-Z0-9]+)', str(url))
+    return match.group(1) if match else None
+
+
+def extract_spotify_id(url):
+    """Extract Spotify ID from URL"""
+    if not url:
+        return None
+    match = re.search(r'(?:open\.spotify\.com|spotify\.com)/(?:track|episode|album)/([a-zA-Z0-9]+)', str(url))
+    return match.group(1) if match else None
 
 
 def get_user_interactions(user, post):
@@ -1720,81 +2085,94 @@ def create_post(request):
     ).order_by('-updated_at')[:5]
     
     if request.method == 'POST':
+        # DEBUG: Print all POST data
+        print("\n" + "="*50)
+        print("DEBUG - POST DATA:")
+        for key, value in request.POST.items():
+            print(f"  {key}: {value}")
+        print("="*50 + "\n")
+        
+        # CRITICAL FIX: Ensure post_type is in POST data
+        # If it's missing but we have a hidden field, add it
+        if 'post_type' not in request.POST:
+            # Check if it might be in a different format
+            hidden_post_type = request.POST.get('post_type_hidden') or request.POST.get('post_type_value')
+            if hidden_post_type:
+                # Create a mutable copy of POST data
+                post_data = request.POST.copy()
+                post_data['post_type'] = hidden_post_type
+                request.POST = post_data
+                print(f"✓ Added post_type from hidden field: {hidden_post_type}")
+        
+        # Create form with POST data
         form = PostForm(request.POST, request.FILES, user=request.user)
+        
+        # Check if form is valid
         if form.is_valid():
+            print("✓ Form is valid!")
+            
+            # Save the post but don't commit yet
             post = form.save(commit=False)
             post.author = request.user
             
-            # Handle media URLs
-            video_url = request.POST.get('video_url')
-            if video_url:
-                post.video_urls = [{'url': video_url, 'type': 'embed', 'source': 'user'}]
-                post.has_media = True
-            
-            audio_url = request.POST.get('audio_url')
-            if audio_url:
-                post.audio_urls = [{'url': audio_url, 'type': 'embed', 'source': 'user'}]
-                post.has_media = True
-            
-            # Different handling based on post type
+            # Set initial status based on post type
             if post.post_type == 'user_news':
-                # News posts go to approval queue
-                post.status = 'draft'
+                post.status = 'draft'  # News posts need approval
                 post.is_news_submission = True
                 post.submission_status = 'pending'
-                post.save()
-                form.save_m2m()
-                
-                # Run AI verification
-                from .news_verifier import process_news_submission
-                process_news_submission(post)
-                
-                messages.info(
-                    request, 
-                    'Your news article has been submitted for review. It will be published after verification.'
-                )
-                
-                # Create activity
-                UserActivity.objects.create(
-                    user=request.user,
-                    activity_type='news_submitted',
-                    post=post,
-                    details={'post_type': 'news_submission'}
-                )
-                
-                return redirect('profile_view', username=request.user.username)
-                
-            elif post.post_type == 'profile_post':
+                messages.info(request, 'Your news submission has been sent for review.')
+            else:
                 post.status = 'published'
-                post.profile_only = True
-                post.privacy = 'private'
-                post.category = None
-                post.save()
-                form.save_m2m()
-                
-                messages.success(request, 'Profile post created successfully!')
-                return redirect('profile_view', username=request.user.username)
-                
-            else:  # discussion
-                post.status = 'published'
-                post.save()
-                form.save_m2m()
-                
-                UserActivity.objects.create(
-                    user=request.user,
-                    activity_type='post_created',
-                    post=post,
-                    details={'post_type': 'discussion'}
-                )
-                
-                messages.success(request, 'Discussion post created successfully!')
+                messages.success(request, 'Post created successfully!')
+            
+            # Handle media
+            if form.cleaned_data.get('video_url'):
+                post.has_media = True
+            
+            if form.cleaned_data.get('audio_url'):
+                post.has_media = True
+            
+            # Save the post
+            post.save()
+            form.save_m2m()  # Save many-to-many relationships
+            
+            # Handle allowed viewers for specific privacy
+            if post.privacy == 'specific' and form.cleaned_data.get('allowed_viewers'):
+                post.allowed_viewers.set(form.cleaned_data['allowed_viewers'])
+            
+            # Create activity
+            UserActivity.objects.create(
+                user=request.user,
+                activity_type='post_created',
+                post=post,
+                details={'title': post.title[:50]}
+            )
+            
+            # Redirect based on post type
+            if post.post_type == 'user_news':
+                return redirect('news_submissions')
+            else:
                 return redirect('post_detail', post_id=post.id)
+        else:
+            print("✗ Form is invalid!")
+            print("Form errors:", form.errors)
+            
+            # Show specific error for post_type
+            if 'post_type' in form.errors:
+                print("post_type errors:", form.errors['post_type'])
+            
+            # Add error messages to be displayed
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
     else:
-        form = PostForm(user=request.user)
-        
+        # GET request - initialize form
+        initial_data = {}
         post_type = request.GET.get('type')
         if post_type in ['discussion', 'user_news', 'profile_post']:
-            form.fields['post_type'].initial = post_type
+            initial_data['post_type'] = post_type
+        
+        form = PostForm(user=request.user, initial=initial_data)
     
     trending_topics = get_trending_topics()
     
@@ -1807,6 +2185,7 @@ def create_post(request):
         'title': 'Create Post',
     }
     return render(request, 'create_post.html', context)
+
 
 @login_required
 def edit_post(request, post_id):
@@ -2166,11 +2545,16 @@ def edit_profile(request):
         user_form = UserUpdateForm(instance=request.user)
         profile_form = UserProfileForm(instance=request.user.profile)
     
+    # Add timestamp to force image refresh
+    import time
+    timestamp = int(time.time())
+    
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
         'trending_topics': trending_topics,
         'title': 'Edit Profile',
+        'timestamp': timestamp,  # Add this to the context
     }
     
     return render(request, 'profile/edit_profile.html', context)
@@ -3024,9 +3408,9 @@ def admin_dashboard(request):
     # Recent users (latest 5)
     recent_users = User.objects.filter(is_active=True).order_by('-date_joined')[:5]
     
-    # Top categories
+    # FIXED: Changed 'post' to 'posts' in the Count filter
     top_categories = Category.objects.annotate(
-        post_count=Count('post', filter=Q(post__status='published'))
+        post_count=Count('posts', filter=Q(posts__status='published'))
     ).filter(post_count__gt=0).order_by('-post_count')[:5]
     
     # Calculate percentages for categories

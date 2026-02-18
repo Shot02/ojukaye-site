@@ -645,7 +645,7 @@
                         <div class="media-upload-item">
                             <div class="current-avatar">
                                 {% if user.profile.profile_pic %}
-                                <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" id="profilePreview">
+                                <img src="{{ user.profile.profile_pic.url }}?t={{ timestamp }}" alt="{{ user.username }}" id="profilePreview" style="width:100%; height:100%; object-fit:cover;">
                                 {% else %}
                                 <div class="avatar-placeholder-large" id="profilePreviewPlaceholder">
                                     {{ user.username|first|upper }}
@@ -660,12 +660,11 @@
                                 <p class="form-hint">Recommended: 400x400px, max 2MB</p>
                             </div>
                         </div>
-                        
                         <!-- Cover Photo -->
                         <div class="media-upload-item">
                             <div class="current-cover">
                                 {% if user.profile.cover_photo %}
-                                <img src="{{ user.profile.cover_photo.url }}" alt="Cover" id="coverPreview">
+                                <img src="{{ user.profile.cover_photo.url }}?t={{ timestamp }}" alt="Cover" id="coverPreview" style="width:100%; height:100%; object-fit:cover;">
                                 {% else %}
                                 <div class="cover-placeholder" id="coverPreviewPlaceholder">
                                     <i class="fas fa-mountain"></i>
@@ -1006,107 +1005,127 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Character counter for bio
-        const bioField = document.getElementById('{{ profile_form.bio.id_for_label }}');
-        const bioCharCount = document.getElementById('bioCharCount');
-        
-        if (bioField && bioCharCount) {
-            bioField.addEventListener('input', function() {
-                bioCharCount.textContent = this.value.length;
-            });
-            bioCharCount.textContent = bioField.value.length;
-        }
-        
-        // Profile preview updates
-        const firstNameField = document.getElementById('{{ user_form.first_name.id_for_label }}');
-        const lastNameField = document.getElementById('{{ user_form.last_name.id_for_label }}');
-        const previewName = document.getElementById('previewName');
-        
-        if (firstNameField && lastNameField && previewName) {
-            function updatePreviewName() {
-                const firstName = firstNameField.value.trim();
-                const lastName = lastNameField.value.trim();
-                const fullName = `${firstName} ${lastName}`.trim() || '{{ user.username }}';
-                previewName.textContent = fullName;
-            }
+            // Character counter for bio
+            const bioField = document.getElementById('{{ profile_form.bio.id_for_label }}');
+            const bioCharCount = document.getElementById('bioCharCount');
             
-            firstNameField.addEventListener('input', updatePreviewName);
-            lastNameField.addEventListener('input', updatePreviewName);
-        }
-        
-        // Bio preview
-        if (bioField) {
-            const previewBio = document.getElementById('previewBio');
-            if (previewBio) {
+            if (bioField && bioCharCount) {
                 bioField.addEventListener('input', function() {
-                    previewBio.textContent = this.value.slice(0, 80) + (this.value.length > 80 ? '...' : '') || 'No bio yet';
+                    bioCharCount.textContent = this.value.length;
                 });
+                bioCharCount.textContent = bioField.value.length;
             }
-        }
-        
-        // Image previews
-        function setupImagePreview(inputId, previewId, placeholderId = null) {
-            const input = document.getElementById(inputId);
-            const preview = document.getElementById(previewId);
-            const placeholder = placeholderId ? document.getElementById(placeholderId) : null;
             
-            if (input && preview) {
-                input.addEventListener('change', function() {
-                    const file = this.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            if (placeholder) placeholder.style.display = 'none';
-                            if (preview.tagName === 'IMG') {
-                                preview.src = e.target.result;
-                            } else {
-                                // Handle placeholder replacement
-                                const newImg = document.createElement('img');
-                                newImg.src = e.target.result;
-                                newImg.style.width = '100%';
-                                newImg.style.height = '100%';
-                                newImg.style.objectFit = 'cover';
-                                preview.innerHTML = '';
-                                preview.appendChild(newImg);
-                            }
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
+            // Profile preview updates
+            const firstNameField = document.getElementById('{{ user_form.first_name.id_for_label }}');
+            const lastNameField = document.getElementById('{{ user_form.last_name.id_for_label }}');
+            const previewName = document.getElementById('previewName');
+            
+            if (firstNameField && lastNameField && previewName) {
+                function updatePreviewName() {
+                    const firstName = firstNameField.value.trim();
+                    const lastName = lastNameField.value.trim();
+                    const fullName = `${firstName} ${lastName}`.trim() || '{{ user.username }}';
+                    previewName.textContent = fullName;
+                }
+                
+                firstNameField.addEventListener('input', updatePreviewName);
+                lastNameField.addEventListener('input', updatePreviewName);
             }
-        }
-        
-        setupImagePreview(
-            '{{ profile_form.profile_pic.id_for_label }}', 
-            'profilePreview', 
-            'profilePreviewPlaceholder'
-        );
-        
-        setupImagePreview(
-            '{{ profile_form.cover_photo.id_for_label }}', 
-            'coverPreview', 
-            'coverPreviewPlaceholder'
-        );
-        
-        // Interests preview
-        const interestsField = document.getElementById('{{ profile_form.interests.id_for_label }}');
-        const interestsPreview = document.getElementById('interestsPreview');
-        
-        if (interestsField && interestsPreview) {
-            function updateInterestsPreview() {
-                const interests = interestsField.value.split(',').map(i => i.trim()).filter(i => i);
-                if (interests.length > 0) {
-                    interestsPreview.innerHTML = interests.map(interest => 
-                        `<span class="interest-tag">${interest}</span>`
-                    ).join('');
-                } else {
-                    interestsPreview.innerHTML = '';
+            
+            // Bio preview
+            if (bioField) {
+                const previewBio = document.getElementById('previewBio');
+                if (previewBio) {
+                    bioField.addEventListener('input', function() {
+                        previewBio.textContent = this.value.slice(0, 80) + (this.value.length > 80 ? '...' : '') || 'No bio yet';
+                    });
                 }
             }
             
-            interestsField.addEventListener('input', updateInterestsPreview);
-            updateInterestsPreview();
-        }
-    });
+            // Image previews - FIXED VERSION
+            function setupImagePreview(inputId, previewId, placeholderId = null) {
+                const input = document.getElementById(inputId);
+                const preview = document.getElementById(previewId);
+                const placeholder = placeholderId ? document.getElementById(placeholderId) : null;
+                
+                if (input && preview) {
+                    input.addEventListener('change', function() {
+                        const file = this.files[0];
+                        if (file) {
+                            // Check file size (max 5MB)
+                            if (file.size > 5 * 1024 * 1024) {
+                                alert('File is too large. Maximum size is 5MB.');
+                                this.value = '';
+                                return;
+                            }
+                            
+                            // Check file type
+                            if (!file.type.startsWith('image/')) {
+                                alert('Please select an image file.');
+                                this.value = '';
+                                return;
+                            }
+                            
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                if (placeholder) {
+                                    placeholder.style.display = 'none';
+                                }
+                                
+                                // Handle different preview elements
+                                if (preview.tagName === 'IMG') {
+                                    preview.src = e.target.result;
+                                    preview.style.display = 'block';
+                                } else {
+                                    // If it's not an img tag, create one
+                                    const newImg = document.createElement('img');
+                                    newImg.src = e.target.result;
+                                    newImg.style.width = '100%';
+                                    newImg.style.height = '100%';
+                                    newImg.style.objectFit = 'cover';
+                                    preview.innerHTML = '';
+                                    preview.appendChild(newImg);
+                                }
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                }
+            }
+            
+            // Set up image previews
+            setupImagePreview(
+                '{{ profile_form.profile_pic.id_for_label }}', 
+                'profilePreview', 
+                'profilePreviewPlaceholder'
+            );
+            
+            setupImagePreview(
+                '{{ profile_form.cover_photo.id_for_label }}', 
+                'coverPreview', 
+                'coverPreviewPlaceholder'
+            );
+            
+            // Interests preview
+            const interestsField = document.getElementById('{{ profile_form.interests.id_for_label }}');
+            const interestsPreview = document.getElementById('interestsPreview');
+            
+            if (interestsField && interestsPreview) {
+                function updateInterestsPreview() {
+                    const interests = interestsField.value.split(',').map(i => i.trim()).filter(i => i);
+                    if (interests.length > 0) {
+                        interestsPreview.innerHTML = interests.map(interest => 
+                            `<span class="interest-tag">${interest}</span>`
+                        ).join('');
+                    } else {
+                        interestsPreview.innerHTML = '';
+                    }
+                }
+                
+                interestsField.addEventListener('input', updateInterestsPreview);
+                updateInterestsPreview();
+            }
+        });
 </script>
 {% endblock %}

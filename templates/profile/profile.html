@@ -896,42 +896,33 @@
             <!-- Cover Photo Camera Button (Visible only to own profile) -->
             {% if is_own_profile %}
             <div class="cover-actions">
-                <button type="button" class="btn-cover-edit" onclick="document.getElementById('coverUploadInput').click();">
+                <a href="{% url 'edit_profile' %}" class="btn-cover-edit" title="Edit Profile">
                     <i class="fas fa-camera"></i>
                     <span>Edit Cover</span>
-                </button>
-                <form id="coverUploadForm" method="POST" action="{% url 'update_cover_photo' %}" enctype="multipart/form-data" style="display: none;">
-                    {% csrf_token %}
-                    <input type="file" id="coverUploadInput" name="cover_photo" accept="image/*" onchange="uploadCoverPhoto(this)">
-                </form>
+                </a>
             </div>
             {% endif %}
         </div>
         
         <!-- Avatar Section -->
-        <div class="profile-avatar-section">
-            <div class="profile-avatar-large-wrapper">
-                {% if profile.profile_pic %}
-                <img src="{{ profile.profile_pic.url }}" alt="{{ profile_user.username }}" class="profile-avatar-large" id="profileAvatarImg">
-                {% else %}
-                <div class="profile-avatar-placeholder-large" id="profileAvatarPlaceholder">
-                    {{ profile_user.username|first|upper }}
-                </div>
-                {% endif %}
-                
-                <!-- Avatar Camera Button (Visible only to own profile) -->
-                {% if is_own_profile %}
-                <div class="avatar-actions">
-                    <button type="button" class="btn-avatar-edit" onclick="document.getElementById('avatarUploadInput').click();">
-                        <i class="fas fa-camera"></i>
-                    </button>
-                    <form id="avatarUploadForm" method="POST" action="{% url 'update_profile_pic' %}" enctype="multipart/form-data" style="display: none;">
-                        {% csrf_token %}
-                        <input type="file" id="avatarUploadInput" name="profile_pic" accept="image/*" onchange="uploadAvatarPhoto(this)">
-                    </form>
-                </div>
-                {% endif %}
+        <div class="profile-avatar-large-wrapper">
+            {% if profile.profile_pic %}
+            <img src="{{ profile.profile_pic.url }}" alt="{{ profile_user.username }}" class="profile-avatar-large" id="profileAvatarImg">
+            {% else %}
+            <div class="profile-avatar-placeholder-large" id="profileAvatarPlaceholder">
+                {{ profile_user.username|first|upper }}
             </div>
+            {% endif %}
+            
+            <!-- Avatar Camera Button (Visible only to own profile) - Links to Edit Profile -->
+            {% if is_own_profile %}
+            <div class="avatar-actions">
+                <a href="{% url 'edit_profile' %}" class="btn-avatar-edit" title="Edit Profile">
+                    <i class="fas fa-camera"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
             
             <div class="profile-header-info">
                 <div class="profile-header-name-wrapper">
