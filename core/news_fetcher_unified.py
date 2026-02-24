@@ -1,5 +1,3 @@
-# core/news_fetcher_unified.py - ENHANCED VERSION
-
 import requests
 import feedparser
 import json

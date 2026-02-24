@@ -8296,3 +8296,44 @@ Traceback (most recent call last):
     raise new from exc
 django.template.exceptions.TemplateDoesNotExist: includes/post_card.html
 "GET /profile/news_bot/ HTTP/1.1" 500 279162
+"GET /online-news/ HTTP/1.1" 200 233731
+"GET /static/css/styles.css HTTP/1.1" 304 0
+Not Found: /api/track-share/1127/
+"POST /api/track-share/1127/ HTTP/1.1" 404 19068
+Not Found: /like/1127/
+"POST /like/1127/ HTTP/1.1" 404 19035
+Not Found: /like/1127/
+"POST /like/1127/ HTTP/1.1" 404 19035
+Not Found: /like/1127/
+"POST /like/1127/ HTTP/1.1" 404 19035
+Not Found: /like/1127/
+"POST /like/1127/ HTTP/1.1" 404 19035
+Not Found: /like/1127/
+"POST /like/1127/ HTTP/1.1" 404 19035
+Not Found: /like/1127/
+"POST /like/1127/ HTTP/1.1" 404 19035
+Not Found: /bookmark/1127/
+"POST /bookmark/1127/ HTTP/1.1" 404 19047
+Not Found: /api/track-share/1127/
+"POST /api/track-share/1127/ HTTP/1.1" 404 19068
+"GET /online-news/ HTTP/1.1" 200 233731
+"GET /static/css/styles.css HTTP/1.1" 200 53249
+"GET /online-news/ HTTP/1.1" 200 233731
+"GET /static/css/styles.css HTTP/1.1" 200 53249
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /static/js/main.js HTTP/1.1" 200 43508
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 19037
+"GET / HTTP/1.1" 200 73466
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET / HTTP/1.1" 200 73466
+"GET /static/css/styles.css HTTP/1.1" 200 189322
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\news_fetcher_unified.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\news_verifier.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\news_verifier.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\news_fetcher_unified.py changed, reloading.
+Watching for file changes with StatReloader
