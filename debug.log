@@ -11242,3 +11242,44 @@ Watching for file changes with StatReloader
 "GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
 "GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
 C:\Users\DELL\Desktop\NewsBlog\ojukaye\ojukaye\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /quick-fetch-news/ HTTP/1.1" 200 51646
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 89899
+"GET /static/css/styles.css HTTP/1.1" 200 191374
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+"GET /static/js/main.js HTTP/1.1" 200 49511
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 26079
+"GET /logout/ HTTP/1.1" 302 0
+Internal Server Error: /online-news/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py", line 606, in online_news
+    auto_fetch_if_needed(request, news_posts)
+    ^^^^^^^^^^^^^^^^^^^^
+NameError: name 'auto_fetch_if_needed' is not defined
+"GET /online-news/ HTTP/1.1" 500 74898
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py changed, reloading.
+Watching for file changes with StatReloader
