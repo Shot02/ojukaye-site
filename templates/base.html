@@ -100,9 +100,9 @@
                             <i class="fas fa-user-edit"></i>
                             Edit Profile
                         </a>
-                        <a href="{% url 'bookmarks' %}" class="dropdown-item">
+                        <a href="{% url 'saved_posts' %}" class="nav-link">
                             <i class="fas fa-bookmark"></i>
-                            Saved Posts
+                            <span>Saved Posts</span>
                         </a>
                         
                         {% if user.is_staff or user.is_superuser %}
@@ -172,9 +172,9 @@
                     <span class="mobile-badge">{{ notification_count }}</span>
                     {% endif %}
                 </a>
-                <a href="{% url 'bookmarks' %}" class="mobile-nav-link">
+                <a href="{% url 'saved_posts' %}" class="nav-link">
                     <i class="fas fa-bookmark"></i>
-                    <span>Saved</span>
+                    <span>Saved Posts</span>
                 </a>
                 
                 {% if user.is_staff or user.is_superuser %}
