@@ -5307,3 +5307,33 @@ def track_share(request, post_id):
         return JsonResponse({'success': True})
     except Post.DoesNotExist:
         return JsonResponse({'error': 'Post not found'}, status=404)
+    
+    
+    
+@login_required
+@require_POST
+def toggle_bookmark(request, post_id):
+    """Toggle bookmark for a post (AJAX endpoint)"""
+    try:
+        post = get_object_or_404(Post, id=post_id)
+        
+        if request.user in post.bookmarks.all():
+            post.bookmarks.remove(request.user)
+            bookmarked = False
+            message = 'Bookmark removed'
+        else:
+            post.bookmarks.add(request.user)
+            bookmarked = True
+            message = 'Post saved'
+        
+        return JsonResponse({
+            'success': True,
+            'bookmarked': bookmarked,
+            'message': message,
+            'count': post.bookmarks.count()
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
