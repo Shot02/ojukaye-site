@@ -14645,3 +14645,598 @@ Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
 "GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
 Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
 "GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 147553
+Not Found: /static/css/styles.css
+"GET /static/css/styles.css HTTP/1.1" 404 179
+Not Found: /static/images/logo.jpeg
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /static/images/logo.jpeg HTTP/1.1" 404 179
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /static/js/main.js
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /static/images/logo.jpeg
+"GET /static/images/logo.jpeg HTTP/1.1" 404 179
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 179
+"GET / HTTP/1.1" 200 147553
+Not Found: /static/images/logo.jpeg
+Not Found: /static/css/styles.css
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /static/css/styles.css HTTP/1.1" 404 179
+"GET /static/images/logo.jpeg HTTP/1.1" 404 179
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+Not Found: /static/js/main.js
+- Broken pipe from ('127.0.0.1', 57047)
+- Broken pipe from ('127.0.0.1', 60062)
+"GET / HTTP/1.1" 200 147553
+Not Found: /static/css/styles.css
+Not Found: /static/images/logo.jpeg
+"GET /static/css/styles.css HTTP/1.1" 404 179
+"GET /static/images/logo.jpeg HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+Not Found: /static/js/main.js
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 404 179
+Not Found: /static/images/logo.jpeg
+"GET /static/images/logo.jpeg HTTP/1.1" 404 179
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\ojukaye\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 147553
+Not Found: /static/css/styles.css
+"GET /static/css/styles.css HTTP/1.1" 404 179
+Not Found: /static/images/logo.jpeg
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /static/images/logo.jpeg HTTP/1.1" 404 179
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+Not Found: /static/js/main.js
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /static/images/logo.jpeg
+"GET /static/images/logo.jpeg HTTP/1.1" 404 179
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 147553
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/css/styles.css HTTP/1.1" 200 222637
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 200 48121
+"GET / HTTP/1.1" 200 147553
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\ojukaye\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\ojukaye\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 147553
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 147553
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\ojukaye\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 147553
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /static/css/styles.css HTTP/1.1" 200 222637
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /static/js/main.js HTTP/1.1" 200 48121
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET / HTTP/1.1" 200 147553
+"GET /static/css/styles.css HTTP/1.1" 200 222637
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 200 48121
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET / HTTP/1.1" 200 147553
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/css/styles.css HTTP/1.1" 200 222637
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 200 48121
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET / HTTP/1.1" 200 147553
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/css/styles.css HTTP/1.1" 200 222637
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 200 48121
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 179
+"GET /create/ HTTP/1.1" 200 56225
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 179
+"GET / HTTP/1.1" 200 147553
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /create/ HTTP/1.1" 200 56225
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET / HTTP/1.1" 200 147553
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Internal Server Error: /post/1916/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1916/bookmark/ HTTP/1.1" 500 145
+"GET /online-news/ HTTP/1.1" 200 243655
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+Internal Server Error: /post/1989/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1989/bookmark/ HTTP/1.1" 500 145
+"POST /post/1989/like/ HTTP/1.1" 200 49
+Internal Server Error: /post/1992/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1992/bookmark/ HTTP/1.1" 500 145
+"GET /admin-posts/ HTTP/1.1" 200 264112
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+"GET /static/css/styles.css HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /admin-dashboard/ HTTP/1.1" 200 55289
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /admin/core/post/ HTTP/1.1" 200 130940
+"GET /static/admin/js/vendor/jquery/jquery.min.js HTTP/1.1" 200 87533
+"GET /static/admin/js/vendor/xregexp/xregexp.min.js HTTP/1.1" 200 163184
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET / HTTP/1.1" 200 150824
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET / HTTP/1.1" 200 150823
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+"GET /static/css/styles.css HTTP/1.1" 200 78790
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 179
+"GET /post/1916/ HTTP/1.1" 200 76779
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET / HTTP/1.1" 200 150823
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Internal Server Error: /post/1916/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1916/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1916/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1916/bookmark/ HTTP/1.1" 500 145
+"GET /online-news/ HTTP/1.1" 200 243463
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Internal Server Error: /post/1989/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1989/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1991/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1991/bookmark/ HTTP/1.1" 500 145
+"GET /online-news/ HTTP/1.1" 200 243447
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /static/css/styles.css HTTP/1.1" 200 222637
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /online-news/ HTTP/1.1" 200 243448
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/css/styles.css HTTP/1.1" 200 222597
+"GET /static/js/main.js HTTP/1.1" 304 0
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+"GET /online-news/ HTTP/1.1" 200 243448
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/css/styles.css HTTP/1.1" 200 223215
+"GET /static/js/main.js HTTP/1.1" 304 0
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+"GET /online-news/ HTTP/1.1" 200 243448
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/css/styles.css HTTP/1.1" 200 223247
+"GET /static/js/main.js HTTP/1.1" 304 0
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+"GET /online-news/ HTTP/1.1" 200 243448
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+"GET /online-news/ HTTP/1.1" 200 243448
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/css/styles.css HTTP/1.1" 200 223248
+"GET /static/js/main.js HTTP/1.1" 304 0
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+Internal Server Error: /post/1990/bookmark/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bookmark_post() got an unexpected keyword argument 'post_id'
+"POST /post/1990/bookmark/ HTTP/1.1" 500 145
+"GET / HTTP/1.1" 200 150824
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /create/ HTTP/1.1" 200 56219
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /create/?category=business HTTP/1.1" 200 56219
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /create/?category=business HTTP/1.1" 200 56219
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /create/?category=crime HTTP/1.1" 200 56219
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /create/?category=education HTTP/1.1" 200 56219
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /online-news/ HTTP/1.1" 200 243416
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /online-news/?category=politics&filter=latest HTTP/1.1" 200 275226
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179

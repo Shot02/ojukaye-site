@@ -48,6 +48,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'core.middleware.MessageToModalMiddleware',
@@ -138,9 +139,25 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# WhiteNoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Add this to serve media files through WhiteNoise
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
+
+
+# Create required directories on startup
+os.makedirs(os.path.join(BASE_DIR, 'static'), exist_ok=True)
+os.makedirs(os.path.join(BASE_DIR, 'staticfiles'), exist_ok=True)
+os.makedirs(os.path.join(BASE_DIR, 'media'), exist_ok=True)
+os.makedirs(os.path.join(BASE_DIR, 'media/profile_pics'), exist_ok=True)
+os.makedirs(os.path.join(BASE_DIR, 'media/cover_photos'), exist_ok=True)
+os.makedirs(os.path.join(BASE_DIR, 'media/post_images'), exist_ok=True)
+os.makedirs(os.path.join(BASE_DIR, 'media/comment_images'), exist_ok=True)
 
 # Authentication
 LOGIN_URL = 'login'
@@ -191,12 +208,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = 'noreply@ojukaye.com'
 
 # Create required directories on startup
-import os
-os.makedirs(os.path.join(BASE_DIR, 'media/profile_pics'), exist_ok=True)
-os.makedirs(os.path.join(BASE_DIR, 'media/cover_photos'), exist_ok=True)
-os.makedirs(os.path.join(BASE_DIR, 'media/post_images'), exist_ok=True)
-os.makedirs(os.path.join(BASE_DIR, 'media/comment_images'), exist_ok=True)
-os.makedirs(os.path.join(BASE_DIR, 'static'), exist_ok=True)
+
 
 # Site configuration
 SITE_NAME = 'Ojukaye'

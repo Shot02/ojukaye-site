@@ -1,4 +1,3 @@
-sorry their was a mistake it is this one
 /* ===== VARIABLES ===== */
 :root {
     /* Light Mode - Royal Theme */
@@ -621,7 +620,7 @@ body {
     padding: 1rem 1.5rem;
     border-radius: var(--radius-lg);
     margin-bottom: 1rem;
-    animation: slideIn 13s ease;
+    animation: slideIn 0.3s ease;
 }
 
 .alert-success {
@@ -1604,8 +1603,29 @@ body {
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.2;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+
+.post-action-btn:active::before {
+    width: 100px;
+    height: 100px;
 }
 
 .post-action-btn:hover {
@@ -1618,23 +1638,32 @@ body {
 
 .post-action-btn i {
     font-size: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.post-action-btn:hover i {
+    transform: scale(1.1);
 }
 
 .post-action-btn.liked {
     background: rgba(239, 68, 68, 0.1);
     border-color: var(--danger);
     color: var(--danger);
+    animation: likePop 0.3s ease;
 }
 
 .post-action-btn.liked i {
     color: var(--danger);
+    animation: heartBeat 0.3s ease;
 }
 
 .post-action-btn.bookmarked {
     background: rgba(59, 130, 246, 0.1);
     border-color: var(--primary);
     color: var(--primary);
+    animation: bookmarkPop 0.3s ease;
 }
+
 
 /* Activity Feed */
 .activity-feed {
@@ -3676,6 +3705,7 @@ body {
 }
 
 /* ===== MODAL SYSTEM ===== */
+/* ===== MODAL SYSTEM ===== */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -3883,6 +3913,7 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 8px 15px -3px rgba(239, 68, 68, 0.4);
 }
+
 
 /* ===== TOAST NOTIFICATIONS ===== */
 .toast-container {
@@ -4113,6 +4144,7 @@ body {
 .share-link-input button.copied {
     background: var(--success);
 }
+
 
 /* ===== COMMENT MODAL ===== */
 .comment-modal-list {
