@@ -15240,3 +15240,535 @@ Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
 "GET /online-news/?category=politics&filter=latest HTTP/1.1" 200 275226
 Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
 "GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Watching for file changes with StatReloader
+- Broken pipe from ('127.0.0.1', 53312)
+"GET / HTTP/1.1" 200 150848
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Not Found: /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 404 179
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\ojukaye\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-posts/ HTTP/1.1" 200 264112
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /static/js/main.js HTTP/1.1" 304 0
+"POST /admin-bulk-news-action/ HTTP/1.1" 302 0
+"GET /admin-news-submissions/ HTTP/1.1" 200 29455
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+"GET /admin-posts/ HTTP/1.1" 200 264112
+Not Found: /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 404 179
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET / HTTP/1.1" 302 0
+- Broken pipe from ('127.0.0.1', 55707)
+"GET /online-news/ HTTP/1.1" 200 230047
+"GET /static/css/styles.css HTTP/1.1" 200 228058
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+"GET /static/js/main.js HTTP/1.1" 200 48121
+"GET /favicon.ico HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py", line 3250, in login_view
+    return render(request, 'registration/login.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\defaulttags.py", line 511, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\urls\resolvers.py", line 842, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'password_reset' not found. 'password_reset' is not a valid view function or pattern name.
+"GET /login/ HTTP/1.1" 500 145
+"GET /favicon.ico HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py", line 3250, in login_view
+    return render(request, 'registration/login.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\defaulttags.py", line 511, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\urls\resolvers.py", line 842, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'password_reset' not found. 'password_reset' is not a valid view function or pattern name.
+"GET /login/ HTTP/1.1" 500 145
+"GET /favicon.ico HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+"GET /favicon.ico HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+"GET / HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 302 0
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+"GET /online-news/ HTTP/1.1" 200 230047
+"GET /register/ HTTP/1.1" 200 26016
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 302 0
+Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py", line 3250, in login_view
+    return render(request, 'registration/login.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\defaulttags.py", line 511, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\urls\resolvers.py", line 842, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'password_reset' not found. 'password_reset' is not a valid view function or pattern name.
+"GET /login/ HTTP/1.1" 500 145
+"GET /online-news/ HTTP/1.1" 200 230047
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+"GET /favicon.ico HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+C:\Users\DELL\Desktop\NewsBlog\ojukaye\ojukaye\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /login/
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\core\handlers\base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\ojukaye\core\views.py", line 3250, in login_view
+    return render(request, 'registration/login.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\template\defaulttags.py", line 511, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\Desktop\NewsBlog\newsenv\Lib\site-packages\django\urls\resolvers.py", line 842, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'password_reset' not found. 'password_reset' is not a valid view function or pattern name.
+"GET /login/ HTTP/1.1" 500 165471
+"GET /favicon.ico HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+"GET /login/ HTTP/1.1" 200 22801
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /favicon.ico HTTP/1.1" 302 0
+"GET /online-news/ HTTP/1.1" 200 230047
+"POST /login/ HTTP/1.1" 302 0
+"GET / HTTP/1.1" 200 150702
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 26708
+"GET /online-news/ HTTP/1.1" 200 235027
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET / HTTP/1.1" 200 150702
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /create/ HTTP/1.1" 200 53063
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /profile/Silver/ HTTP/1.1" 200 158702
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET / HTTP/1.1" 200 150702
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /admin-dashboard/ HTTP/1.1" 200 54944
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /admin-posts/ HTTP/1.1" 200 263857
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET / HTTP/1.1" 200 150702
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET / HTTP/1.1" 200 150702
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 235027
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /online-news/ HTTP/1.1" 200 235426
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /static/js/main.js HTTP/1.1" 200 48882
+"GET /static/css/styles.css HTTP/1.1" 200 230012
+"GET /static/css/styles.css HTTP/1.1" 304 0
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /edit-profile/ HTTP/1.1" 200 50775
+"GET /static/css/styles.css HTTP/1.1" 304 0
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+- Broken pipe from ('127.0.0.1', 59955)
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg?t=1776255898 HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png?t=1776255898 HTTP/1.1" 200 195470
+"GET /profile/Silver/ HTTP/1.1" 200 159101
+"GET /static/css/styles.css HTTP/1.1" 304 0
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /create/?type=user_news HTTP/1.1" 200 53462
+"GET /static/js/main.js HTTP/1.1" 304 0
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET / HTTP/1.1" 200 151101
+"GET /static/images/logo.jpeg HTTP/1.1" 304 0
+"GET /static/css/styles.css HTTP/1.1" 304 0
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET / HTTP/1.1" 200 151101
+"GET /static/css/styles.css HTTP/1.1" 304 0
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET / HTTP/1.1" 200 151101
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /static/css/styles.css HTTP/1.1" 200 230012
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+"GET /static/js/main.js HTTP/1.1" 200 48882
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET / HTTP/1.1" 200 151101
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /static/css/styles.css HTTP/1.1" 200 230012
+"GET /static/images/logo.jpeg HTTP/1.1" 200 3824
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /static/js/main.js HTTP/1.1" 200 48882
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 26708
+"GET / HTTP/1.1" 200 150866
+"GET /static/css/styles.css HTTP/1.1" 200 231335
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 26819
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/cover_photos/Purple_and_Black_Modern_Success_Quote_LinkedIn_Post.png HTTP/1.1" 200 195470
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 235191
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /static/js/main.js HTTP/1.1" 304 0
+- Broken pipe from ('127.0.0.1', 58671)
+"GET /post/1989/ HTTP/1.1" 200 83826
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 235191
+"GET /post/1993/ HTTP/1.1" 200 84890
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 235191
+"GET /post/1984/ HTTP/1.1" 200 82973
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 235191
+"GET /post/1978/ HTTP/1.1" 200 83908
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 235191
+"GET /post/1959/ HTTP/1.1" 200 84188
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 235191
+"GET /post/1976/ HTTP/1.1" 200 85552
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /quick-fetch-news/ HTTP/1.1" 200 55636
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+Watching for file changes with StatReloader
+"GET /quick-fetch-news/ HTTP/1.1" 200 55636
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /online-news/ HTTP/1.1" 200 242203
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /post/1989/ HTTP/1.1" 200 83826
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 242203
+"GET /post/1989/ HTTP/1.1" 200 83826
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 242203
+"GET /admin-posts/ HTTP/1.1" 200 264021
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /quick-fetch-news/ HTTP/1.1" 200 55636
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"POST /quick-fetch-news/ HTTP/1.1" 200 1001
+"GET /online-news/ HTTP/1.1" 200 271103
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /post/2056/ HTTP/1.1" 200 89278
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 271103
+"GET /post/2058/ HTTP/1.1" 200 91838
+"GET /static/css/styles.css HTTP/1.1" 304 0
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 271103
+"GET /post/2060/ HTTP/1.1" 200 87286
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /media/profile_pics/46e42bbb-a980-4f35-a206-7eee4e8314b1_4XCRozz.jpg HTTP/1.1" 200 24614
+"GET /online-news/ HTTP/1.1" 200 271104

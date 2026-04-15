@@ -632,12 +632,32 @@ def online_news(request):
     
     # Add media info and verification badges to each post
     for post in page_obj:
-        media_info = get_post_media_info(post)
-        post.has_video = media_info['has_video']
-        post.has_audio = media_info['has_audio']
-        post.media_count = media_info['media_count']
-        post.verification_badge = get_verification_badge(post)
-        post.media_preview = get_media_preview(post)
+        try:
+            # Safely get media info
+            media_info = get_post_media_info_safe(post)
+            post.has_video = media_info['has_video']
+            post.has_audio = media_info['has_audio']
+            post.media_count = media_info['media_count']
+            
+            # Safely get verification badge
+            post.verification_badge = get_verification_badge_safe(post)
+            
+            # Safely get media preview
+            post.media_preview = get_media_preview_safe(post)
+            
+            # Ensure post has comments_count attribute
+            if not hasattr(post, 'comments_count'):
+                post.comments_count = post.comments.filter(is_active=True).count()
+                
+        except Exception as e:
+            logger.error(f"Error processing post {post.id}: {e}")
+            # Set safe defaults
+            post.has_video = False
+            post.has_audio = False
+            post.media_count = 0
+            post.verification_badge = None
+            post.media_preview = {'type': None, 'thumbnail': None}
+            post.comments_count = 0
     
     # Get trending topics
     trending_topics = get_trending_topics()
@@ -678,6 +698,119 @@ def online_news(request):
     }
     
     return render(request, 'online_news.html', context)
+
+
+def get_post_media_info_safe(post):
+    """Safely get media information for a post without errors"""
+    has_video = False
+    has_audio = False
+    
+    # Check video URLs safely
+    if post.video_urls:
+        try:
+            if isinstance(post.video_urls, str):
+                if post.video_urls.strip() and post.video_urls not in ['[]', '{}', 'null', '']:
+                    videos = json.loads(post.video_urls)
+                    has_video = bool(videos and len(videos) > 0)
+            elif isinstance(post.video_urls, list):
+                has_video = len(post.video_urls) > 0
+            elif isinstance(post.video_urls, dict):
+                has_video = bool(post.video_urls)
+        except (json.JSONDecodeError, TypeError, ValueError):
+            has_video = False
+    
+    # Check audio URLs safely
+    if post.audio_urls:
+        try:
+            if isinstance(post.audio_urls, str):
+                if post.audio_urls.strip() and post.audio_urls not in ['[]', '{}', 'null', '']:
+                    audios = json.loads(post.audio_urls)
+                    has_audio = bool(audios and len(audios) > 0)
+            elif isinstance(post.audio_urls, list):
+                has_audio = len(post.audio_urls) > 0
+            elif isinstance(post.audio_urls, dict):
+                has_audio = bool(post.audio_urls)
+        except (json.JSONDecodeError, TypeError, ValueError):
+            has_audio = False
+    
+    media_count = (1 if has_video else 0) + (1 if has_audio else 0)
+    
+    return {
+        'has_video': has_video,
+        'has_audio': has_audio,
+        'media_count': media_count,
+    }
+
+
+def get_verification_badge_safe(post):
+    """Safely get verification badge type"""
+    try:
+        if post.verification_status == 'verified':
+            return 'verified'
+        elif post.verification_score and post.verification_score > 0.7:
+            return 'trusted'
+    except:
+        pass
+    return None
+
+
+def get_media_preview_safe(post):
+    """Safely get media preview information"""
+    preview = {
+        'type': None,
+        'thumbnail': None,
+        'duration': None
+    }
+    
+    try:
+        # Check for video
+        if post.video_urls:
+            try:
+                videos = None
+                if isinstance(post.video_urls, str):
+                    if post.video_urls.strip() and post.video_urls not in ['[]', '{}']:
+                        videos = json.loads(post.video_urls)
+                elif isinstance(post.video_urls, list):
+                    videos = post.video_urls
+                
+                if videos and len(videos) > 0:
+                    first_video = videos[0]
+                    video_url = first_video.get('url', '') if isinstance(first_video, dict) else str(first_video)
+                    
+                    if 'youtube' in video_url or 'youtu.be' in video_url:
+                        video_id = extract_youtube_id(video_url)
+                        if video_id:
+                            preview['type'] = 'youtube'
+                            preview['thumbnail'] = f'https://img.youtube.com/vi/{video_id}/mqdefault.jpg'
+                            preview['video_id'] = video_id
+            except:
+                pass
+        
+        # Check for audio
+        elif post.audio_urls:
+            try:
+                audios = None
+                if isinstance(post.audio_urls, str):
+                    if post.audio_urls.strip() and post.audio_urls not in ['[]', '{}']:
+                        audios = json.loads(post.audio_urls)
+                elif isinstance(post.audio_urls, list):
+                    audios = post.audio_urls
+                
+                if audios and len(audios) > 0:
+                    first_audio = audios[0]
+                    audio_url = first_audio.get('url', '') if isinstance(first_audio, dict) else str(first_audio)
+                    
+                    if 'spotify' in audio_url:
+                        preview['type'] = 'spotify'
+                    elif 'soundcloud' in audio_url:
+                        preview['type'] = 'soundcloud'
+            except:
+                pass
+                
+    except Exception as e:
+        logger.error(f"Error in media preview: {e}")
+    
+    return preview
 
 
 def auto_fetch_if_needed(request, news_posts):
@@ -887,15 +1020,15 @@ def get_banner_posts():
     banner_posts = cache.get(cache_key)
     
     if banner_posts is None:
-        # Get featured posts
+        # Get posts marked as banner
         banner_posts = list(Post.objects.filter(
             status='published',
-            is_featured=True,
+            is_banner=True,  # ← FIXED: Changed from is_featured to is_banner
             post_type__in=['news', 'user_news']
-        ).select_related('category')[:4])
+        ).select_related('category').order_by('-banner_priority', '-published_at')[:5])
         
-        # If not enough, add trending ones
-        if len(banner_posts) < 4:
+        # If no banner posts, get trending posts instead
+        if not banner_posts:
             trending = Post.objects.filter(
                 status='published',
                 post_type__in=['news', 'user_news'],
@@ -905,12 +1038,12 @@ def get_banner_posts():
                 comment_count=Count('comments', filter=Q(comments__is_active=True))
             ).annotate(
                 engagement=F('like_count') + F('comment_count') * 2 + F('views') / 100
-            ).order_by('-engagement')[:4 - len(banner_posts)]
+            ).order_by('-engagement')[:5]
             
-            banner_posts.extend(list(trending))
+            banner_posts = list(trending)
         
-        # Cache for 1 hour
-        cache.set(cache_key, banner_posts, 3600)
+        # Cache for 30 minutes
+        cache.set(cache_key, banner_posts, 1800)
     
     return banner_posts
 

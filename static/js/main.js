@@ -18,33 +18,51 @@ document.addEventListener('DOMContentLoaded', function() {
     initDarkMode();
 });
 
+
 // ===== MOBILE MENU =====
 function initMobileMenu() {
     const menuBtn = document.querySelector('.mobile-menu-btn');
     const mobileMenu = document.querySelector('.mobile-menu');
     
     if (menuBtn && mobileMenu) {
-        menuBtn.addEventListener('click', function(e) {
+        // Remove any existing listeners
+        const newMenuBtn = menuBtn.cloneNode(true);
+        menuBtn.parentNode.replaceChild(newMenuBtn, menuBtn);
+        
+        newMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             e.stopPropagation();
+            
             mobileMenu.classList.toggle('active');
             
-            const icon = menuBtn.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('fa-bars');
-                icon.classList.toggle('fa-times');
+            const icon = this.querySelector('i');
+            if (mobileMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
             }
         });
         
         // Close menu when clicking outside
         document.addEventListener('click', function(e) {
-            if (!menuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+            if (!newMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
                 mobileMenu.classList.remove('active');
-                const icon = menuBtn.querySelector('i');
-                if (icon) {
-                    icon.classList.add('fa-bars');
-                    icon.classList.remove('fa-times');
-                }
+                const icon = newMenuBtn.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
             }
+        });
+        
+        // Close menu when clicking a link (optional - improves UX)
+        mobileMenu.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenu.classList.remove('active');
+                const icon = newMenuBtn.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
         });
     }
 }

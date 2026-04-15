@@ -22,7 +22,6 @@
     <!-- Dark Mode Initialization Script (runs before anything else) -->
     <script>
         (function() {
-            // Set initial theme based on saved preference or system preference
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme) {
                 document.documentElement.setAttribute('data-theme', savedTheme);
@@ -39,7 +38,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <!-- Mobile Menu Button -->
-            <button class="mobile-menu-btn" aria-label="Menu">
+            <button class="mobile-menu-btn" aria-label="Menu" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
             </button>
             
@@ -54,11 +53,11 @@
                 <form action="{% url 'search' %}" method="GET" class="search-wrapper">
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" 
-                           name="q" 
-                           class="search-input" 
-                           placeholder="Search news, discussions, people..."
-                           value="{{ search_query|default:'' }}"
-                           autocomplete="off">
+                        name="q" 
+                        class="search-input" 
+                        placeholder="Search news, discussions, people..."
+                        value="{{ search_query|default:'' }}"
+                        autocomplete="off">
                     <button type="submit" class="search-btn">Search</button>
                 </form>
             </div>
@@ -89,7 +88,6 @@
                         <span>Notifications</span>
                     </a>
                     
-                    <!-- Dark Mode Toggle in Navbar - Only for logged in users -->
                     <button class="nav-link dark-mode-nav-btn" id="darkModeToggle" aria-label="Toggle dark mode">
                         <i class="fas fa-moon"></i>
                     </button>
@@ -157,26 +155,9 @@
             </div>
         </div>
         
-        <!-- Mobile Menu -->
-        <div class="mobile-menu">
+        <!-- Mobile Menu - FIXED -->
+        <div class="mobile-menu" id="mobileMenu">
             <div class="mobile-menu-content">
-                <!-- Mobile Search -->
-                <form action="{% url 'search' %}" method="GET" class="search-wrapper mobile-search">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" name="q" class="search-input" placeholder="Search...">
-                </form>
-                
-                <!-- Dark Mode Toggle (Mobile) - Only for logged in users -->
-                {% if user.is_authenticated %}
-                <div class="mobile-dark-mode">
-                    <button class="dark-mode-toggle mobile-toggle" id="mobileDarkModeToggle" aria-label="Toggle dark mode">
-                        <i class="fas fa-moon"></i>
-                        <span>Dark Mode</span>
-                    </button>
-                </div>
-                {% endif %}
-                
-                <!-- Mobile Navigation -->
                 <a href="{% url 'home' %}" class="mobile-nav-link">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
@@ -193,7 +174,7 @@
                 </a>
                 <a href="{% url 'profile_view' username=user.username %}" class="mobile-nav-link">
                     <i class="fas fa-user"></i>
-                    <span>Profile</span>
+                    <span>My Profile</span>
                 </a>
                 <a href="{% url 'notifications' %}" class="mobile-nav-link">
                     <i class="fas fa-bell"></i>
@@ -207,32 +188,42 @@
                     <span>Saved Posts</span>
                 </a>
                 
+                <button class="mobile-nav-link" id="mobileDarkModeToggle" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;">
+                    <i class="fas fa-moon"></i>
+                    <span>Dark Mode</span>
+                </button>
+                
                 {% if user.is_staff or user.is_superuser %}
-                <div class="mobile-admin-section">
-                    <a href="{% url 'admin_dashboard' %}" class="mobile-nav-link admin-link">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Admin Dashboard
-                    </a>
-                    <a href="{% url 'admin_posts' %}" class="mobile-nav-link admin-link">
-                        <i class="fas fa-file-alt"></i>
-                        Manage Posts
-                    </a>
-                    <a href="{% url 'quick_fetch_news' %}" class="mobile-nav-link admin-link">
-                        <i class="fas fa-sync-alt"></i>
-                        Quick Fetch News
-                    </a>
-                </div>
+                <div style="margin:10px 0;border-top:1px solid var(--border-color);"></div>
+                <a href="{% url 'admin_dashboard' %}" class="mobile-nav-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Admin Dashboard</span>
+                </a>
+                <a href="{% url 'admin_posts' %}" class="mobile-nav-link">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Manage Posts</span>
+                </a>
+                <a href="{% url 'quick_fetch_news' %}" class="mobile-nav-link">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Quick Fetch News</span>
+                </a>
                 {% endif %}
                 
-                <a href="{% url 'logout' %}" class="mobile-nav-link logout-link">
+                <div style="margin:10px 0;border-top:1px solid var(--border-color);"></div>
+                <a href="{% url 'logout' %}" class="mobile-nav-link" style="color:var(--danger);">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>
                 {% else %}
-                <div class="mobile-auth-buttons">
-                    <a href="{% url 'login' %}" class="btn-login">Sign In</a>
-                    <a href="{% url 'register' %}" class="btn-register">Register</a>
-                </div>
+                <div style="margin:10px 0;border-top:1px solid var(--border-color);"></div>
+                <a href="{% url 'login' %}" class="mobile-nav-link">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Sign In</span>
+                </a>
+                <a href="{% url 'register' %}" class="mobile-nav-link">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Register</span>
+                </a>
                 {% endif %}
             </div>
         </div>
@@ -403,7 +394,20 @@
             }
         });
     </script>
-    
-    {% block extra_js %}{% endblock %}
+
+    <script>
+        function toggleMobileMenu() {
+            var menu = document.getElementById('mobileMenu');
+            var btn = document.querySelector('.mobile-menu-btn i');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+                btn.className = 'fas fa-bars';
+            } else {
+                menu.style.display = 'block';
+                btn.className = 'fas fa-times';
+            }
+        }
+    </script>
+            {% block extra_js %}{% endblock %}
 </body>
 </html>

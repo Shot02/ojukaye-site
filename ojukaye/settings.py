@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-i)ef7k5z)av6nsza0zkhaq87$rj55#4)2e@(#a66qbwk8c^2&$')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)
 # DEBUG = False
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
@@ -51,7 +51,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'core.middleware.MessageToModalMiddleware',
+    "core.middleware.MessageToModalMiddleware",
     # 'ojuaye.context_processors.categories',
     # 'ojuaye.context_processors.trending_posts',
     # 'ojuaye.context_processors.notifications_count',
@@ -257,7 +257,7 @@ LOGGING = {
             'propagate': False,
         },
         'core.views': {
-            'handlers': ['file'],
+            'handlers': ['file'], 
             'level': 'INFO',
             'propagate': False,
         },

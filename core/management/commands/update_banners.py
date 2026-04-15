@@ -2,6 +2,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta
+from django.db.models import Count, Q, F
 from core.models import Post
 
 class Command(BaseCommand):
@@ -13,19 +14,41 @@ class Command(BaseCommand):
         # Clear old banners
         Post.objects.filter(is_banner=True).update(is_banner=False)
         
-        # Get trending posts from last 24 hours
+        # Get trending posts from last 7 days
         trending_posts = Post.objects.filter(
             status='published',
-            published_at__gte=timezone.now() - timedelta(hours=24)
+            post_type__in=['news', 'user_news'],
+            published_at__gte=timezone.now() - timedelta(days=7)
         ).annotate(
-            engagement=models.Count('likes') + models.Count('comments') * 2 + models.F('views') / 100
+            like_count=Count('likes'),
+            comment_count=Count('comments', filter=Q(comments__is_active=True))
+        ).annotate(
+            engagement=F('like_count') + F('comment_count') * 2 + F('views') / 100
         ).order_by('-engagement')[:5]
         
         # Mark as banners
+        count = 0
         for post in trending_posts:
             post.is_banner = True
-            post.banner_expires_at = timezone.now() + timedelta(days=1)
+            post.banner_priority = 1
+            post.banner_expires_at = timezone.now() + timedelta(days=7)
             post.save()
-            self.stdout.write(f'Marked as banner: {post.title[:50]}...')
+            count += 1
+            self.stdout.write(f'  ✓ Marked as banner: {post.title[:50]}...')
         
-        self.stdout.write(self.style.SUCCESS(f'Updated {trending_posts.count()} banner posts'))
+        # If no trending posts, mark some recent posts
+        if count == 0:
+            recent_posts = Post.objects.filter(
+                status='published',
+                post_type__in=['news', 'user_news']
+            ).order_by('-published_at')[:5]
+            
+            for post in recent_posts:
+                post.is_banner = True
+                post.banner_priority = 1
+                post.banner_expires_at = timezone.now() + timedelta(days=7)
+                post.save()
+                count += 1
+                self.stdout.write(f'  ✓ Marked as banner: {post.title[:50]}...')
+        
+        self.stdout.write(self.style.SUCCESS(f'Successfully updated {count} banner posts'))
